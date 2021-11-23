@@ -1,0 +1,63 @@
+@import "../../assets/styles/index.scss";
+
+.inputContainer {
+  position: relative;
+  padding-bottom: 18px;
+  .icon {
+    position: absolute;
+    top: 1.5px;
+    right: 1.5px;
+    height: 30px;
+    width: 30px;
+    cursor: pointer;
+    user-select: none;
+  }
+  &.withIcon {
+    padding-right: 33px;
+  }
+  input {
+    border: none;
+    background-color: none;
+    width: 100%;
+    font-size: 22px;
+    line-height: 33px;
+    font-family: $mainFontFamily;
+    color: $spaceBlue;
+    outline: none;
+    &:placeholder-shown ~ .border {
+      animation-iteration-count: infinite;
+      animation-duration: 2s;
+      animation-name: pulse;
+      animation-delay: 1s;
+    }
+  }
+  & .border {
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    bottom: 18px;
+    height: 1px;
+    background-color: $spaceBlue;
+    opacity: 0;
+  }
+  .error {
+    position: absolute;
+    bottom: 0px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 100%;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

@@ -1,0 +1,14 @@
+@import "../../assets/styles/variables.scss";
+
+.button {
+  display: block;
+  width: 100%;
+  min-height: 62px;
+  border: none;
+  transition: color 250ms;
+  color: $digitalBlue;
+  &:disabled {
+    color: $mediumGray;
+  }
+  background-color: white;
+}

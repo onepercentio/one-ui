@@ -1,0 +1,12 @@
+@mixin iteractibleElement() {
+  & {
+    cursor: pointer;
+    transition: transform 250ms;
+  }
+  &:hover {
+    transform: scale(1.2);
+  }
+  &:active {
+    transform: scale(1.1);
+  }
+}

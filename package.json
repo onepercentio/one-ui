@@ -38,6 +38,7 @@
     "build-storybook": "build-storybook",
     "prebuild": "cd src",
     "build": "tsc; cpy --cwd='src' '**/*.scss' '../dist' --parents",
-    "postbuild": "cd .."
+    "postbuild": "cd ..",
+    "prepare": "npm run build"
   }
 }

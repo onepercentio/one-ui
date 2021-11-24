@@ -1,0 +1,34 @@
+@import "../../assets/styles/index.scss";
+
+.container {
+  font-family: Manrope;
+  transition: max-height 1s;
+  overflow: hidden;
+  max-height: 0px;
+  * {
+    text-align: left;
+  }
+  h1 {
+    font-weight: bold;
+    font-size: 34px;
+    line-height: 41px;
+    color: $spaceBlue !important;
+  }
+  p {
+    font-family: Roboto;
+    font-size: 22px;
+    line-height: 33px;
+  }
+}
+
+.hidden {
+  max-height: 0px !important;
+}
+
+.loading * {
+  color: $spaceBlue !important;
+}
+
+.disabled * {
+  color: $mediumGray !important;
+}

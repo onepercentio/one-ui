@@ -2,7 +2,7 @@
 
 .button {
   display: block;
-  width: 100%;
+  min-width: 150px;
   min-height: 62px;
   border: none;
   transition: color 250ms;
@@ -10,5 +10,5 @@
   &:disabled {
     color: $mediumGray;
   }
-  background-color: white;
+  background-color: transparent;
 }

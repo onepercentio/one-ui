@@ -1,5 +1,7 @@
 import React, {
   ComponentProps,
+  DetailedHTMLProps,
+  HTMLAttributes,
   useEffect,
   useMemo,
   useRef,
@@ -15,11 +17,15 @@ export default function Input({
   error,
   placeholder = " ",
   hideError,
+  icon,
   ...otherProps
 }: {
   error?: string;
   hideError?: "onfocus";
   placeholder?: string;
+  icon?: {
+    onClick?: () => void;
+  } & DetailedHTMLProps<React.ImgHTMLAttributes<HTMLImageElement>, any>;
 } & React.HTMLProps<HTMLInputElement>) {
   const [focused, setFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -48,12 +54,18 @@ export default function Input({
           if (otherProps.onBlur) otherProps.onBlur(e);
         }}
       />
-      <div className={Styles.border}/>
+      <div className={Styles.border} />
       {error && shouldShowError && (
-        <Text title={error} data-testid="error-label" className={Styles.error} type="error">
+        <Text
+          title={error}
+          data-testid="error-label"
+          className={Styles.error}
+          type="error"
+        >
           {error}
         </Text>
       )}
+      {icon && <img className={Styles.icon} {...icon} />}
     </div>
   );
 }

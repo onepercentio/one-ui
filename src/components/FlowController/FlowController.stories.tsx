@@ -19,5 +19,13 @@ Primary.args = {
     <div>Etapa 7</div>,
     <div>Etapa 8</div>,
   ],
-  buttons: [],
+  buttons: [{
+    label: "Action",
+    onClick: () => {},
+    state: "enabled"
+  }, {
+    label: "Action disabled",
+    onClick: () => {},
+    state: "disabled"
+  }],
 } as Partial<ComponentProps<typeof C>>;

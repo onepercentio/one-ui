@@ -10,24 +10,14 @@
   flex-direction: column;
   justify-content: space-between;
   button {
+    width: 100%;
     border-top: 1px solid $lightGray;
   }
-  > section {
-    min-height: 250px;
-    display: flex;
-    align-items: center;
-    overflow: hidden;
+  .transition {
     margin-top: -105px;
     height: 100%;
-    > div {
-      display: flex;
-      flex-direction: column;
-      min-height: inherit;
-      min-width: 100%;
-      animation-duration: 500ms;
-      animation-fill-mode: forwards;
+    .content {
       padding: 0px 33px 33px 33px;
-      overflow: auto;
       margin-top: 105px;
       max-height: calc(100% - 105px);
 
@@ -37,18 +27,37 @@
         height: 100%;
       }
     }
-    div.entranceLeft {
-      animation-name: entranceLeft;
-    }
-    div.exitLeft {
-      animation-name: exitLeft;
-    }
     section {
       border-top: 1px solid $lightGray;
       margin: 0px -33px;
       padding: 0px 33px;
     }
   }
+  // > section {
+  //   min-height: 250px;
+  //   display: flex;
+  //   align-items: center;
+  //   overflow: hidden;
+  //   height: 100%;
+  //   > div {
+  //     display: flex;
+  //     flex-direction: column;
+  //     min-height: inherit;
+  //     min-width: 100%;
+  //     animation-duration: 500ms;
+  //     animation-fill-mode: forwards;
+  //     padding: 0px 33px 33px 33px;
+  //     overflow: auto;
+  //     margin-top: 105px;
+  //     max-height: calc(100% - 105px);
+
+  //     &.fullHeight {
+  //       margin-top: 0px;
+  //       max-height: 100%;
+  //       height: 100%;
+  //     }
+  //   }
+  // }
   header {
     margin: 55px 33px;
     margin-bottom: 33px;
@@ -102,22 +111,5 @@
         left: 0px;
       }
     }
-  }
-}
-
-@keyframes entranceLeft {
-  0% {
-    margin-left: -100%;
-  }
-  100% {
-    margin-left: 0%;
-  }
-}
-@keyframes exitLeft {
-  0% {
-    margin-left: 0%;
-  }
-  100% {
-    margin-left: -100%;
   }
 }

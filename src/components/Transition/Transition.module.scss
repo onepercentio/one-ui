@@ -1,0 +1,42 @@
+.section {
+  * {
+    box-sizing: border-box;
+  }
+  min-height: 250px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  > div {
+    display: flex;
+    flex-direction: column;
+    min-height: inherit;
+    min-width: 100%;
+    animation-duration: 500ms;
+    animation-fill-mode: forwards;
+    overflow: auto;
+  }
+}
+
+div.entranceLeft {
+  animation-name: entranceLeft;
+}
+div.exitLeft {
+  animation-name: exitLeft;
+}
+
+@keyframes entranceLeft {
+  0% {
+    margin-left: -100%;
+  }
+  100% {
+    margin-left: 0%;
+  }
+}
+@keyframes exitLeft {
+  0% {
+    margin-left: 0%;
+  }
+  100% {
+    margin-left: -100%;
+  }
+}

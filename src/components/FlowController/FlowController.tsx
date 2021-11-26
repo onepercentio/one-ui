@@ -1,5 +1,6 @@
 import React, { MouseEvent, useEffect, useMemo, useRef, useState } from "react";
 import Button from "../Button";
+import Transition from "../Transition";
 import Styles from "./FlowController.module.scss";
 
 export type FlowControlState = "disabled" | "enabled" | "hidden";
@@ -14,7 +15,7 @@ export default function FlowController<
   buttons,
   step,
   onClose,
-  onBack, 
+  onBack,
   fullPage,
   firstStep = 0,
   style,
@@ -39,63 +40,6 @@ export default function FlowController<
     else if (onBack) onBack();
   }
 
-  const [screensStack, setScreensStack] = useState([
-    <div key={step}>{children[step]}</div>,
-  ]);
-  const prevStep = useRef(step);
-  useEffect(() => {
-    if (prevStep.current > step) {
-      setScreensStack((screensBeforeChangingStep) => [
-        <div
-          key={step}
-          className={`${Styles.entranceLeft} ${
-            fullPage ? Styles.fullHeight : ""
-          }`}
-          onAnimationEnd={() =>
-            setScreensStack((screensAfterTheCurrentStepEntered) =>
-              screensAfterTheCurrentStepEntered.filter(
-                (s) => s !== screensBeforeChangingStep[0]
-              )
-            )
-          }
-        >
-          {children[step]}
-        </div>,
-        ...screensBeforeChangingStep,
-      ]);
-    } else if (prevStep.current < step) {
-      const stepToDelete = prevStep.current;
-      setScreensStack((screensBeforeChangingStep) => {
-        const lastIndex = screensBeforeChangingStep.length - 1;
-        const lastScreen = screensBeforeChangingStep[lastIndex];
-        const clonedLast = React.cloneElement(lastScreen, {
-          className: `${Styles.exitLeft} ${
-            lastScreen.props.className?.includes(Styles.fullHeight)
-              ? Styles.fullHeight
-              : ""
-          }`,
-          onAnimationEnd: () =>
-            setScreensStack((screensAfterTheCurrentStepEntered) => {
-              return screensAfterTheCurrentStepEntered.filter(
-                (s) => s.key !== String(stepToDelete)
-              );
-            }),
-        });
-
-        return [
-          ...screensBeforeChangingStep.slice(0, lastIndex),
-          clonedLast,
-          <div key={step} className={fullPage ? Styles.fullHeight : ""}>
-            {children[step]}
-          </div>,
-        ];
-      });
-    }
-    return () => {
-      prevStep.current = step;
-    };
-  }, [step]);
-
   const isAtFirstStep = step === firstStep;
 
   const shouldDisplayHeaderButton =
@@ -116,7 +60,15 @@ export default function FlowController<
           />
         )}
       </header>
-      <section>{screensStack}</section>
+      <Transition
+        step={step}
+        className={Styles.transition}
+        contentClassName={`${fullPage ? Styles.fullHeight : ""} ${
+          Styles.content
+        }`}
+      >
+        {children}
+      </Transition>
       <footer
         className={
           buttons.find((b) => b.state === "hidden") ? Styles.hidden : undefined

@@ -1,0 +1,25 @@
+@import "../../assets/styles/variables.scss";
+
+.container {
+  animation-fill-mode: forwards;
+  animation-duration: 250ms;
+  animation-name: expand;
+  width: auto;
+  min-width: 250px;
+}
+
+.success {
+  background-color: $success;
+}
+
+@keyframes expand {
+  0% {
+    padding: 0px 12px;
+    max-height: 0%;
+  }
+
+  100% {
+    padding: 12px 12px;
+    max-height: 100%;
+  }
+}

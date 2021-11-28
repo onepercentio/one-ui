@@ -1,6 +1,1 @@
-declare module "*.module.scss" {
-  const Styles: {
-    [style: string]: string;
-  };
-  export default Styles;
-}
+export type CommonErrorCodes = "UNEXPECTED_ERROR";

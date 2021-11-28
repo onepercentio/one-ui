@@ -1,6 +1,7 @@
 @import "../../assets/styles/variables.scss";
 
 .button {
+  cursor: pointer;
   display: block;
   min-width: 150px;
   min-height: 62px;
@@ -8,6 +9,7 @@
   transition: color 250ms;
   color: $digitalBlue;
   &:disabled {
+    cursor: initial;
     color: $mediumGray;
   }
   background-color: transparent;

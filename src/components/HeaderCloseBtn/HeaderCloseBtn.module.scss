@@ -1,0 +1,44 @@
+@import "../../assets/styles/index.scss";
+
+.headerButton {
+  width: 22px;
+  height: 22px;
+  position: relative;
+  opacity: 1;
+  @include iteractibleElement();
+  transition: opacity 250ms, transform 250ms;
+  &.pointOfNoReturn {
+    opacity: 0;
+  }
+  div {
+    transition: width 250ms, top 250ms, left 250ms;
+    position: absolute;
+    height: 3px;
+    border-radius: 1.5px;
+    width: 22px;
+    background-color: $digitalBlue;
+    transform-origin: 1.5px 1.5px;
+    &:nth-child(1) {
+      transform: rotateZ(45deg);
+    }
+    &:nth-child(2) {
+      transform: rotateZ(-45deg);
+    }
+  }
+  &.back div {
+    width: 12.5px;
+    top: 5.5px;
+    left: 0px;
+  }
+  &.close div {
+    width: 22px;
+    &:nth-child(1) {
+      top: 0px;
+      left: 0px;
+    }
+    &:nth-child(2) {
+      top: 13px;
+      left: 0px;
+    }
+  }
+}

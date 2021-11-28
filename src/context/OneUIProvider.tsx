@@ -6,10 +6,6 @@ type DeepPartial<T> = {
   [P in keyof T]?: DeepPartial<T[P]>;
 };
 
-type DeepRequired<T> = {
-  [P in keyof T]: DeepRequired<T[P]>;
-};
-
 type ContextSpecs = {
   component: {
     passwordInput: {
@@ -18,8 +14,18 @@ type ContextSpecs = {
         passwordVisible: string;
       };
     };
+    asyncWrapper: {
+      LoadingComponent?: () => JSX.Element;
+      messages: {
+        error: {
+          title: string;
+          retryBtn: string,
+        };
+      };
+    };
   };
 };
+
 type ContextConfigSpecs = DeepPartial<ContextSpecs>;
 
 const Context = createContext<ContextConfigSpecs>(null as any);
@@ -43,11 +49,12 @@ export function ProtectVariableAccess(obj?: any, basePath: string[] = []): any {
     },
     get: (ctx, variable) => {
       const value = ctx()[variable as keyof ReturnType<typeof ctx>];
-      if (variable === Symbol.toPrimitive) return ctx;
+      if (variable === Symbol.toPrimitive) return () => value;
       if (value === undefined) {
         const path = [...basePath, variable.toString()];
-        debouncedError(
-          `A component is using the UI config ${path.join(".")}.
+        if (/[^A-Z]/.test(String(variable).charAt(0)))
+          debouncedError(
+            `A component is using the UI config ${path.join(".")}.
           
 Please define it using:
 import OneUIProvider from "@onepercent/one-ui/dist/context/OneUIProvider";
@@ -55,11 +62,12 @@ import OneUIProvider from "@onepercent/one-ui/dist/context/OneUIProvider";
   <OneUIProvider config={THE_MISSING_CONFIG}>
     ...
   </OneUIProvider>`
-        );
+          );
+        else debouncedError.cancel();
       }
       if (
         (typeof value === "object" && !Array.isArray(value)) ||
-        value === undefined
+        (value === undefined && /[^A-Z]/.test(String(variable).charAt(0)))
       )
         return ProtectVariableAccess(value, [...basePath, variable.toString()]);
       return value;
@@ -68,12 +76,12 @@ import OneUIProvider from "@onepercent/one-ui/dist/context/OneUIProvider";
   return proxyInstance;
 }
 
-export function useOneUIProvider() {
+export function useOneUIContext() {
   const context = useContext(Context);
 
   if (process.env.NODE_ENV === "development") {
-    return ProtectVariableAccess(context) as DeepRequired<ContextSpecs>;
+    return ProtectVariableAccess(context) as ContextSpecs;
   }
 
-  return context as DeepRequired<ContextSpecs>;
+  return context as ContextSpecs;
 }

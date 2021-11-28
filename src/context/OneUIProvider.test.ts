@@ -14,6 +14,10 @@ describe("The proxy that protects variable access", () => {
     const val = ProtectVariableAccess(() => {});
     expect("" + val).toBeDefined();
   });
+  it("Should work when there is an or", () => {
+    const val = ProtectVariableAccess(() => {});
+    expect(val || "expectedResult").toEqual("expectedResult");
+  });
   it("Should log expected value", () => {
     const a = ProtectVariableAccess({ some: { prop: "string" } });
     // expect("Result: " + a).toEqual("Result: [object Object]");

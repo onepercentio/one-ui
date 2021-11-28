@@ -1,5 +1,6 @@
 import React, { MouseEvent, useEffect, useMemo, useRef, useState } from "react";
 import Button from "../Button";
+import HeaderCloseBtn from "../HeaderCloseBtn";
 import Transition from "../Transition";
 import Styles from "./FlowController.module.scss";
 
@@ -53,7 +54,7 @@ export default function FlowController<
     >
       <header>
         {shouldDisplayHeaderButton && (
-          <HeaderButton
+          <HeaderCloseBtn
             mode={isAtFirstStep ? "close" : "back"}
             hidden={!onBack}
             onClick={_handleBackPress}
@@ -89,27 +90,4 @@ export default function FlowController<
 
 export function HeadingImage({ src }: { src: string }) {
   return <img src={src} className={Styles.headingImg} />;
-}
-
-function HeaderButton({
-  mode,
-  hidden,
-  onClick,
-}: {
-  mode: "back" | "close";
-  hidden: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <div
-      data-testid="header-control-back"
-      className={`${Styles.headerButton} ${Styles[mode]} ${
-        hidden ? Styles.pointOfNoReturn : ""
-      }`}
-      onClick={onClick}
-    >
-      <div />
-      <div />
-    </div>
-  );
 }

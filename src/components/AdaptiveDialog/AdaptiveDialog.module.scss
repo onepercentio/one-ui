@@ -1,0 +1,131 @@
+.backdrop {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @media screen and (orientation: "portrait") {
+    align-items: flex-end;
+  }
+}
+.backdrop,
+.container {
+  animation-duration: 250ms;
+  animation-fill-mode: forwards;
+}
+
+.open {
+  &.backdrop {
+    animation-name: backdropAppear;
+  }
+  .container {
+    animation-name: reveal;
+  }
+  @media screen and (orientation: "portrait") {
+    .container {
+      animation-timing-function: ease-in-out;
+      animation-name: slideUp;
+    }
+  }
+}
+
+.close {
+  &.backdrop {
+    animation-name: backdropDismiss;
+  }
+
+  .container {
+    animation-name: dismiss;
+  }
+
+  @media screen and (orientation: "portrait") {
+    .container {
+      animation-name: slideDown;
+    }
+  }
+}
+
+.container {
+  > div:first-child {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+  }
+  padding: 16px 32px;
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  @media screen and (orientation: "portrait") {
+    min-height: initial;
+    align-items: flex-start;
+  }
+}
+
+@keyframes backdropAppear {
+  0% {
+    background-color: #0000;
+  }
+
+  100% {
+    background-color: #0005;
+  }
+}
+
+@keyframes backdropDismiss {
+  0% {
+    background-color: #0005;
+  }
+
+  100% {
+    background-color: #0000;
+  }
+}
+
+@keyframes reveal {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes dismiss {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes slideUp {
+  0% {
+    min-height: 0px;
+    max-height: 0%;
+  }
+
+  100% {
+    max-height: 100%;
+  }
+}
+
+@keyframes slideDown {
+  0% {
+    max-height: 100%;
+  }
+
+  100% {
+    min-height: 0px;
+    max-height: 0%;
+  }
+}

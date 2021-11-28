@@ -5,7 +5,7 @@ import React, {
   useImperativeHandle,
   useState,
 } from "react";
-import { useOneUIProvider } from "../../context/OneUIProvider";
+import { useOneUIContext } from "../../context/OneUIProvider";
 import Input from "../Input";
 import Text from "../Text";
 import Styles from "./PasswordInput.module.scss";
@@ -72,7 +72,7 @@ function PasswordInput(
   const {
     passwordHidden,
     passwordVisible,
-  } = useOneUIProvider().component.passwordInput.iconSrc;
+  } = useOneUIContext().component.passwordInput.iconSrc;
 
   function _validatePassword(password: string) {
     switch (props.mode) {

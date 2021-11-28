@@ -34,15 +34,18 @@
   },
   "dependencies": {
     "@types/lodash": "^4.14.177",
+    "identity-obj-proxy": "^3.0.0",
     "lodash": "^4.17.21"
   },
   "scripts": {
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "prebuild": "cd src",
-    "build": "tsc; cpy --cwd='src' '**/*.scss' '../dist' --parents",
+    "copy-css": "cpy --cwd='src' '**/*.scss' '../dist' --parents",
+    "build": "tsc; npm run copy-css",
     "postbuild": "cd ..",
     "prepare": "npm run build",
+    "dev": "tsc --watch",
     "test:watch": "jest --watchAll --coverage"
   }
 }

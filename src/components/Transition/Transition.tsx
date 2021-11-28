@@ -18,29 +18,36 @@ export default function Transition({
   children: React.ReactElement[];
 }) {
   const [screensStack, setScreensStack] = useState([
-    <div key={step} style={contentStyle} className={contentClassName}>
+    <div
+      data-testid="transition-container"
+      key={String(step)}
+      style={contentStyle}
+      className={contentClassName}
+    >
       {children[step]}
     </div>,
   ]);
   const prevStep = useRef(step);
   useEffect(() => {
     if (prevStep.current > step) {
+      const stepToRemove = prevStep.current;
       setScreensStack((screensBeforeChangingStep) => [
         <div
+          data-testid="transition-container"
           key={step}
           className={`${Styles.entranceLeft} ${contentClassName}`}
           style={contentStyle}
-          onAnimationEnd={() =>
+          onAnimationEnd={() => console.warn("blabla") as any || 
             setScreensStack((screensAfterTheCurrentStepEntered) =>
               screensAfterTheCurrentStepEntered.filter(
-                (s) => s !== screensBeforeChangingStep[0]
+                (s) => s.key !== String(stepToRemove)
               )
             )
           }
         >
           {children[step]}
         </div>,
-        ...screensBeforeChangingStep,
+        ...screensBeforeChangingStep.filter(a => a.key !== String(step)),
       ]);
     } else if (prevStep.current < step) {
       const stepToDelete = prevStep.current;
@@ -48,22 +55,29 @@ export default function Transition({
         const lastIndex = screensBeforeChangingStep.length - 1;
         const lastScreen = screensBeforeChangingStep[lastIndex];
         const clonedLast = React.cloneElement(lastScreen, {
+          "data-testid": "transition-container",
           style: contentStyle,
           className: `${Styles.exitLeft} ${
             lastScreen.props.className?.replace(Styles.entranceLeft, "") || ""
           }`,
-          onAnimationEnd: () =>
+          onAnimationEnd: () => {
             setScreensStack((screensAfterTheCurrentStepEntered) => {
               return screensAfterTheCurrentStepEntered.filter(
                 (s) => s.key !== String(stepToDelete)
               );
-            }),
+            });
+          },
         });
 
         return [
           ...screensBeforeChangingStep.slice(0, lastIndex),
           clonedLast,
-          <div key={step} style={contentStyle} className={contentClassName}>
+          <div
+            data-testid="transition-container"
+            key={step}
+            style={contentStyle}
+            className={contentClassName}
+          >
             {children[step]}
           </div>,
         ];
@@ -73,6 +87,7 @@ export default function Transition({
       prevStep.current = step;
     };
   }, [step]);
+
   return (
     <>
       <section className={`${Styles.section} ${className}`}>

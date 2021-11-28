@@ -1,0 +1,39 @@
+@import "../../assets/styles/variables.scss";
+
+.indicator {
+  font-size: 14px;
+  & span {
+    display: inline-block;
+    width: 0.75em;
+    height: 0.75em;
+    border-radius: 0.375em;
+    margin-left: 4px;
+    background-color: $digitalBlue;
+    animation-name: transparentToOpaque;
+    animation-duration: 500ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-out;
+    &:nth-child(1) {
+      margin-left: initial;
+      animation-delay: 0;
+    }
+    &:nth-child(2) {
+      animation-delay: 125ms;
+    }
+    &:nth-child(3) {
+      animation-delay: 250ms;
+    }
+  }
+}
+
+@keyframes transparentToOpaque {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

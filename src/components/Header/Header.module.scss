@@ -1,0 +1,47 @@
+@import "../../assets/styles/index.scss";
+
+.header {
+  position: sticky;
+  top: 0px;
+  width: 100%;
+  background-color: $digitalBlue;
+  display: flex;
+  padding: 32px;
+  align-items: center;
+  font-family: $mainFontFamily;
+}
+
+.sectionDivider {
+    margin-left: auto;
+}
+
+.option {
+  font-size: 18px;
+  line-height: 22px;
+  color: $headerTextColor;
+}
+
+.logoDivider {
+  margin: -32px 32px;
+  width: 1px;
+  background-color: $headerBackgroundColor;
+  align-self: stretch;
+}
+
+.profile {
+  background-color: $headerBrightColor;
+  height: 36px;
+  width: 36px;
+  border-radius: 18px;
+  line-height: 36px;
+  text-align: center;
+}
+
+.profile,
+.profileName {
+  margin-right: 8px;
+}
+
+.profileName {
+  color: $headerBrightColor;
+}

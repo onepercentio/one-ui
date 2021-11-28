@@ -1,0 +1,22 @@
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  // TODO: Priorize reducing width of empty elements insteas of the main container
+  > :nth-child(1),
+  > :nth-child(3) {
+    flex: 1;
+    max-width: 250px;
+  }
+
+  .content {
+    min-width: 250px;
+  }
+
+  > :nth-child(2) {
+    flex: 1;
+    max-width: 850px;
+  }
+}

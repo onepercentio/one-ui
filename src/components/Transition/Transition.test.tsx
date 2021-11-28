@@ -24,8 +24,8 @@ it("Should not break this crazy logic", async () => {
     el2,
     el4,
   ] = wrapper.getAllByTestId("transition-container") as HTMLDivElement[];
-  const event = new Event("animationend");
   expect(wrapper.container.textContent).toMatchSnapshot();
+  const event = new Event("animationend");
   event.initEvent("animationend", true, true)
   el1.dispatchEvent(event);
   expect(wrapper.container.textContent).toMatchSnapshot();

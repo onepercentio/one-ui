@@ -1,0 +1,41 @@
+@import "../../assets/styles/index.scss";
+
+.container {
+  > .title {
+    cursor: pointer;
+    margin: 0px;
+    display: block;
+  }
+  > .title::after {
+    content: "";
+    width: 0.5em;
+    height: 0.5em;
+    border-bottom: 1px solid $lightGray;
+    border-right: 1px solid $lightGray;
+    display: block;
+    right: 0px;
+    transform-origin: 75% 75%;
+    transition: transform 250ms ease-out;
+    margin-left: 0.7em;
+  }
+}
+
+.open .title::after {
+  transform: translateX(-0.5em) rotateX(180deg) rotateZ(45deg);
+}
+.closed .title::after {
+  transform: translateX(-0.5em) rotateX(0deg) rotateZ(45deg);
+}
+
+.content {
+  overflow: hidden;
+  transition: height 250ms ease-in;
+  height: 0px;
+  &.float {
+    position: absolute;
+  }
+}
+
+.open {
+  transition: height 250ms ease-out;
+}

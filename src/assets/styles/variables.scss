@@ -11,3 +11,8 @@ $success: var(--success, lightgreen);
 //FONTS
 $mainFontFamily: var(--main-font, Roboto);
 $secondaryFontFamily: var(--second-font, Manrope);
+
+// Component specific variables on the format --<component>-<element>-<category>
+$headerBackgroundColor: var(--header-divider-bg-color, #467EEA);
+$headerTextColor: var(--header-text-color, #94B8FF);
+$headerBrightColor: var(--header-bright-color, white);

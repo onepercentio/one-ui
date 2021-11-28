@@ -19,9 +19,12 @@ type ContextSpecs = {
       messages: {
         error: {
           title: string;
-          retryBtn: string,
+          retryBtn: string;
         };
       };
+    };
+    header: {
+      LogoImage: () => JSX.Element;
     };
   };
 };

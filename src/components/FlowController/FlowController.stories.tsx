@@ -37,8 +37,6 @@ export const BugfixMultipleChanges = (args: any) => {
 
   useEffect(() => {
     window.addEventListener("keydown", ({ key }) => {
-      console.warn(key);
-
       if (key !== "ArrowLeft") setStep((p) => ++p);
       else setStep((p) => --p);
     });

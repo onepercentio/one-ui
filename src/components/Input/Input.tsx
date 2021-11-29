@@ -18,6 +18,8 @@ export default function Input({
   placeholder = " ",
   hideError,
   icon,
+  Icon,
+  autoFocus,
   ...otherProps
 }: {
   error?: string;
@@ -26,6 +28,7 @@ export default function Input({
   icon?: {
     onClick?: () => void;
   } & DetailedHTMLProps<React.ImgHTMLAttributes<HTMLImageElement>, any>;
+  Icon?: React.ReactElement;
 } & React.HTMLProps<HTMLInputElement>) {
   const [focused, setFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -34,11 +37,13 @@ export default function Input({
     return !!error;
   }, [focused, error, hideError]);
   useEffect(() => {
-    const t = setTimeout(() => {
-      inputRef.current!.focus();
-    }, 500);
-    return () => clearTimeout(t);
-  }, []);
+    if (autoFocus) {
+      const t = setTimeout(() => {
+        inputRef.current!.focus();
+      }, 500);
+      return () => clearTimeout(t);
+    }
+  }, [autoFocus]);
   return (
     <div className={`${Styles.inputContainer} ${false ? Styles.withIcon : ""}`}>
       <input
@@ -65,6 +70,7 @@ export default function Input({
           {error}
         </Text>
       )}
+      {Icon && <div className={Styles.icon}>{Icon}</div>}
       {icon && <img className={Styles.icon} {...icon} />}
     </div>
   );

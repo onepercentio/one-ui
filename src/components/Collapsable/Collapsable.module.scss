@@ -1,22 +1,11 @@
 @import "../../assets/styles/index.scss";
 
 .container {
+  position: relative;
   > .title {
     cursor: pointer;
     margin: 0px;
     display: block;
-  }
-  > .title::after {
-    content: "";
-    width: 0.5em;
-    height: 0.5em;
-    border-bottom: 1px solid $lightGray;
-    border-right: 1px solid $lightGray;
-    display: block;
-    right: 0px;
-    transform-origin: 75% 75%;
-    transition: transform 250ms ease-out;
-    margin-left: 0.7em;
   }
 }
 
@@ -33,6 +22,8 @@
   height: 0px;
   &.float {
     position: absolute;
+    z-index: 100;
+    background-color: white;
   }
 }
 

@@ -43,17 +43,17 @@ function MainGrid(
     <>
       <div className={Styles.container}>
         <div className={leftContent ? Styles.content : ""}>
-          <UncontrolledTransition ref={refs[0]}>
+          <UncontrolledTransition className={Styles.section} ref={refs[0]}>
             {leftContent}
           </UncontrolledTransition>
         </div>
         <div>
-          <UncontrolledTransition ref={refs[1]}>
+          <UncontrolledTransition className={Styles.section} ref={refs[1]}>
             {children}
           </UncontrolledTransition>
         </div>
         <div className={rightContent ? Styles.content : ""}>
-          <UncontrolledTransition ref={refs[2]}>
+          <UncontrolledTransition className={Styles.section} ref={refs[2]}>
             {rightContent}
           </UncontrolledTransition>
         </div>

@@ -12,8 +12,10 @@ import Transition from "../Transition";
  **/
 function UncontrolledTransition(
   {
+    className = "",
     children = <React.Fragment key="default"></React.Fragment>,
   }: {
+    className?: string;
     children?: React.ReactElement;
   },
   ref: ForwardedRef<{
@@ -53,6 +55,7 @@ function UncontrolledTransition(
     <>
       {childStack.length ? (
         <Transition
+          className={className}
           step={childStack.length - offset}
           onDiscardStep={(discardedIndex) => {
             setChildStack((prev) => {

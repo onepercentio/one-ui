@@ -52,7 +52,10 @@ export default function Collapsable({
         open ? Styles.open : Styles.closed
       } ${className}`}
     >
-      <div className={Styles.title} onClick={() => onToggleOpen(!open)} id={_collapsableId("header", id)}>
+      <div
+        onClick={() => onToggleOpen(!open)}
+        id={_collapsableId("header", id)}
+      >
         {title}
       </div>
       <div

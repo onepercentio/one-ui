@@ -3,14 +3,39 @@
 .button {
   cursor: pointer;
   display: block;
-  min-width: 150px;
-  min-height: 62px;
+  min-width: $buttonMinWidth;
+  min-height: $buttonMinHeight;
+  padding: 16px;
   border: none;
   transition: color 250ms;
   color: $digitalBlue;
+  border-radius: 8px;
   &:disabled {
     cursor: initial;
+  }
+}
+
+///"transparent" | "filled" | "outline";
+
+.transparent {
+  background-color: transparent;
+  &:disabled {
     color: $mediumGray;
   }
+}
+
+.filled {
+  background-color: #1e22aa;
+  color: white;
+  &:disabled {
+    color: $mediumGray;
+  }
+}
+
+.outline {
+  border: 1px solid $digitalBlue;
   background-color: transparent;
+  &:disabled {
+    color: $mediumGray;
+  }
 }

@@ -30,7 +30,10 @@ export default function Header({
   moreOptions?: MoreOptions;
 }) {
   const [showMoreOptions, setShowMoreOptions] = useState(false);
-  const { LogoImage = () => null } = useOneUIContext().component.header;
+  const {
+    LogoImage = () => null,
+    MoreOptions,
+  } = useOneUIContext().component.header;
   return (
     <header className={Styles.header}>
       <LogoImage />
@@ -67,6 +70,7 @@ export default function Header({
       {user ? <p className={Styles.profileName}>{user.name}</p> : null}
       {moreOptions ? (
         <Collapsable
+          title={<MoreOptions />}
           data-testid="more-options-container"
           open={showMoreOptions}
           onToggleOpen={setShowMoreOptions}

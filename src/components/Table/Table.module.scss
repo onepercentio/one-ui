@@ -1,0 +1,66 @@
+@import "../../assets/styles/index.scss";
+
+.transitionContainer {
+  min-height: auto;
+}
+
+.container {
+  font-family: $mainFontFamily;
+  padding: 0px 4px;
+  width: 100%;
+  position: relative;
+  border-spacing: 0px;
+  th {
+    font-family: 14px;
+    line-height: 28px;
+    text-align: start;
+    font-weight: normal;
+  }
+  td,
+  th {
+    padding: 20px;
+  }
+  tbody tr {
+    background-color: $tableRowBgColor;
+    &:first-child td {
+      &:first-child {
+        border-top-left-radius: 8px;
+      }
+      &:last-child {
+        border-top-right-radius: 8px;
+      }
+      border-top: 1px solid $tableRowBorderColor;
+    }
+    &:last-child td {
+      &:first-child {
+        border-bottom-left-radius: 8px;
+      }
+      &:last-child {
+        border-bottom-right-radius: 8px;
+      }
+    }
+    td {
+      border-bottom: 1px solid $tableRowBorderColor;
+      &:first-child {
+        border-left: 1px solid $tableRowBorderColor;
+      }
+      &:last-child {
+        border-right: 1px solid $tableRowBorderColor;
+      }
+    }
+  }
+}
+.footer {
+  padding: 0px 4px;
+  display: flex;
+  justify-content: flex-end;
+  --button-min-width: auto;
+  --button-min-height: auto;
+}
+
+.iterable {
+  @include iteractibleElement;
+  &:first-child {
+    margin-left: auto;
+  }
+}

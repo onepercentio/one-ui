@@ -1,10 +1,11 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Collapsable from "../Collapsable";
 import Text from "../Text";
 import InputStyles from "../Input/Input.module.scss";
 import Styles from "./Select.module.scss";
 import Input from "../Input";
 import Loader from "../Loader";
+import { useOneUIContext } from "../../context/OneUIProvider";
 
 export type SelectItem = {
   label: string;
@@ -34,25 +35,54 @@ export default function Select<I extends SelectItem>({
       label?: string;
     }
 )) {
+  const { DropdownIndicator } = useOneUIContext().component.select;
   const _selected = useMemo(() => {
     return items.find((a) => a.value === selected);
   }, [selected]);
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      const close = () => {
+        setOpen(false);
+      };
+      window.addEventListener("click", close);
+      return () => window.removeEventListener("click", close);
+    }
+  }, [open]);
+
   return (
     <Collapsable
       title={
         <Input
+          className={`${Styles.input} ${!items.length ? Styles.empty : ""}`}
           value={_selected?.label || label}
           disabled
-          Icon={loading ? <Loader /> : undefined}
+          Icon={
+            <div
+              className={`${Styles.indicator} ${
+                open && !loading ? Styles.open : ""
+              }`}
+            >
+              {loading ? <Loader /> : <DropdownIndicator />}
+            </div>
+          }
         />
       }
       id={undefined}
       mode="float"
       open={open}
-      onToggleOpen={setOpen}
+      onToggleOpen={(open) => {
+        if (items.length) setOpen(open);
+      }}
     >
-      <div className={Styles.items}>
+      <div
+        className={Styles.items}
+        onClick={(e) => {
+          e.stopPropagation();
+          setOpen(false);
+        }}
+      >
         {items.map((i) => (
           <Text
             type="caption"

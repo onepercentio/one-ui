@@ -17,6 +17,8 @@
 }
 
 .content {
+  width: 100%;
+  max-width: 500px;
   overflow: hidden;
   transition: height 250ms ease-in;
   height: 0px;

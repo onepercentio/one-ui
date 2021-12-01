@@ -1,37 +1,35 @@
 @import "../../assets/styles/index.scss";
 
-.container {
-  display: flex !important;
-  align-items: center;
-
-  > :last-child {
-    position: absolute;
-    right: 0px;
-    z-index: 100;
-  }
-  &,
-  .items > * {
-    cursor: pointer;
-    background-color: white;
-    padding: 18px 32px;
-    margin-bottom: 8px;
-    margin-left: 4px;
-    margin-right: 4px;
-    text-align: center;
-    border-radius: 4px;
-    &.selected {
-      background-color: $lightGray;
-    }
-  }
-  & {
-    font-size: 14px;
-    color: black;
+> :last-child {
+  position: absolute;
+  right: 0px;
+  z-index: 100;
+}
+.items > * {
+  cursor: pointer;
+  background-color: white;
+  padding: 12px 32px;
+  margin-bottom: 8px;
+  margin-left: 4px;
+  margin-right: 4px;
+  text-align: left;
+  border-radius: 4px;
+  font-size: 14px;
+  &.selected {
     background-color: $lightGray;
-
-    &::after {
-      top: 21px;
-      right: 22px;
-    }
-    padding: 18px 50px 18px 32px;
   }
+}
+.empty {
+  opacity: 0.3;
+}
+.input {
+  transition: opacity 250ms;
+  cursor: pointer;
+}
+.indicator {
+  transition: transform 250ms;
+  transform: rotateX(0deg);
+}
+.open {
+  transform: rotateX(180deg);
 }

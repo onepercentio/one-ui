@@ -23,8 +23,18 @@ type ContextSpecs = {
         };
       };
     };
+    select: {
+      DropdownIndicator: () => JSX.Element;
+    };
     header: {
       LogoImage: () => JSX.Element;
+      MoreOptions: () => JSX.Element;
+    };
+    table: {
+      controls: {
+        PrevPage: ({ disabled }: { disabled: boolean }) => JSX.Element;
+        NextPage: ({ disabled }: { disabled: boolean }) => JSX.Element;
+      };
     };
   };
 };

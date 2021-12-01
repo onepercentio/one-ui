@@ -6,7 +6,20 @@ import Styles from "./Button.module.scss";
  **/
 export default function Button({
   children,
+  variant = "transparent",
+  className = "",
   ...otherProps
-}: React.PropsWithChildren<React.ButtonHTMLAttributes<HTMLButtonElement>>) {
-  return <button className={Styles.button} {...otherProps}>{children}</button>;
+}: React.PropsWithChildren<
+  React.ButtonHTMLAttributes<HTMLButtonElement> & {
+    variant?: "transparent" | "filled" | "outline";
+  }
+>) {
+  return (
+    <button
+      className={`${Styles.button} ${Styles[variant]} ${className}`}
+      {...otherProps}
+    >
+      {children}
+    </button>
+  );
 }

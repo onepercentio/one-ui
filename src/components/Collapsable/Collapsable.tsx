@@ -15,7 +15,7 @@ export default function Collapsable({
   mode = "block",
   ...props
 }: PropsWithChildren<{
-  title?: React.ReactNode;
+  title: React.ReactNode;
   className?: string;
   onToggleOpen: (isOpen: boolean) => void;
   open: boolean;

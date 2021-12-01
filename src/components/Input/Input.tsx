@@ -1,8 +1,11 @@
 import React, {
   ComponentProps,
   DetailedHTMLProps,
+  ForwardedRef,
+  forwardRef,
   HTMLAttributes,
   useEffect,
+  useImperativeHandle,
   useMemo,
   useRef,
   useState,
@@ -13,25 +16,29 @@ import Styles from "./Input.module.scss";
 /**
  * A transparent input with some prebuilt states common to the application
  **/
-export default function Input({
-  error,
-  placeholder = " ",
-  hideError,
-  icon,
-  Icon,
-  autoFocus,
-  ...otherProps
-}: {
-  error?: string;
-  hideError?: "onfocus";
-  placeholder?: string;
-  icon?: {
-    onClick?: () => void;
-  } & DetailedHTMLProps<React.ImgHTMLAttributes<HTMLImageElement>, any>;
-  Icon?: React.ReactElement;
-} & React.HTMLProps<HTMLInputElement>) {
+function Input(
+  {
+    error,
+    placeholder = " ",
+    hideError,
+    icon,
+    Icon,
+    autoFocus,
+    ...otherProps
+  }: {
+    error?: string;
+    hideError?: "onfocus";
+    placeholder?: string;
+    icon?: {
+      onClick?: () => void;
+    } & DetailedHTMLProps<React.ImgHTMLAttributes<HTMLImageElement>, any>;
+    Icon?: React.ReactElement;
+  } & React.HTMLProps<HTMLInputElement>,
+  ref: ForwardedRef<any>
+) {
   const [focused, setFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  useImperativeHandle(ref, () => inputRef.current, []);
   const shouldShowError = useMemo(() => {
     if (hideError === "onfocus") return !focused;
     return !!error;
@@ -75,3 +82,5 @@ export default function Input({
     </div>
   );
 }
+
+export default forwardRef(Input);

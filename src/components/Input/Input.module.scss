@@ -2,7 +2,7 @@
 
 .inputContainer {
   position: relative;
-  padding-bottom: 18px;
+  margin-top: 18px;
   .icon {
     position: absolute;
     top: 1.5px;
@@ -22,7 +22,7 @@
   input,
   .input {
     border: none;
-    background-color: none;
+    background-color: transparent;
     width: 100%;
     font-size: 22px;
     line-height: 33px;

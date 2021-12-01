@@ -7,11 +7,18 @@ export default function usePagination<I extends any, A extends any[]>(
     page: number,
     currItems?: I,
     ...args: A
-  ) => Promise<{ finished: boolean; items: I }>,
+  ) => Promise<{ finished: boolean; items: I; totalItems: number }>,
   paginationId: (...args: A) => string = () => "default"
 ): Paginable<I, A> {
-  const finishedPaginationRef = useRef<{ [d: string]: boolean }>({});
-  const { current: finishedPagination } = finishedPaginationRef;
+  const paginationDataRef = useRef<{
+    [d: string]:
+      | {
+          finished: boolean;
+          totalItems: number;
+        }
+      | undefined;
+  }>({});
+  const { current: paginationData } = paginationDataRef;
 
   const currentPageRef = useRef<{ [d: string]: number }>({});
   const { current: currentPage } = currentPageRef;
@@ -21,11 +28,14 @@ export default function usePagination<I extends any, A extends any[]>(
 
   function _requestPage(page: number, ...args: A) {
     const id = paginationId(...args);
-    if (finishedPagination[id] || control.loading) return;
+    if (paginationData[id]?.finished || control.loading) return;
     process(async () => {
       const result = await request(page, items, ...args);
       currentPage[id] = page;
-      finishedPagination[id] = result.finished;
+      paginationData[id] = {
+        finished: result.finished,
+        totalItems: result.totalItems,
+      };
       setItems(result.items);
     });
   }
@@ -34,6 +44,7 @@ export default function usePagination<I extends any, A extends any[]>(
     getNextPage: (...args: A) =>
       _requestPage((currentPage[paginationId(...args)] || 0) + 1, ...args),
     getPage: _requestPage,
+    totalItems: (...args) => paginationData[paginationId(...args)]?.totalItems,
     loading: control.loading,
     error: control.error,
     items,
@@ -43,6 +54,7 @@ export default function usePagination<I extends any, A extends any[]>(
 export type Paginable<I extends any, A extends any[] = []> = {
   getNextPage: (...args: A) => void;
   getPage: (page: number, ...args: A) => void;
+  totalItems: (...args: A) => number | undefined;
   loading: boolean;
   error: CommonErrorCodes | undefined;
   items: I | undefined;

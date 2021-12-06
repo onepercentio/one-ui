@@ -13,10 +13,12 @@ export default function Collapsable({
   open,
   id,
   mode = "block",
+  contentClassName,
   ...props
 }: PropsWithChildren<{
   title: React.ReactNode;
   className?: string;
+  contentClassName?: string;
   onToggleOpen: (isOpen: boolean) => void;
   open: boolean;
   id?: string | undefined;
@@ -30,6 +32,7 @@ export default function Collapsable({
     const el = contentRef.current!;
     if (open) {
       el.style.height = el.scrollHeight + "px";
+      el.parentElement!.style.position = "relative";
       const onTransitionEnd = () => {
         el.style.height = "auto";
       };
@@ -37,11 +40,22 @@ export default function Collapsable({
       el.addEventListener("transitionend", () =>
         el.removeEventListener("transitionend", onTransitionEnd)
       );
+      return () => {
+        el.removeEventListener("transitionend", onTransitionEnd);
+      };
     } else {
       el.style.height = el.clientHeight + "px";
       setTimeout(() => {
         el.style.height = 0 + "px";
       }, 100);
+      const onTransitionEnd = () => {
+        el.parentElement!.style.position = "initial";
+        el.removeEventListener("transitionend", onTransitionEnd);
+      };
+      el.addEventListener("transitionend", onTransitionEnd);
+      return () => {
+        el.removeEventListener("transitionend", onTransitionEnd);
+      };
     }
   }, [open]);
 
@@ -60,7 +74,9 @@ export default function Collapsable({
       </div>
       <div
         ref={contentRef}
-        className={`${Styles.content} ${Styles[mode] || ""}`}
+        className={`${Styles.content} ${
+          Styles[mode] || ""
+        } ${contentClassName}`}
         id={_collapsableId("content", id)}
       >
         <FadeIn>{open ? children : null}</FadeIn>

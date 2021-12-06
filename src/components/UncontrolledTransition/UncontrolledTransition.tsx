@@ -14,9 +14,11 @@ function UncontrolledTransition(
   {
     className = "",
     children = <React.Fragment key="default"></React.Fragment>,
+    lockTransitionWidth = true,
   }: {
     className?: string;
     children?: React.ReactElement;
+    lockTransitionWidth?: boolean;
   },
   ref: ForwardedRef<{
     setOrientation: (orientation: "forward" | "backward") => void;
@@ -64,6 +66,7 @@ function UncontrolledTransition(
             setOffset(1);
             setOrientation("forward");
           }}
+          lockTransitionWidth={lockTransitionWidth}
         >
           {childStack}
         </Transition>

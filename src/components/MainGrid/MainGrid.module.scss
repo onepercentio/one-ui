@@ -9,6 +9,7 @@
   > :nth-child(3) {
     flex: 1;
     max-width: 250px;
+    min-width: 150px;
   }
 
   .content {
@@ -23,4 +24,5 @@
 
 .section {
   align-items: flex-start;
+  min-height: initial;
 }

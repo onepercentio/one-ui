@@ -1,4 +1,11 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, {
+  ComponentProps,
+  ForwardedRef,
+  forwardRef,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import Collapsable from "../Collapsable";
 import Text from "../Text";
 import InputStyles from "../Input/Input.module.scss";
@@ -15,26 +22,28 @@ export type SelectItem = {
 /**
  * A dropdown select
  **/
-export default function Select<I extends SelectItem>({
+function Select<I extends SelectItem>({
   items,
   selected,
   label,
   onClick,
   loading,
+  ...otherProps
 }: {
   loading?: boolean;
   items: Readonly<I[]>;
   onClick: (i: I) => void;
 } & (
   | {
-      selected?: SelectItem["value"];
+      selected?: I["value"];
       label: string;
     }
   | {
-      selected: SelectItem["value"];
+      selected: I["value"];
       label?: string;
     }
-)) {
+) &
+  Omit<ComponentProps<typeof Input>, "selected" | "onClick">) {
   const { DropdownIndicator } = useOneUIContext().component.select;
   const _selected = useMemo(() => {
     return items.find((a) => a.value === selected);
@@ -55,6 +64,7 @@ export default function Select<I extends SelectItem>({
     <Collapsable
       title={
         <Input
+          {...otherProps}
           className={`${Styles.input} ${!items.length ? Styles.empty : ""}`}
           value={_selected?.label || label}
           disabled
@@ -74,7 +84,7 @@ export default function Select<I extends SelectItem>({
       open={open}
       onToggleOpen={(open) => {
         if (items.length) setOpen(open);
-      }}
+      }}contentClassName={Styles.optionsContainer}
     >
       <div
         className={Styles.items}
@@ -86,6 +96,7 @@ export default function Select<I extends SelectItem>({
         {items.map((i) => (
           <Text
             type="caption"
+            key={i.value}
             className={i === _selected ? Styles.selected : ""}
             onClick={() => onClick(i)}
           >
@@ -96,3 +107,7 @@ export default function Select<I extends SelectItem>({
     </Collapsable>
   );
 }
+
+export default forwardRef((props: any, ref: any) => (
+  <Select {...props} />
+)) as typeof Select;

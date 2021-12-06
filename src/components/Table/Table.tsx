@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import { useOneUIContext } from "../../context/OneUIProvider";
 import Button from "../Button";
+import Spacing from "../Spacing";
 import UncontrolledTransition from "../UncontrolledTransition";
 import Styles from "./Table.module.scss";
 
@@ -90,29 +91,32 @@ export default function Table<I extends any>({
         </Wrapper>
       </TableContext.Provider>
       {paginable && paginable.totalItems > 5 ? (
-        <div className={Styles.footer} data-testid="controls">
-          <span
-            className={Styles.iterable}
-            onClick={() => {
-              if (!(transitionRef.current instanceof HTMLDivElement))
-                transitionRef.current!.setOrientation("backward");
-              paginable.togglePage(paginable.currentPage - 1);
-            }}
-          >
-            <PrevPage disabled={paginable.currentPage === 1} />
-          </span>
-          {`${paginable.currentPage}/${pages}`}
-          <span
-            className={Styles.iterable}
-            onClick={() => {
-              if (!(transitionRef.current instanceof HTMLDivElement))
-                transitionRef.current!.setOrientation("forward");
-              paginable.togglePage(paginable.currentPage + 1);
-            }}
-          >
-            <NextPage disabled={paginable.currentPage === pages} />
-          </span>
-        </div>
+        <>
+          <Spacing size="15" />
+          <div className={Styles.footer} data-testid="controls">
+            <span
+              className={Styles.iterable}
+              onClick={() => {
+                if (!(transitionRef.current instanceof HTMLDivElement))
+                  transitionRef.current!.setOrientation("backward");
+                paginable.togglePage(paginable.currentPage - 1);
+              }}
+            >
+              <PrevPage disabled={paginable.currentPage === 1} />
+            </span>
+            <span className={Styles.paging}>{`${paginable.currentPage}/${pages}`}</span>
+            <span
+              className={Styles.iterable}
+              onClick={() => {
+                if (!(transitionRef.current instanceof HTMLDivElement))
+                  transitionRef.current!.setOrientation("forward");
+                paginable.togglePage(paginable.currentPage + 1);
+              }}
+            >
+              <NextPage disabled={paginable.currentPage === pages} />
+            </span>
+          </div>
+        </>
       ) : null}
     </>
   );

@@ -36,8 +36,10 @@ export default function Header({
   } = useOneUIContext().component.header;
   return (
     <header className={Styles.header}>
-      <LogoImage />
-      <div className={Styles.logoDivider} />
+      <div className={Styles.logo}>
+        <LogoImage />
+        <div className={Styles.logoDivider} />
+      </div>
       {options.map((option, i) => (
         <Text
           type="link"
@@ -70,11 +72,20 @@ export default function Header({
       {user ? <p className={Styles.profileName}>{user.name}</p> : null}
       {moreOptions ? (
         <Collapsable
-          title={<MoreOptions />}
+          title={
+            <div
+              className={`${Styles.indicator} ${
+                showMoreOptions ? Styles.open : ""
+              }`}
+            >
+              <MoreOptions />
+            </div>
+          }
           data-testid="more-options-container"
           open={showMoreOptions}
           onToggleOpen={setShowMoreOptions}
           mode="float"
+          contentClassName={Styles.headerOptions}
         >
           {moreOptions.map((opt) => (
             <Text type="link" onClick={opt.onClick}>

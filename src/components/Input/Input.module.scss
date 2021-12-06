@@ -2,7 +2,6 @@
 
 .inputContainer {
   position: relative;
-  margin-top: 18px;
   .icon {
     position: absolute;
     top: 1.5px;
@@ -28,6 +27,7 @@
     line-height: 33px;
     font-family: $mainFontFamily;
     color: $spaceBlue;
+    margin-bottom: 18px;
     outline: none;
     &:placeholder-shown ~ .border {
       animation-iteration-count: infinite;

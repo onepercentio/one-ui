@@ -11,6 +11,7 @@ export default function Transition({
   children,
   className,
   onDiscardStep,
+  lockTransitionWidth = false,
 }: {
   step: number;
   className?: string;
@@ -18,7 +19,9 @@ export default function Transition({
   contentClassName?: string;
   children: (React.ReactElement | undefined)[];
   onDiscardStep?: (discardedKey: number) => void;
+  lockTransitionWidth?: boolean;
 }) {
+  const containerRef = useRef<HTMLElement>(null);
   const [screensStack, setScreensStack] = useState([
     <div
       data-testid="transition-container"
@@ -32,6 +35,7 @@ export default function Transition({
 
   const prevStep = useRef(step);
   const prevKey = useRef(children[step]?.key);
+
   useEffect(() => {
     if (
       prevKey.current !== null &&
@@ -44,6 +48,11 @@ export default function Transition({
 
     const key = children[step]?.key || step;
 
+    if (prevStep.current !== step && lockTransitionWidth)
+      containerRef.current!.style.width = `${
+        containerRef.current!.clientWidth
+      }px`;
+
     if (prevStep.current > step) {
       const stepToRemove = prevStep.current;
       const prevKeyToRemove = prevKey.current || stepToRemove;
@@ -53,14 +62,14 @@ export default function Transition({
           key={key}
           className={`${Styles.entranceLeft} ${contentClassName}`}
           style={contentStyle}
-          onAnimationEnd={() =>
+          onAnimationEnd={() => {
             setScreensStack((screensAfterTheCurrentStepEntered) => {
               if (onDiscardStep) onDiscardStep(stepToRemove);
               return screensAfterTheCurrentStepEntered.filter(
                 (s) => s.key !== String(prevKeyToRemove)
               );
-            })
-          }
+            });
+          }}
         >
           {children[step]}
         </div>,
@@ -108,9 +117,18 @@ export default function Transition({
     };
   }, [step]);
 
+  useEffect(() => {
+    if (screensStack.length === 1 && lockTransitionWidth)
+      containerRef.current!.style.width = "";
+  }, [screensStack.length !== 1]);
+
   return (
     <>
-      <section className={`${Styles.section} ${className}`}>
+      <section
+        data-testid="transition-controller"
+        ref={containerRef}
+        className={`${Styles.section} ${className}`}
+      >
         {screensStack}
       </section>
     </>

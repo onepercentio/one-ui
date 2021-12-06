@@ -2,6 +2,8 @@
 
 .transitionContainer {
   min-height: auto;
+  max-width: 100vw;
+  overflow: auto;
 }
 
 .container {
@@ -53,9 +55,17 @@
 .footer {
   padding: 0px 4px;
   display: flex;
+  align-items: center;
   justify-content: flex-end;
   --button-min-width: auto;
   --button-min-height: auto;
+
+  .paging {
+    font-family: $mainFontFamily;
+    color: $digitalBlue;
+    margin: 0px 12px;
+    font-size: 18px;
+  }
 }
 
 .iterable {

@@ -13,7 +13,17 @@
 }
 
 .sectionDivider {
-    margin-left: auto;
+  margin-left: auto;
+}
+
+.logo {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+
+  @media (orientation: portrait) {
+    display: none;
+  }
 }
 
 .option {
@@ -26,7 +36,6 @@
   margin: -32px 32px;
   width: 1px;
   background-color: $headerBackgroundColor;
-  align-self: stretch;
 }
 
 .profile {
@@ -45,4 +54,33 @@
 
 .profileName {
   color: $headerBrightColor;
+
+  @media (orientation: portrait) {
+    display: none;
+  }
+}
+.headerOptions {
+  right: 0px;
+  width: fit-content;
+  margin-top: 18px;
+  > * {
+    cursor: pointer;
+    background-color: white;
+    padding: 12px 32px;
+    margin-bottom: 8px;
+    margin-left: 4px;
+    margin-right: 4px;
+    text-align: left;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+}
+.indicator {
+  @include iteractibleElement();
+  transition: transform 250ms;
+  transform: rotateX(0deg);
+
+  &.open {
+    transform: rotateX(180deg);
+  }
 }

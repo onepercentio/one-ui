@@ -11,6 +11,17 @@
   font-weight: bolder;
   line-height: 26px;
 }
+.boldTitleBig {
+  font-family: $secondaryFontFamily;
+  font-size: 28px;
+  font-weight: bolder;
+  line-height: 33.8px;
+}
+.content {
+  font-size: 16px;
+  line-height: 24px;
+  font-family: $mainFontFamily;
+}
 .icon.description {
   font-size: 14px;
   line-height: 21px;
@@ -55,4 +66,12 @@
   &:hover {
     text-decoration: underline;
   }
+}
+
+.highlight {
+  font-family: $secondaryFontFamily;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: $sunsetPink;
 }

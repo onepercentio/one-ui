@@ -18,9 +18,12 @@ export default function Text({
       | "error"
       | "caption"
       | "highlightTitle"
+      | "highlight"
       | "subtitle"
       | "boldTitle"
-      | "link";
+      | "link"
+      | "boldTitleBig"
+      | "content";
   } & React.HTMLAttributes<HTMLParagraphElement>
 >) {
   return (

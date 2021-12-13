@@ -4,10 +4,10 @@ import Styles from "./Divider.module.scss";
 /**
  * Guess what this does
  **/
-export default function Divider() {
+export default function Divider({className = ""}: {className?: string}) {
   return (
     <>
-      <div className={Styles.container} />
+      <div className={`${Styles.container} ${className}`} />
     </>
   );
 }

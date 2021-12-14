@@ -30,8 +30,3 @@ export const TodasVariacoes = () => {
       </div>
     ));
 };
-
-export const Primary = (args: any) => <C {...args}>{args.exampleText}</C>;
-Primary.args = {
-  exampleText: "Texto de exemplo",
-};

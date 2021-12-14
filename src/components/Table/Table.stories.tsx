@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import OneUIProvider from "../../context/OneUIProvider";
+import Button from "../Button";
 import Table, { TableProps } from "./Table";
 
 export default {
@@ -10,16 +12,29 @@ export const Paginable = (args: any) => {
   const [page, setPage] = useState(1);
 
   return (
-    <div style={{ backgroundColor: "lightgray" }}>
-      <Table
-        {...args}
-        paginable={{
-          currentPage: page,
-          totalItems: args.items.length,
-          togglePage: setPage,
-        }}
-      />
-    </div>
+    <OneUIProvider
+      config={{
+        component: {
+          table: {
+            controls: {
+              NextPage: () => <Button variant="outline">{">"}</Button>,
+              PrevPage: () => <Button variant="outline">{"<"}</Button>,
+            },
+          },
+        },
+      }}
+    >
+      <div style={{ backgroundColor: "lightgray" }}>
+        <Table
+          {...args}
+          paginable={{
+            currentPage: page,
+            totalItems: args.items.length,
+            togglePage: setPage,
+          }}
+        />
+      </div>
+    </OneUIProvider>
   );
 };
 

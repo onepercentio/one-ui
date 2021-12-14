@@ -1,4 +1,5 @@
 import React from "react";
+import OneUIProvider from "../../context/OneUIProvider";
 import Select from "./Select";
 
 export default {
@@ -6,7 +7,19 @@ export default {
   title: "Select",
 };
 
-export const InitialImplementation = (args: any) => <Select {...args} />;
+export const InitialImplementation = (args: any) => (
+  <OneUIProvider
+    config={{
+      component: {
+        select: {
+          DropdownIndicator: () => "V",
+        },
+      },
+    }}
+  >
+    <Select {...args} />
+  </OneUIProvider>
+);
 InitialImplementation.args = {
   items: [
     {

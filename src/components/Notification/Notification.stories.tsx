@@ -7,7 +7,7 @@ export default {
 };
 
 export const InitialImplementation = (args: any) => <div style={{height: "250px"}}>
-  <Notification {...args} />
+  <Notification {...args}>Exemplo de notificação</Notification>
 </div>;
 InitialImplementation.args = {
   type: "success",

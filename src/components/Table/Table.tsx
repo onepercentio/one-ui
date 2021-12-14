@@ -92,7 +92,7 @@ export default function Table<I extends any>({
       </TableContext.Provider>
       {paginable && paginable.totalItems > 5 ? (
         <>
-          <Spacing size="15" />
+          <Spacing size="small" />
           <div className={Styles.footer} data-testid="controls">
             <span
               className={Styles.iterable}

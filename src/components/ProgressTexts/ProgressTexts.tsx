@@ -67,7 +67,7 @@ export default function ProgressTexts({
             {s.action && (
               <Button onClick={s.action.onClick}>{s.action.label}</Button>
             )}
-            <Spacing size="33" />
+            <Spacing size="large" />
           </div>
         ) : null;
       })}

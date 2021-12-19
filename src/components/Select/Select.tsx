@@ -84,7 +84,9 @@ function Select<I extends SelectItem>({
       open={open}
       onToggleOpen={(open) => {
         if (items.length) setOpen(open);
-      }}contentClassName={Styles.optionsContainer}
+      }}
+      className={otherProps.disabled ? "disabled" : ""}
+      contentClassName={`${Styles.optionsContainer}`}
     >
       <div
         className={Styles.items}

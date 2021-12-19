@@ -32,7 +32,7 @@ export default function Header({
   const [showMoreOptions, setShowMoreOptions] = useState(false);
   const {
     LogoImage = () => null,
-    MoreOptions = () => "v",
+    MoreOptions = () => <div>v</div>,
   } = useOneUIContext().component.header;
   return (
     <header className={Styles.header}>

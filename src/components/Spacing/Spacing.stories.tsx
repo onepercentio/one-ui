@@ -7,8 +7,8 @@ export default {
 };
 
 export const TodasVariacoes = () => {
-  const variantes: { value: string }[] = (C as any).__docgenInfo.props.size
-    .type.value;
+  const variantes: { value: string }[] = (C as any).__docgenInfo.props.size.type
+    .value;
 
   return variantes
     .map((a) => JSON.parse(a.value))
@@ -18,9 +18,9 @@ export const TodasVariacoes = () => {
           width: "25%",
           marginRight: 24,
           display: "inline-flex",
-          minHeight: "300px", 
+          minHeight: "300px",
           flexDirection: "column",
-          backgroundColor: "lightyellow"
+          backgroundColor: "lightyellow",
         }}
       >
         <span style={{ borderBottom: "2px solid black", marginBottom: 14 }}>
@@ -29,7 +29,7 @@ export const TodasVariacoes = () => {
         <span>Item antes do espacamento</span>
         <C size={a as any} />
         <span>Item depois do espacamento</span>
-        <C size="33" />
+        <C size="large" />
       </div>
     ));
 };

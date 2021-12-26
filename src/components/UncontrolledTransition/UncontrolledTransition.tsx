@@ -59,9 +59,11 @@ function UncontrolledTransition(
         <Transition
           className={className}
           step={childStack.length - offset}
-          onDiscardStep={(discardedIndex) => {
+          onDiscardStep={(discardedKey) => {
+            
             setChildStack((prev) => {
-              return prev.filter((a, i) => i !== discardedIndex);
+              console.warn("Discarded", discardedKey, prev.filter((a, i) => i !== discardedKey).map(a => a.key));
+              return prev.filter((a) => a.key !== discardedKey);
             });
             setOffset(1);
             setOrientation("forward");

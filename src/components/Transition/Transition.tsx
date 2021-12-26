@@ -18,7 +18,7 @@ export default function Transition({
   contentStyle?: React.CSSProperties;
   contentClassName?: string;
   children: (React.ReactElement | undefined)[];
-  onDiscardStep?: (discardedKey: number) => void;
+  onDiscardStep?: (discardedKey: React.Key) => void;
   lockTransitionWidth?: boolean;
 }) {
   const containerRef = useRef<HTMLElement>(null);
@@ -37,6 +37,8 @@ export default function Transition({
   const prevKey = useRef(children[step]?.key);
 
   useEffect(() => {
+    console.warn(step, children[step]?.key, prevKey.current);
+    
     if (
       prevKey.current !== null &&
       children[step]?.key === prevKey.current // I'm rendering the same screen
@@ -54,6 +56,7 @@ export default function Transition({
       }px`;
 
     if (prevStep.current > step) {
+      console.warn("Going back", prevStep.current, step, children.map(a => a?.key))
       const stepToRemove = prevStep.current;
       const prevKeyToRemove = prevKey.current || stepToRemove;
       setScreensStack((screensBeforeChangingStep) => [
@@ -64,7 +67,7 @@ export default function Transition({
           style={contentStyle}
           onAnimationEnd={() => {
             setScreensStack((screensAfterTheCurrentStepEntered) => {
-              if (onDiscardStep) onDiscardStep(stepToRemove);
+              if (onDiscardStep) onDiscardStep(prevKeyToRemove);
               return screensAfterTheCurrentStepEntered.filter(
                 (s) => s.key !== String(prevKeyToRemove)
               );
@@ -88,7 +91,7 @@ export default function Transition({
             lastScreen.props.className?.replace(Styles.entranceLeft, "") || ""
           }`,
           onAnimationEnd: () => {
-            if (onDiscardStep) onDiscardStep(stepToDelete);
+            if (onDiscardStep) onDiscardStep(prevKeyToRemove);
             setScreensStack((screensAfterTheCurrentStepEntered) => {
               return screensAfterTheCurrentStepEntered.filter((s) => {
                 return s.key !== String(prevKeyToRemove);

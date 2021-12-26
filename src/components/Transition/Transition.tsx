@@ -37,8 +37,6 @@ export default function Transition({
   const prevKey = useRef(children[step]?.key);
 
   useEffect(() => {
-    console.warn(step, children[step]?.key, prevKey.current);
-    
     if (
       prevKey.current !== null &&
       children[step]?.key === prevKey.current // I'm rendering the same screen
@@ -56,7 +54,6 @@ export default function Transition({
       }px`;
 
     if (prevStep.current > step) {
-      console.warn("Going back", prevStep.current, step, children.map(a => a?.key))
       const stepToRemove = prevStep.current;
       const prevKeyToRemove = prevKey.current || stepToRemove;
       setScreensStack((screensBeforeChangingStep) => [

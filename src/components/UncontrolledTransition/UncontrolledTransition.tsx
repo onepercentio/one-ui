@@ -62,7 +62,6 @@ function UncontrolledTransition(
           onDiscardStep={(discardedKey) => {
             
             setChildStack((prev) => {
-              console.warn("Discarded", discardedKey, prev.filter((a, i) => i !== discardedKey).map(a => a.key));
               return prev.filter((a) => a.key !== discardedKey);
             });
             setOffset(1);

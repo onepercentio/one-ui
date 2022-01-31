@@ -1,4 +1,4 @@
-import React from "react";
+import React, { createRef } from "react";
 import InfinityScroll from "./InfinityScroll";
 
 export default {
@@ -7,7 +7,7 @@ export default {
 };
 
 export const InitialImplementation = (args: any) => (
-  <InfinityScroll {...args} />
+  <InfinityScroll ref={createRef()} {...args} />
 );
 InitialImplementation.args = {
   items: [

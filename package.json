@@ -51,6 +51,7 @@
     "postbuild": "cd ..",
     "prepare": "npm run build",
     "dev": "tsc --watch",
-    "test:watch": "jest --watchAll --coverage"
+    "test:watch": "jest --watchAll --coverage",
+    "deploy:storybook": "yarn build-storybook; firebase deploy --only hosting"
   }
 }

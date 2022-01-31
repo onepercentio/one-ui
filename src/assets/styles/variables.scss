@@ -13,6 +13,7 @@ $mainFontFamily: var(--main-font, Roboto);
 $secondaryFontFamily: var(--second-font, Manrope);
 
 // Component specific variables on the format --<component>-<element>-<category>
+$headerFillBackgroundColor: var(--header-background-color, $digitalBlue);
 $headerBackgroundColor: var(--header-divider-bg-color, #467eea);
 $headerTextColor: var(--header-text-color, #94b8ff);
 $headerBrightColor: var(--header-bright-color, white);
@@ -22,3 +23,4 @@ $tableRowBorderColor: var(--table-row-border-color, #bec1ca);
 
 $buttonMinHeight: var(--button-min-height, 62px);
 $buttonMinWidth: var(--button-min-width, 150px);
+

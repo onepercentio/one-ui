@@ -4,7 +4,7 @@
   position: sticky;
   top: 0px;
   width: 100%;
-  background-color: $digitalBlue;
+  background-color: $headerFillBackgroundColor;
   display: flex;
   padding: 32px;
   align-items: center;
@@ -29,6 +29,7 @@
 .option {
   font-size: 18px;
   line-height: 22px;
+  margin-right: 28px;
   color: $headerTextColor;
 }
 

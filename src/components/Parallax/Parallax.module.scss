@@ -1,0 +1,26 @@
+.parallax {
+  display: flex;
+  position: relative;
+  transition: transform 250ms;
+  overflow: hidden;
+  user-select: none;
+  transform: translate3d(0, 0, 0);
+}
+
+.reflection {
+  transform: translateX(-50%) translateY(-50%);
+  width: 40%;
+  pointer-events: none;
+  &::after {
+    background: radial-gradient(#fff2, #fff2 5%, #aaa0 50%);
+    background-size: 100% 100%;
+    content: "";
+    display: block;
+    padding-bottom: 100%;
+    border-radius: 50%;
+    background-repeat: no-repeat;
+  }
+  position: absolute;
+  left: -50%;
+  top: -50%;
+}

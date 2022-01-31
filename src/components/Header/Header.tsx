@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { PropsWithChildren, useState } from "react";
 import { useOneUIContext } from "../../context/OneUIProvider";
 import Collapsable from "../Collapsable";
 import Select from "../Select";
@@ -24,11 +24,12 @@ export default function Header({
   options,
   user,
   moreOptions,
-}: {
+  children
+}: PropsWithChildren<{
   user?: User;
   options: Option[];
   moreOptions?: MoreOptions;
-}) {
+}>) {
   const [showMoreOptions, setShowMoreOptions] = useState(false);
   const {
     LogoImage = () => null,
@@ -52,6 +53,7 @@ export default function Header({
         </Text>
       ))}
       <div className={Styles.sectionDivider} />
+      {children}
       {user ? (
         user.profilePicture ? (
           <img

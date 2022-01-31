@@ -1,0 +1,31 @@
+.container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  overflow: auto;
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  & {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  > * {
+    width: 100%;
+    min-width: 100%;
+    min-height: 500px;
+  }
+
+  > :first-child {
+    // background-color: green;
+  }
+  > :nth-child(2) {
+    // background-color: yellow;
+  }
+  > :nth-child(3) {
+    // background-color: blue;
+  }
+}

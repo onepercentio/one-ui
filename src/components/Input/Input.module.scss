@@ -31,9 +31,9 @@
     outline: none;
     &:placeholder-shown ~ .border {
       animation-iteration-count: infinite;
-      animation-duration: 2s;
+      animation-duration: $verySlow;
       animation-name: pulse;
-      animation-delay: 1s;
+      animation-delay: $slow;
     }
   }
   & .border {

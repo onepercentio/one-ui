@@ -19,7 +19,7 @@
   width: 100%;
   max-width: 500px;
   overflow: hidden;
-  transition: height 250ms ease-in;
+  transition: height $fast ease-in;
   height: 0px;
   &.float {
     position: absolute;
@@ -29,5 +29,5 @@
 }
 
 .open {
-  transition: height 250ms ease-out;
+  transition: height $fast ease-out;
 }

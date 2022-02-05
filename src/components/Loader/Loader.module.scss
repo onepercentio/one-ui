@@ -11,7 +11,7 @@
     margin-left: 4px;
     background-color: $digitalBlue;
     animation-name: transparentToOpaque;
-    animation-duration: 500ms;
+    animation-duration: $normal;
     animation-iteration-count: infinite;
     animation-timing-function: ease-out;
     &:nth-child(1) {
@@ -19,10 +19,10 @@
       animation-delay: 0;
     }
     &:nth-child(2) {
-      animation-delay: 125ms;
+      animation-delay: $veryFast;
     }
     &:nth-child(3) {
-      animation-delay: 250ms;
+      animation-delay: $fast;
     }
   }
 }

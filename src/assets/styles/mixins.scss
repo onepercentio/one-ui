@@ -1,7 +1,7 @@
 @mixin iteractibleElement() {
   & {
     cursor: pointer;
-    transition: transform 250ms;
+    transition: transform $fast;
   }
   &:hover {
     transform: scale(1.2);

@@ -23,11 +23,11 @@
   opacity: 0.3;
 }
 .input {
-  transition: opacity 250ms;
+  transition: opacity $fast;
   cursor: pointer;
 }
 .indicator {
-  transition: transform 250ms;
+  transition: transform $fast;
   transform: rotateX(0deg);
 }
 .open {

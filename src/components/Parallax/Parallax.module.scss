@@ -1,7 +1,7 @@
 .parallax {
   display: flex;
   position: relative;
-  transition: transform 250ms;
+  transition: transform $fast;
   overflow: hidden;
   user-select: none;
   transform: translate3d(0, 0, 0);

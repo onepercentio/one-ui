@@ -38,7 +38,7 @@
     margin-bottom: 33px;
   }
   footer {
-    transition: opacity 250ms;
+    transition: opacity $fast;
     opacity: 1;
   }
   footer.hidden {

@@ -6,12 +6,12 @@
   position: relative;
   opacity: 1;
   @include iteractibleElement();
-  transition: opacity 250ms, transform 250ms;
+  transition: opacity $fast, transform $fast;
   &.pointOfNoReturn {
     opacity: 0;
   }
   div {
-    transition: width 250ms, top 250ms, left 250ms;
+    transition: width $fast, top $fast, left $fast;
     position: absolute;
     height: 3px;
     border-radius: 1.5px;

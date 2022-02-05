@@ -2,7 +2,7 @@
 
 .container {
   font-family: Manrope;
-  transition: max-height 1s;
+  transition: max-height $slow;
   overflow: hidden;
   max-height: 0px;
   * {

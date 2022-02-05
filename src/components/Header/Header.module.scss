@@ -78,7 +78,7 @@
 }
 .indicator {
   @include iteractibleElement();
-  transition: transform 250ms;
+  transition: transform $fast;
   transform: rotateX(0deg);
 
   &.open {

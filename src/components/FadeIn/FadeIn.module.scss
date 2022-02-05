@@ -1,6 +1,6 @@
 .container {
   opacity: 0;
-  transition: opacity 500ms;
+  transition: opacity $normal;
   &.active {
     opacity: 1;
   }

@@ -1,3 +1,5 @@
+@import "../../assets/styles/index.scss";
+
 .section {
   * {
     box-sizing: border-box;
@@ -11,7 +13,8 @@
     flex-direction: column;
     min-height: inherit;
     min-width: 100%;
-    animation-duration: $fast;
+    animation-duration: var(--animation-speed-transition, $fast);
+    animation-timing-function: var(--animation-timing-transition, initial);
     animation-fill-mode: forwards;
     overflow: auto;
   }

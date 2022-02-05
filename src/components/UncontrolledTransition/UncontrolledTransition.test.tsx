@@ -1,4 +1,4 @@
-import React, { ElementRef } from "react";
+import React, { createRef, ElementRef } from "react";
 import { act, render } from "@testing-library/react";
 
 import Component from "./UncontrolledTransition";
@@ -12,16 +12,15 @@ const spyOnTransitionContructor = jest.spyOn(
   "default"
 );
 
-it("Should at least render :)", () => {
-  renderScreen({ children: <h1></h1> });
-});
-
 it("Should transition only when the child changes", async () => {
+  const ref: React.MutableRefObject<ElementRef<typeof Component>> = {
+    current: null as any,
+  };
   const event = new Event("animationend");
   event.initEvent("animationend", true, true);
 
   const wrapper = render(
-    <Component>
+    <Component ref={ref}>
       <h1 key="1">First step</h1>
     </Component>
   );
@@ -29,7 +28,7 @@ it("Should transition only when the child changes", async () => {
   expect(wrapper.container.textContent).toEqual("First step");
 
   wrapper.rerender(
-    <Component>
+    <Component ref={ref}>
       <h1 key="2">Second step</h1>
     </Component>
   );
@@ -37,7 +36,7 @@ it("Should transition only when the child changes", async () => {
   expect(wrapper.container.textContent).toEqual("First stepSecond step");
 
   wrapper.rerender(
-    <Component>
+    <Component ref={ref}>
       <h1 key="2">Second step</h1>
     </Component>
   );
@@ -48,10 +47,6 @@ it("Should transition only when the child changes", async () => {
   firstStepEl.dispatchEvent(event);
 
   expect(wrapper.container.textContent).toEqual("Second step");
-
-  const ref: React.MutableRefObject<ElementRef<typeof Component>> = {
-    current: null as any,
-  };
   wrapper.rerender(
     <Component ref={ref}>
       <h1 key="3">Third step</h1>
@@ -80,7 +75,7 @@ it("Should transition only when the child changes", async () => {
   });
 
   wrapper.rerender(
-    <Component>
+    <Component ref={ref}>
       <h1 key="2">Second step</h1>
     </Component>
   );

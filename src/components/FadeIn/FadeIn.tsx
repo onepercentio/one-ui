@@ -1,21 +1,33 @@
-import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
+import React, {
+  createRef,
+  ForwardedRef,
+  forwardRef,
+  PropsWithChildren,
+  RefObject,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import Styles from "./FadeIn.module.scss";
+
+type FadeInProps = PropsWithChildren<{ className?: string; active?: boolean }>;
 
 /**
  * Receives a children and displays it with a fade in animation, also when it's removed, it hides with a fadeout
  **/
-export default function FadeIn({
-  children,
-  className = "",
-  active,
-}: PropsWithChildren<{ className?: string; active?: boolean }>) {
+function FadeIn(
+  { children, className = "", active }: FadeInProps,
+  divRef: ForwardedRef<HTMLDivElement>
+) {
+  if (!divRef) {
+    divRef = createRef();
+  }
   const [, trigger] = useState(0);
-  const divRef = useRef<HTMLDivElement>(null);
   const prevChildren = useRef<typeof children>();
   prevChildren.current = children || prevChildren.current;
 
   useEffect(() => {
-    const el = divRef.current!;
+    const el = (divRef as RefObject<HTMLDivElement>).current!;
     const isElHidden = active !== undefined ? !active : !children;
 
     if (isElHidden) {
@@ -42,3 +54,5 @@ export default function FadeIn({
     </div>
   );
 }
+
+export default forwardRef<HTMLDivElement, FadeInProps>(FadeIn);

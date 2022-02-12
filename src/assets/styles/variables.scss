@@ -25,7 +25,10 @@ $tableRowBorderColor: var(--table-row-border-color, #bec1ca);
 $buttonMinHeight: var(--button-min-height, 62px);
 $buttonMinWidth: var(--button-min-width, 150px);
 
+$tooltipBackgroudColor: var(--tooltip-background-color, $digitalBlue);
+
 // Animation speed variables
+$almostInstant: var(--animation--speed-almostInstant, 50ms);
 $veryFast: var(--animation--speed-veryfast, 125ms);
 $fast: var(--animation--speed-fast, 250ms);
 $normal: var(--animation--speed-normal, 500ms);

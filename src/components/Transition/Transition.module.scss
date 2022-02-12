@@ -16,7 +16,6 @@
     animation-duration: var(--animation-speed-transition, $fast);
     animation-timing-function: var(--animation-timing-transition, initial);
     animation-fill-mode: forwards;
-    overflow: auto;
   }
 }
 

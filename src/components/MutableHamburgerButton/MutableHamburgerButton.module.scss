@@ -1,0 +1,82 @@
+@import "../../assets/styles/index.scss";
+
+$slice: 1/7;
+
+.container {
+  cursor: pointer;
+  width: 1em;
+  height: 1em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  background-size: 0 0;
+  background-repeat: no-repeat;
+  transition: transform 250ms;
+  &:active {
+    transform: scale(0.9);
+  }
+  > * {
+    width: 0.8em;
+    height: #{$slice}em;
+    border-radius: #{$slice / 2}em;
+    transition: transform $veryFast, width $veryFast;
+    background: var(--mutable-hamburger-background, $digitalBlue);
+    background-size: 1em 1em;
+    background-repeat: no-repeat;
+  }
+  & > * {
+    background-position-x: -0.1em;
+  }
+  & > :nth-child(1) {
+    background-position-y: #{$slice * -1}em;
+  }
+  & > :nth-child(2) {
+    background-position-y: #{$slice * -3}em;
+  }
+  & > :nth-child(3) {
+    background-position-y: #{$slice * -5}em;
+  }
+
+  &.closed {
+    > :nth-child(1) {
+      transform: translateY(#{$slice * 2}em) rotateZ(-45deg);
+    }
+    > :nth-child(2) {
+      transform: rotateZ(45deg);
+    }
+    > :nth-child(3) {
+      transform: translateY(-#{$slice * 2}em) rotateZ(-45deg);
+    }
+  }
+
+  &.arrow-up {
+    > * {
+      width: 0.4em;
+    }
+    > :nth-child(1) {
+      transform: translateX(0.1em) translateY(#{$slice * 2}em) rotateZ(45deg);
+    }
+    > :nth-child(2) {
+      transform: translateX(0.1em) rotateZ(45deg);
+    }
+    > :nth-child(3) {
+      transform: translateX(-0.1em) translateY(-#{$slice * 2}em) rotateZ(-45deg);
+    }
+  }
+
+  &.arrow-down {
+    > * {
+      width: 0.4em;
+    }
+    > :nth-child(1) {
+      transform: translateX(0.1em) translateY(#{$slice * 2}em) rotateZ(-45deg);
+    }
+    > :nth-child(2) {
+      transform: translateX(0.1em) rotateZ(-45deg);
+    }
+    > :nth-child(3) {
+      transform: translateX(-0.1em) translateY(-#{$slice * 2}em) rotateZ(45deg);
+    }
+  }
+}

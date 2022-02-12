@@ -28,7 +28,7 @@ type ContextSpecs = {
     };
     header: {
       LogoImage: () => JSX.Element;
-      MoreOptions: () => JSX.Element;
+      MoreOptions: ({ open }: { open: boolean }) => JSX.Element;
     };
     table: {
       controls: {

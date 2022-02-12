@@ -64,9 +64,11 @@
   right: 0px;
   width: fit-content;
   margin-top: 18px;
+  z-index: 1000;
   > * {
     cursor: pointer;
-    background-color: white;
+    background: $mainBackgroundColor;
+    backdrop-filter: var(--header-submenu-backdrop, initial);
     padding: 12px 32px;
     margin-bottom: 8px;
     margin-left: 4px;
@@ -83,5 +85,25 @@
 
   &.open {
     transform: rotateX(180deg);
+  }
+
+  display: none;
+  @media screen and (max-width: 640px) {
+    display: initial;
+  }
+  &.withMoreOptions {
+    display: initial;
+  }
+}
+
+.desktopOnly {
+  @media screen and (max-width: 640px) {
+    display: none;
+  }
+}
+
+.mobileOnly {
+  @media screen and (min-width: 640px) {
+    display: none;
   }
 }

@@ -14,6 +14,7 @@ export default function Collapsable({
   id,
   mode = "block",
   contentClassName,
+  onContentClick,
   ...props
 }: PropsWithChildren<{
   title: React.ReactNode;
@@ -25,6 +26,7 @@ export default function Collapsable({
   /** This will define if the content will be floating under the title or will expand all the container as one */
   mode?: "block" | "float";
   "data-testid"?: string;
+  onContentClick?: HTMLInputElement['onclick'];
 }>) {
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -78,6 +80,7 @@ export default function Collapsable({
           Styles[mode] || ""
         } ${contentClassName}`}
         id={_collapsableId("content", id)}
+        onClick={onContentClick}
       >
         <FadeIn>{open ? children : null}</FadeIn>
       </div>

@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useState } from "react";
+import React, { PropsWithChildren, useEffect, useState } from "react";
 import { useOneUIContext } from "../../context/OneUIProvider";
 import Collapsable from "../Collapsable";
 import Select from "../Select";
@@ -17,43 +17,41 @@ type User = {
 
 type MoreOptions = Option[];
 
-/**
- * A generic header implementation
- **/
-export default function Header({
-  options,
-  user,
-  moreOptions,
-  children
-}: PropsWithChildren<{
+type Props = PropsWithChildren<{
   user?: User;
   options: Option[];
   moreOptions?: MoreOptions;
-}>) {
+  /**
+   * This controls the visbility of a control for showing or hiding a menu on mobile
+   */
+  responsive?: boolean;
+}>;
+
+/**
+ * A generic header implementation
+ **/
+export default function Header(props: Props) {
+  const { user, moreOptions } = props;
   const [showMoreOptions, setShowMoreOptions] = useState(false);
-  const {
-    LogoImage = () => null,
-    MoreOptions = () => <div>v</div>,
-  } = useOneUIContext().component.header;
+  const { LogoImage = () => null, MoreOptions = () => <div>v</div> } =
+    useOneUIContext().component.header;
+
+  useEffect(() => {
+    if (showMoreOptions) {
+      const close = () => setShowMoreOptions(false);
+      window.addEventListener("click", close);
+      return () => {
+        window.removeEventListener("click", close);
+      };
+    }
+  }, [showMoreOptions]);
   return (
     <header className={Styles.header}>
       <div className={Styles.logo}>
         <LogoImage />
         <div className={Styles.logoDivider} />
       </div>
-      {options.map((option, i) => (
-        <Text
-          type="link"
-          key={option.label}
-          data-testid={`option-${i}`}
-          onClick={option.onClick}
-          className={Styles.option}
-        >
-          {option.label}
-        </Text>
-      ))}
-      <div className={Styles.sectionDivider} />
-      {children}
+      <Controls {...props} mode="desktop" />
       {user ? (
         user.profilePicture ? (
           <img
@@ -72,15 +70,15 @@ export default function Header({
         )
       ) : null}
       {user ? <p className={Styles.profileName}>{user.name}</p> : null}
-      {moreOptions ? (
+      {
         <Collapsable
           title={
             <div
               className={`${Styles.indicator} ${
-                showMoreOptions ? Styles.open : ""
+                moreOptions ? Styles.withMoreOptions : ""
               }`}
             >
-              <MoreOptions />
+              <MoreOptions open={showMoreOptions} />
             </div>
           }
           data-testid="more-options-container"
@@ -89,13 +87,50 @@ export default function Header({
           mode="float"
           contentClassName={Styles.headerOptions}
         >
-          {moreOptions.map((opt) => (
-            <Text type="link" onClick={opt.onClick}>
-              {opt.label}
-            </Text>
-          ))}
+          <Controls {...props} mode="mobile" />
+          {moreOptions
+            ? moreOptions.map((opt) => (
+                <Text type="link" onClick={opt.onClick}>
+                  {opt.label}
+                </Text>
+              ))
+            : null}
         </Collapsable>
-      ) : null}
+      }
     </header>
+  );
+}
+
+function Controls({
+  options,
+  children,
+  mode,
+}: Props & { mode: "desktop" | "mobile" }) {
+  return (
+    <>
+      {options.map((option, i) => (
+        <Text
+          type="link"
+          key={option.label}
+          data-testid={`option-${i}`}
+          onClick={option.onClick}
+          className={`${Styles.option} ${
+            mode === "desktop" ? Styles.desktopOnly : Styles.mobileOnly
+          }`}
+        >
+          {option.label}
+        </Text>
+      ))}
+      <div className={Styles.sectionDivider} />
+      {children && (
+        <div
+          className={`${Styles.children} ${
+            mode === "desktop" ? Styles.desktopOnly : Styles.mobileOnly
+          }`}
+        >
+          {children}
+        </div>
+      )}
+    </>
   );
 }

@@ -1,3 +1,5 @@
+@import "../../assets/styles/index.scss";
+
 .backdrop {
   position: fixed;
   top: 0px;
@@ -60,7 +62,8 @@
   position: relative;
   width: 100%;
   max-width: 640px;
-  background-color: white;
+  background: $mainBackgroundColor;
+  backdrop-filter: var(--adaptive-dialog-backdrop, initial);
   display: flex;
   align-items: center;
   justify-content: center;

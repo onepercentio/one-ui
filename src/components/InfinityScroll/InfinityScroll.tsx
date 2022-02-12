@@ -20,6 +20,12 @@ export function shouldIncrementPage(
   else return 0;
 }
 
+export function keys(currPage: number) {
+  return [currPage % 3, (currPage + 1) % 3, (currPage + 2) % 3].map(
+    (a) => `step_${a}`
+  ).reverse();
+}
+
 /**
  * Manages a set of divs that allows the effect of inifinite scrolling between pages
  **/
@@ -61,7 +67,14 @@ function InfinityScroll(
     if (slicedItems.length < _pageSize) {
       slicedItems.push(...getItems(0, 0, _pageSize - slicedItems.length));
     }
-    return slicedItems;
+    return slicedItems.map((i, index) =>
+      typeof i === "object"
+        ? {
+            ...i,
+            key: index,
+          }
+        : i
+    );
   }
 
   useEffect(() => {
@@ -72,6 +85,7 @@ function InfinityScroll(
       left: centerScroll - viewportWidth / 2,
     });
   }, [isCountTheSameAsPage, currPage.page]);
+  const [beforeKey, currKey, afterKey] = keys(currPage.page);
 
   return (
     <div
@@ -112,15 +126,30 @@ function InfinityScroll(
       }
     >
       {!isCountTheSameAsPage && (
-        <div className={pageClass} data-testid="infinity-prev" ref={prevDiv}>
+        <div
+          key={beforeKey}
+          className={pageClass}
+          data-testid="infinity-prev"
+          ref={prevDiv}
+        >
           {getItems(currPage.page - 1, currPage.offset)}
         </div>
       )}
-      <div className={pageClass} data-testid="infinity-curr" ref={currDiv}>
+      <div
+        key={currKey}
+        className={pageClass}
+        data-testid="infinity-curr"
+        ref={currDiv}
+      >
         {getItems(currPage.page, currPage.offset)}
       </div>
       {!isCountTheSameAsPage && (
-        <div className={pageClass} data-testid="infinity-next" ref={nextDiv}>
+        <div
+          key={afterKey}
+          className={pageClass}
+          data-testid="infinity-next"
+          ref={nextDiv}
+        >
           {getItems(currPage.page + 1, currPage.offset)}
         </div>
       )}

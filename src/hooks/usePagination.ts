@@ -55,6 +55,7 @@ export default function usePagination<I extends any, A extends any[]>(
     loading: control.loading,
     error: control.error,
     items,
+    setError: control.setError
   };
 }
 
@@ -66,4 +67,5 @@ export type Paginable<I extends any, A extends any[] = []> = {
   loading: boolean;
   error: CommonErrorCodes | undefined;
   items: I | undefined;
+  setError: ReturnType<typeof useAsyncControl>["setError"];
 };

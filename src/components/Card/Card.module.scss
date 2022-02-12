@@ -1,5 +1,7 @@
+@import "../../assets/styles/index.scss";
+
 .container {
-  background-color: white;
+  background: $mainBackgroundColor;
   padding: 32px;
   max-width: 640px;
   width: 100%;

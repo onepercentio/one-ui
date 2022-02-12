@@ -1,7 +1,7 @@
 import React, { createRef } from "react";
 import { render } from "@testing-library/react";
 
-import InfinityScroll, { shouldIncrementPage } from "./InfinityScroll";
+import InfinityScroll, { keys, shouldIncrementPage } from "./InfinityScroll";
 import { act } from "@testing-library/react";
 
 HTMLElement.prototype.scrollTo = jest.fn();
@@ -198,3 +198,13 @@ describe("BugFixing", () => {
     expect(container.textContent).toEqual("789123456");
   });
 });
+
+describe("Optimization", () => {
+  it("Should slide the keys definitions to reuse divs", () => {
+    expect(keys(0)).toEqual([0, 1, 2])
+    expect(keys(1)).toEqual([1, 2, 0])
+    expect(keys(2)).toEqual([2, 0, 1])
+    expect(keys(3)).toEqual([0, 1, 2])
+    expect(keys(4)).toEqual([1, 2, 0])
+  })
+})

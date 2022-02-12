@@ -4,7 +4,6 @@ import AdaptiveDialog from "../AdaptiveDialog";
 import Button from "../Button";
 import Loader from "../Loader";
 import Text from "../Text";
-import Styles from "./AsyncWrapper.module.scss";
 
 /**
  * This is a generic implementation of the loading, and error handling

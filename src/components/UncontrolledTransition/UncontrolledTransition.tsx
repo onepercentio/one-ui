@@ -13,10 +13,12 @@ import Transition from "../Transition";
 function UncontrolledTransition(
   {
     className = "",
+    contentClassName,
     children = <React.Fragment key="default"></React.Fragment>,
     lockTransitionWidth = true,
   }: {
     className?: string;
+    contentClassName?: string;
     children?: React.ReactElement;
     lockTransitionWidth?: boolean;
   },
@@ -68,6 +70,7 @@ function UncontrolledTransition(
             setOrientation("forward");
           }}
           lockTransitionWidth={lockTransitionWidth}
+          contentClassName={contentClassName}
         >
           {childStack}
         </Transition>

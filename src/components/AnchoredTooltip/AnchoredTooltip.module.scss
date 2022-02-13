@@ -18,7 +18,8 @@
 
   // The position will be calculated via the javascript and the context
 
-  transition: top $almostInstant;
+  transition: top $almostInstant, left $almostInstant;
+  z-index: 1000;
 
   &::after,
   &::before {

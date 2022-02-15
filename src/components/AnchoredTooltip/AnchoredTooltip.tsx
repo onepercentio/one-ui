@@ -117,12 +117,16 @@ export default function AnchoredTooltip(props: Props) {
 
   return (
     <>
-      <FadeIn ref={tooltipRef} className={Styles.tooltipContainer}>
+      <FadeIn
+        onClick={(e) => e.stopPropagation()}
+        ref={tooltipRef}
+        className={Styles.tooltipContainer}
+      >
         {open ? <div>{children}</div> : undefined}
       </FadeIn>
-      {process.env.NODE_ENV === "development" && open ? (
+      {/* {process.env.NODE_ENV === "development" && open ? (
         <DebuggingHelper tooltipRef={tooltipRef} {...props} />
-      ) : null}
+      ) : null} */}
     </>
   );
 }

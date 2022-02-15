@@ -4,19 +4,24 @@ import React, {
   forwardRef,
   PropsWithChildren,
   RefObject,
+  SyntheticEvent,
   useEffect,
   useRef,
   useState,
 } from "react";
 import Styles from "./FadeIn.module.scss";
 
-type FadeInProps = PropsWithChildren<{ className?: string; active?: boolean }>;
+type FadeInProps = PropsWithChildren<{
+  className?: string;
+  active?: boolean;
+  onClick?: (e: SyntheticEvent<HTMLDivElement>) => void;
+}>;
 
 /**
  * Receives a children and displays it with a fade in animation, also when it's removed, it hides with a fadeout
  **/
 function FadeIn(
-  { children, className = "", active }: FadeInProps,
+  { children, className = "", active, onClick }: FadeInProps,
   divRef: ForwardedRef<HTMLDivElement>
 ) {
   if (!divRef) {
@@ -49,6 +54,7 @@ function FadeIn(
       ref={divRef}
       data-testid="fadein_container"
       className={`${Styles.container} ${className}`}
+      onClick={onClick}
     >
       {prevChildren.current}
     </div>

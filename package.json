@@ -46,7 +46,7 @@
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "prebuild": "cd src",
-    "copy-css": "cpy --cwd='src' '**/*.scss' '../dist' --parents",
+    "copy-css": "cpy --cwd='src' '**/*.{scss,svg}' '../dist' --parents",
     "build": "tsc; npm run copy-css",
     "postbuild": "cd ..",
     "prepare": "npm run build",

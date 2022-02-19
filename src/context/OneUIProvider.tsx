@@ -3,7 +3,7 @@ import React from "react";
 import { createContext, PropsWithChildren, useContext } from "react";
 
 type DeepPartial<T> = {
-  [P in keyof T]?: DeepPartial<T[P]>;
+  [P in keyof T]?:  T[P] extends Function ? T[P] : DeepPartial<T[P]>;
 };
 
 type ContextSpecs = {

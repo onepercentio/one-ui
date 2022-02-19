@@ -35,11 +35,13 @@ function InfinityScroll(
     pageSize,
     initialPage = 0,
     pageClass,
+    className = ""
   }: {
     items: (React.ReactElement | string)[];
     pageSize: number;
     initialPage?: number;
     pageClass?: string;
+    className?: string;
   },
   ref: ForwardedRef<HTMLDivElement>
 ) {
@@ -90,7 +92,7 @@ function InfinityScroll(
   return (
     <div
       ref={ref}
-      className={Styles.container}
+      className={`${Styles.container} ${className}`}
       data-testid="infinity-parent"
       onScroll={
         !isCountTheSameAsPage

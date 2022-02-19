@@ -1,5 +1,8 @@
 import React from "react";
-import Spacing from "../Spacing";
+import {
+  extractAllPossibilitiesFromEnumProp,
+  SideBySideContainer,
+} from "../../storybookUtils";
 import C from "./Text";
 
 export default {
@@ -8,25 +11,11 @@ export default {
 };
 
 export const TodasVariacoes = () => {
-  const variantes: { value: string }[] = (C as any).__docgenInfo.props.type.type
-    .value;
+  const variantes = extractAllPossibilitiesFromEnumProp(C, "type");
 
-  return variantes
-    .map((a) => JSON.parse(a.value))
-    .map((a) => (
-      <div
-        style={{
-          width: "25%",
-          marginRight: 24,
-          display: "inline-flex",
-          flexDirection: "column",
-        }}
-      >
-        <span style={{ borderBottom: "2px solid black", marginBottom: 14 }}>
-          Tipo: <b>{a}</b>
-        </span>
-        <C type={a as any}>Texto do exemplo</C>
-        <Spacing size="large" />
-      </div>
-    ));
+  return variantes.map((a) => (
+    <SideBySideContainer exampleName={a}>
+      <C type={a as any}>Texto do exemplo</C>
+    </SideBySideContainer>
+  ));
 };

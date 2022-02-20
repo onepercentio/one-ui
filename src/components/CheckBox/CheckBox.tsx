@@ -23,7 +23,7 @@ export default function CheckBox({
     HTMLSpanElement
   >) {
   return (
-    <div
+    <span
       className={`${Styles.container} ${className}`}
       style={{ fontSize: size }}
     >
@@ -36,6 +36,6 @@ export default function CheckBox({
         className={checked ? Styles.checked : ""}
       />
       {label}
-    </div>
+    </span>
   );
 }

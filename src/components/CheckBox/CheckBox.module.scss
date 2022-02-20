@@ -2,20 +2,20 @@
 
 .container {
   display: flex;
-  line-height: 1em;
+  line-height: 1.5em;
   vertical-align: middle;
 
   > span:first-child {
     visibility: visible;
-    width: 0.92em;
-    height: 0.92em;
-    border-radius: 0.25em;
+    width: 1.5em;
+    height: 1.5em;
+    border-radius: 0.45em;
     background-image: url("../../assets/img/svg/checkbox.svg");
     background-color: transparent;
     transition: background-color 250ms, border 250ms, box-shadow 250ms;
     border: 1px solid rgb(40, 43, 53);
     box-shadow: 0px 0px 0px -4px $digitalBlue;
-    margin-right: 0.25em;
+    margin-right: 0.45em;
   }
   > span:first-child.checked {
     background-color: $digitalBlue;

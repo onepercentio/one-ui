@@ -25,9 +25,16 @@
 .input {
   transition: opacity $fast;
   cursor: pointer;
+  padding-right: 30px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: transform $fast;
+  min-height: inherit;
   transform: rotateX(0deg);
 }
 .open {

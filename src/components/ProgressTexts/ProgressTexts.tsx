@@ -7,7 +7,7 @@ import Button from "../Button";
 type Step = {
   type: "wait" | "final";
   title: string;
-  description?: string;
+  description?: string | React.ReactElement;
   action?: {
     label: string;
     onClick: (e: MouseEvent<HTMLButtonElement>) => void;
@@ -21,6 +21,9 @@ export default function ProgressTexts({
   steps,
   currentStep,
 }: {
+  /**
+   * Starts at 0
+   */
   currentStep: number;
   steps: Step[];
 }) {

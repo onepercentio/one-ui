@@ -29,6 +29,8 @@ $tooltipBackgroudColor: var(--tooltip-background-color, $digitalBlue);
 
 $checkboxBaseColor: var(--checkbox-base-color, $digitalBlue);
 
+$textDefaultColor: var(--text-default-color, $digitalBlue);
+
 // Animation speed variables
 $almostInstant: var(--animation--speed-almostInstant, 50ms);
 $veryFast: var(--animation--speed-veryfast, 125ms);

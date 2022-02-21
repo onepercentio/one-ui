@@ -9,7 +9,7 @@ export default function AdaptiveDialog({
   onClose,
   open = false,
   children,
-}: PropsWithChildren<{ open: boolean; onClose: () => void }>) {
+}: PropsWithChildren<{ open: boolean; onClose?: () => void }>) {
   const rootDivRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(open);
   const [expanded, setExpanded] = useState(false);
@@ -38,7 +38,9 @@ export default function AdaptiveDialog({
       }`}
     >
       <div className={Styles.container}>
-        <HeaderCloseBtn mode="close" hidden={false} onClick={onClose} />
+        {onClose && (
+          <HeaderCloseBtn mode="close" hidden={false} onClick={onClose} />
+        )}
         <div
           className={Styles.indicator}
           onClick={() => setExpanded((p) => !p)}

@@ -1,0 +1,48 @@
+@import "../../assets/styles/index.scss";
+
+$hamburgerSize: 48;
+$hamburgerOffset: 24;
+
+@value hamburgerSize #{$hamburgerSize};
+
+.hamburger {
+  position: fixed;
+  top: #{$hamburgerOffset}px;
+  left: #{$hamburgerOffset}px;
+}
+
+.hamburger {
+  display: initial;
+}
+
+.hamburger,
+.container {
+  z-index: 1000;
+}
+
+@media screen and (min-width: 640px) {
+  .hamburger {
+    display: none;
+  }
+}
+
+.container {
+    box-sizing: border-box;
+  height: 100%;
+
+  @media screen and (max-width: 640px) {
+    padding-top: #{$hamburgerSize + $hamburgerOffset * 2}px;
+    position: fixed;
+    width: 100%;
+    overflow: auto;
+
+    &.open {
+      transition: transform $veryFast ease-out;
+      transform: translateX(-0%);
+    }
+    &.closed {
+      transition: transform $veryFast ease-in;
+      transform: translateX(-100%);
+    }
+  }
+}

@@ -1,0 +1,22 @@
+@import "../../assets/styles/index.scss";
+
+.container {
+  overflow-x: auto;
+  display: flex;
+  position: relative;
+  align-items: flex-start;
+  p {
+    cursor: pointer;
+    margin: 1em 2em;
+    &.selected {
+      font-weight: bold;
+    }
+  }
+}
+
+.guide {
+  height: 0.1em;
+  background-color: $digitalBlue;
+  position: absolute;
+  transition: left $fast, width $fast, top $fast;
+}

@@ -25,7 +25,7 @@
 }
 
 .filled {
-  background-color: #1e22aa;
+  background-color: $buttonPrimaryBackgroundColor;
   color: white;
   &:disabled {
     color: $mediumGray;

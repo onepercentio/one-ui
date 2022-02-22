@@ -31,6 +31,8 @@ $checkboxBaseColor: var(--checkbox-base-color, $digitalBlue);
 
 $textDefaultColor: var(--text-default-color, $digitalBlue);
 
+$buttonPrimaryBackgroundColor: var(--button-primary-bg-color, #1e22aa);
+
 // Animation speed variables
 $almostInstant: var(--animation--speed-almostInstant, 50ms);
 $veryFast: var(--animation--speed-veryfast, 125ms);

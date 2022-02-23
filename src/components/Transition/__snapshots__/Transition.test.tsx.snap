@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Should not break this crazy logic 1`] = `"Elemento 3Elemento 1Elemento 2Elemento 4"`;
+exports[`Should not break this crazy logic 1`] = `"Etapa 3Etapa 1Etapa 2Etapa 4Controle o elemento atual pelos controles abaixo, existem 4 etapas"`;
 
-exports[`Should not break this crazy logic 2`] = `"Elemento 3Elemento 2Elemento 4"`;
+exports[`Should not break this crazy logic 2`] = `"Etapa 3Etapa 2Etapa 4Controle o elemento atual pelos controles abaixo, existem 4 etapas"`;
 
-exports[`Should not break this crazy logic 3`] = `"Elemento 3Elemento 4"`;
+exports[`Should not break this crazy logic 3`] = `"Etapa 3Etapa 4Controle o elemento atual pelos controles abaixo, existem 4 etapas"`;
 
-exports[`Should not break this crazy logic 4`] = `"Elemento 3"`;
+exports[`Should not break this crazy logic 4`] = `"Etapa 3Controle o elemento atual pelos controles abaixo, existem 4 etapas"`;

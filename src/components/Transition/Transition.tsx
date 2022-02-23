@@ -108,7 +108,6 @@ export default function Transition({
     }
 
     const key = children[step]?.key || step;
-    console.warn(key);
 
     if (prevStep.current !== step && lockTransitionWidth)
       containerRef.current!.style.width = `${
@@ -180,14 +179,18 @@ export default function Transition({
             ) || ""
           }`,
           onAnimationEnd: () => {
-            nextScreenRef.current!.classList.remove(
-              transitionClasses.forward.elementEntering
-            );
+            if (transitionClasses.forward.elementEntering)
+              nextScreenRef.current?.classList.remove(
+                transitionClasses.forward.elementEntering
+              );
             if (onDiscardStep) onDiscardStep(prevKeyToRemove);
             setScreensStack((screensAfterTheCurrentStepEntered) => {
-              return screensAfterTheCurrentStepEntered.filter((s) => {
-                return s.key !== String(prevKeyToRemove);
-              });
+              const nextState = screensAfterTheCurrentStepEntered.filter(
+                (s) => {
+                  return s.key !== String(prevKeyToRemove);
+                }
+              );
+              return nextState;
             });
           },
         });

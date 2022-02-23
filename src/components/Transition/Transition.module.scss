@@ -58,6 +58,7 @@ div.fadeOut {
 }
 
 div.scaleIn {
+  animation-fill-mode: initial;
   animation-name: scaleIn;
 }
 
@@ -66,17 +67,14 @@ div.scaleIn {
     position: absolute;
     transform: scale(0);
   }
-  99.9% {
-    position: absolute;
-    transform: scale(0.999);
-  }
   100% {
-    position: initial;
+    position: absolute;
     transform: scale(1);
   }
 }
 
 div.scaleOut {
+  animation-fill-mode: initial;
   animation-name: scaleOut;
 }
 

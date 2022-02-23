@@ -19,7 +19,7 @@ it("Should not break this crazy logic", async () => {
   wrapper.rerender(<Component step={2} />);
   wrapper.rerender(<Component step={3} />);
   wrapper.rerender(<Component step={2} />);
-  const [el3WhenGoinBack, el1, el2, el4] = wrapper.getAllByTestId(
+  const [el3WhenGoinBack, el1, el2] = wrapper.getAllByTestId(
     "transition-container"
   ) as HTMLDivElement[];
   expect(wrapper.container.textContent).toMatchSnapshot();

@@ -95,7 +95,7 @@ export const ClickBasedTransition = (
     >
       <UncontrolledTransition
         ref={transRef}
-        transitionType={TransitionAnimationTypes.SLIDE}
+        transitionType={TransitionAnimationTypes.POP_FROM_CLICK_ORIGIN}
         contentStyle={{
           backgroundColor: "white",
         }}

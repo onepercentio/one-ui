@@ -1,5 +1,66 @@
-import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
+import React, {
+  createRef,
+  PropsWithChildren,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import Styles from "./Transition.module.scss";
+
+export type TransitionProps = {
+  step: number;
+  className?: string;
+  contentStyle?: React.CSSProperties;
+  contentClassName?: string;
+  children: (React.ReactElement | undefined)[];
+  onDiscardStep?: (discardedKey: React.Key) => void;
+  lockTransitionWidth?: boolean;
+  transitionType?: TransitionAnimationTypes;
+};
+
+function TransitionClasses(
+  type: NonNullable<TransitionProps["transitionType"]>
+): {
+  /**
+   * Applied to the element that was not visible and is now entering the screen
+   */
+  backward: {
+    elementEntering: string;
+    elementExiting: string;
+  };
+  /**
+   * Applied to the element that was visible and now is exiting the screen
+   */
+  forward: {
+    elementEntering: string;
+    elementExiting: string;
+  };
+} {
+  switch (type) {
+    case TransitionAnimationTypes.SLIDE:
+      return {
+        backward: {
+          elementEntering: Styles.entranceLeft,
+          elementExiting: "",
+        },
+        forward: {
+          elementEntering: "",
+          elementExiting: Styles.exitLeft,
+        },
+      };
+    case TransitionAnimationTypes.POP_FROM_CLICK_ORIGIN:
+      return {
+        backward: {
+          elementEntering: Styles.fadeIn,
+          elementExiting: Styles.scaleOut,
+        },
+        forward: {
+          elementEntering: Styles.scaleIn,
+          elementExiting: Styles.fadeOut,
+        },
+      };
+  }
+}
 
 /**
  * Handles the transition between multiple children and recycling of elements
@@ -12,15 +73,13 @@ export default function Transition({
   className,
   onDiscardStep,
   lockTransitionWidth = false,
-}: {
-  step: number;
-  className?: string;
-  contentStyle?: React.CSSProperties;
-  contentClassName?: string;
-  children: (React.ReactElement | undefined)[];
-  onDiscardStep?: (discardedKey: React.Key) => void;
-  lockTransitionWidth?: boolean;
-}) {
+  transitionType = TransitionAnimationTypes.SLIDE,
+}: TransitionProps) {
+  const preTransitionDetails = useRef<{
+    transformOrigin: `${number}% ${number}%` | `initial`;
+  }>({
+    transformOrigin: "initial",
+  });
   const containerRef = useRef<HTMLElement>(null);
   const [screensStack, setScreensStack] = useState([
     <div
@@ -37,6 +96,8 @@ export default function Transition({
   const prevKey = useRef(children[step]?.key);
 
   useEffect(() => {
+    const transitionClasses = TransitionClasses(transitionType);
+
     if (
       prevKey.current !== null &&
       children[step]?.key === prevKey.current // I'm rendering the same screen
@@ -47,6 +108,7 @@ export default function Transition({
     }
 
     const key = children[step]?.key || step;
+    console.warn(key);
 
     if (prevStep.current !== step && lockTransitionWidth)
       containerRef.current!.style.width = `${
@@ -56,38 +118,71 @@ export default function Transition({
     if (prevStep.current > step) {
       const stepToRemove = prevStep.current;
       const prevKeyToRemove = prevKey.current || stepToRemove;
-      setScreensStack((screensBeforeChangingStep) => [
-        <div
-          data-testid="transition-container"
-          key={key}
-          className={`${Styles.entranceLeft} ${contentClassName}`}
-          style={contentStyle}
-          onAnimationEnd={() => {
-            setScreensStack((screensAfterTheCurrentStepEntered) => {
-              if (onDiscardStep) onDiscardStep(prevKeyToRemove);
-              return screensAfterTheCurrentStepEntered.filter(
-                (s) => s.key !== String(prevKeyToRemove)
-              );
-            });
-          }}
-        >
-          {children[step]}
-        </div>,
-        ...screensBeforeChangingStep.filter((a) => a.key !== String(key)),
-      ]);
+      setScreensStack((screensBeforeChangingStep) => {
+        const enteringScreenRef = createRef<HTMLDivElement>();
+        const [firstNextScreen, ...restOfScreens] =
+          screensBeforeChangingStep.filter((a) => a.key !== String(key));
+        const clonedFirst = React.cloneElement(firstNextScreen, {
+          "data-testid": "transition-container",
+          style: {
+            ...contentStyle,
+            ...preTransitionDetails.current,
+          },
+          className: `${transitionClasses.backward.elementExiting} ${
+            firstNextScreen.props.className?.replace(
+              transitionClasses.backward.elementEntering,
+              ""
+            ) || ""
+          }`,
+        });
+        return [
+          <div
+            ref={enteringScreenRef}
+            data-testid="transition-container"
+            key={key}
+            className={`${transitionClasses.backward.elementEntering} ${contentClassName}`}
+            style={{
+              ...contentStyle,
+              ...preTransitionDetails.current,
+            }}
+            onAnimationEnd={() => {
+              setScreensStack((screensAfterTheCurrentStepEntered) => {
+                if (onDiscardStep) onDiscardStep(prevKeyToRemove);
+                return screensAfterTheCurrentStepEntered.filter(
+                  (s) => s.key !== String(prevKeyToRemove)
+                );
+              });
+            }}
+          >
+            {children[step]}
+          </div>,
+          clonedFirst,
+          ...restOfScreens,
+        ];
+      });
     } else if (prevStep.current < step) {
       const stepToDelete = prevStep.current;
       const prevKeyToRemove = prevKey.current || stepToDelete;
       setScreensStack((screensBeforeChangingStep) => {
         const lastIndex = screensBeforeChangingStep.length - 1;
         const lastScreen = screensBeforeChangingStep[lastIndex];
+        const nextScreenRef = createRef<HTMLDivElement>();
         const clonedLast = React.cloneElement(lastScreen, {
           "data-testid": "transition-container",
-          style: contentStyle,
-          className: `${Styles.exitLeft} ${
-            lastScreen.props.className?.replace(Styles.entranceLeft, "") || ""
+          style: {
+            ...contentStyle,
+            ...preTransitionDetails.current,
+          },
+          className: `${transitionClasses.forward.elementExiting} ${
+            lastScreen.props.className?.replace(
+              transitionClasses.backward.elementEntering,
+              ""
+            ) || ""
           }`,
           onAnimationEnd: () => {
+            nextScreenRef.current!.classList.remove(
+              transitionClasses.forward.elementEntering
+            );
             if (onDiscardStep) onDiscardStep(prevKeyToRemove);
             setScreensStack((screensAfterTheCurrentStepEntered) => {
               return screensAfterTheCurrentStepEntered.filter((s) => {
@@ -101,10 +196,14 @@ export default function Transition({
           ...screensBeforeChangingStep.slice(0, lastIndex),
           clonedLast,
           <div
+            ref={nextScreenRef}
             data-testid="transition-container"
             key={key}
-            style={contentStyle}
-            className={contentClassName}
+            style={{
+              ...contentStyle,
+              ...preTransitionDetails.current,
+            }}
+            className={`${contentClassName} ${transitionClasses.forward.elementEntering}`}
           >
             {children[step]}
           </div>,
@@ -125,6 +224,17 @@ export default function Transition({
   return (
     <>
       <section
+        onClick={({
+          currentTarget: { offsetTop, offsetLeft, clientWidth, clientHeight },
+          clientX,
+          clientY,
+        }) => {
+          const offsetX = clientX - offsetLeft;
+          const offsetY = clientY - offsetTop;
+          const percentX = (offsetX * 100) / clientWidth;
+          const percentY = (offsetY * 100) / clientHeight;
+          preTransitionDetails.current.transformOrigin = `${percentX}% ${percentY}%`;
+        }}
         data-testid="transition-controller"
         ref={containerRef}
         className={`${Styles.section} ${className}`}
@@ -133,4 +243,9 @@ export default function Transition({
       </section>
     </>
   );
+}
+
+export enum TransitionAnimationTypes {
+  SLIDE,
+  POP_FROM_CLICK_ORIGIN,
 }

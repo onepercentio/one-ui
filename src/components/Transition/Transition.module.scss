@@ -4,6 +4,7 @@
   * {
     box-sizing: border-box;
   }
+  position: relative;
   min-height: 250px;
   display: flex;
   align-items: center;
@@ -40,5 +41,65 @@ div.exitLeft {
   }
   100% {
     margin-left: -100%;
+  }
+}
+
+div.fadeOut {
+  animation-name: fadeOut;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+div.scaleIn {
+  animation-name: scaleIn;
+}
+
+@keyframes scaleIn {
+  0% {
+    position: absolute;
+    transform: scale(0);
+  }
+  99.9% {
+    position: absolute;
+    transform: scale(0.999);
+  }
+  100% {
+    position: initial;
+    transform: scale(1);
+  }
+}
+
+div.scaleOut {
+  animation-name: scaleOut;
+}
+
+@keyframes scaleOut {
+  0% {
+    position: absolute;
+    transform: scale(1);
+  }
+  100% {
+    position: absolute;
+    transform: scale(0);
+  }
+}
+
+div.fadeIn {
+  animation-name: fadeIn;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
   }
 }

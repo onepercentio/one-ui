@@ -1,4 +1,5 @@
 import React, {
+  ComponentProps,
   ForwardedRef,
   forwardRef,
   useEffect,
@@ -6,6 +7,7 @@ import React, {
   useState,
 } from "react";
 import Transition from "../Transition";
+import { TransitionProps } from "../Transition/Transition";
 
 /**
  * This component handles when a child changes and transition this child change, allowing the finest experiences
@@ -16,21 +18,23 @@ function UncontrolledTransition(
     contentClassName,
     children = <React.Fragment key="default"></React.Fragment>,
     lockTransitionWidth = true,
+    transitionType,
+    contentStyle,
   }: {
     className?: string;
     contentClassName?: string;
     children?: React.ReactElement;
     lockTransitionWidth?: boolean;
-  },
+    transitionType?: ComponentProps<typeof Transition>["transitionType"];
+  } & Pick<TransitionProps, "contentStyle">,
   ref: ForwardedRef<{
     setOrientation: (orientation: "forward" | "backward") => void;
   }>
 ) {
   const [childStack, setChildStack] = useState<React.ReactElement[]>([]);
   const [offset, setOffset] = useState(1);
-  const [orientation, setOrientation] = useState<"forward" | "backward">(
-    "forward"
-  );
+  const [orientation, setOrientation] =
+    useState<"forward" | "backward">("forward");
 
   useImperativeHandle(
     ref,
@@ -59,10 +63,10 @@ function UncontrolledTransition(
     <>
       {childStack.length ? (
         <Transition
+          contentStyle={contentStyle}
           className={className}
           step={childStack.length - offset}
           onDiscardStep={(discardedKey) => {
-            
             setChildStack((prev) => {
               return prev.filter((a) => a.key !== discardedKey);
             });
@@ -71,6 +75,7 @@ function UncontrolledTransition(
           }}
           lockTransitionWidth={lockTransitionWidth}
           contentClassName={contentClassName}
+          transitionType={transitionType}
         >
           {childStack}
         </Transition>

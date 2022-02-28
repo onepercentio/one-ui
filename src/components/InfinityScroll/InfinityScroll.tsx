@@ -21,9 +21,9 @@ export function shouldIncrementPage(
 }
 
 export function keys(currPage: number) {
-  return [currPage % 3, (currPage + 1) % 3, (currPage + 2) % 3].map(
-    (a) => `step_${a}`
-  ).reverse();
+  return [currPage % 3, (currPage + 1) % 3, (currPage + 2) % 3]
+    .map((a) => `step_${a}`)
+    .reverse();
 }
 
 /**
@@ -35,7 +35,7 @@ function InfinityScroll(
     pageSize,
     initialPage = 0,
     pageClass,
-    className = ""
+    className = "",
   }: {
     items: (React.ReactElement | string)[];
     pageSize: number;
@@ -54,7 +54,7 @@ function InfinityScroll(
   const currDiv = useRef<HTMLDivElement>(null);
   const nextDiv = useRef<HTMLDivElement>(null);
 
-  const isCountTheSameAsPage = items.length <= pageSize;
+  const isCountTheSameOrLowerThanPage = items.length <= pageSize;
 
   function getItems(
     page: number,
@@ -66,7 +66,8 @@ function InfinityScroll(
     if (from > items.length) from = from - items.length;
     const to = from + _pageSize;
     const slicedItems = items.slice(from, to);
-    if (slicedItems.length < _pageSize) {
+
+    if (slicedItems.length < _pageSize && !isCountTheSameOrLowerThanPage) {
       slicedItems.push(...getItems(0, 0, _pageSize - slicedItems.length));
     }
     return slicedItems.map((i, index) =>
@@ -80,13 +81,13 @@ function InfinityScroll(
   }
 
   useEffect(() => {
-    if (isCountTheSameAsPage) return;
+    if (isCountTheSameOrLowerThanPage) return;
     const viewportWidth = parentDiv.current!.clientWidth;
     const centerScroll = parentDiv.current!.scrollWidth / 2;
     parentDiv.current!.scrollTo({
       left: centerScroll - viewportWidth / 2,
     });
-  }, [isCountTheSameAsPage, currPage.page]);
+  }, [isCountTheSameOrLowerThanPage, currPage.page, currPage.offset]);
   const [beforeKey, currKey, afterKey] = keys(currPage.page);
 
   return (
@@ -95,7 +96,7 @@ function InfinityScroll(
       className={`${Styles.container} ${className}`}
       data-testid="infinity-parent"
       onScroll={
-        !isCountTheSameAsPage
+        !isCountTheSameOrLowerThanPage
           ? () => {
               const pageToIncrement = shouldIncrementPage(
                 parentDiv.current!.scrollLeft,
@@ -127,7 +128,7 @@ function InfinityScroll(
           : undefined
       }
     >
-      {!isCountTheSameAsPage && (
+      {!isCountTheSameOrLowerThanPage && (
         <div
           key={beforeKey}
           className={pageClass}
@@ -145,7 +146,7 @@ function InfinityScroll(
       >
         {getItems(currPage.page, currPage.offset)}
       </div>
-      {!isCountTheSameAsPage && (
+      {!isCountTheSameOrLowerThanPage && (
         <div
           key={afterKey}
           className={pageClass}

@@ -31,7 +31,9 @@ const elements = [
   "f",
 ];
 it("Should be able to decide when to emulate the page recycling", () => {
-  const wrapper = render(<InfinityScroll ref={createRef()} items={elements} pageSize={3} />);
+  const wrapper = render(
+    <InfinityScroll ref={createRef()} items={elements} pageSize={3} />
+  );
 
   expect(wrapper.container.textContent).toEqual("def123456");
 });
@@ -44,7 +46,12 @@ it.each([
   (initialPage, expectation) => {
     const elements = ["1", "2", "3", "4"];
     const wrapper = render(
-      <InfinityScroll ref={createRef()} items={elements} pageSize={3} initialPage={initialPage} />
+      <InfinityScroll
+        ref={createRef()}
+        items={elements}
+        pageSize={3}
+        initialPage={initialPage}
+      />
     );
 
     expect(wrapper.container.textContent).toEqual(expectation);
@@ -78,7 +85,12 @@ it.each([
 it("Should not infinitize if the number of items can be displayed on single section", () => {
   const elements = ["1", "2", "3"];
   const { container } = render(
-    <InfinityScroll ref={createRef()} items={elements} pageSize={3} initialPage={1} />
+    <InfinityScroll
+      ref={createRef()}
+      items={elements}
+      pageSize={3}
+      initialPage={1}
+    />
   );
   expect(container.textContent).toEqual("123");
 });
@@ -93,7 +105,9 @@ describe("BugFixing", () => {
       <InfinityScroll ref={createRef()} items={elements} pageSize={3} />
     );
     expect(container.textContent).toEqual("123");
-    rerender(<InfinityScroll ref={createRef()} items={moreElements} pageSize={3} />);
+    rerender(
+      <InfinityScroll ref={createRef()} items={moreElements} pageSize={3} />
+    );
     expect(container.textContent).toEqual("234123412");
     const parent = getByTestId("infinity-parent");
     const prev = getByTestId("infinity-prev");
@@ -109,53 +123,61 @@ describe("BugFixing", () => {
       parent.dispatchEvent(event);
     });
     expect(container.textContent).toEqual("123412341");
-
   });
   it("Should request next pages correctly", () => {
     const event = new Event("scroll");
     event.initEvent("scroll", true, true);
     const elements = ["1", "2", "3", "4"];
     const { getByTestId, container } = render(
-      <InfinityScroll ref={createRef()} items={elements} pageSize={3} initialPage={1} />
+      <InfinityScroll
+        ref={createRef()}
+        items={elements}
+        pageSize={3}
+        initialPage={1}
+      />
     );
     expect(container.textContent).toEqual("123412341");
     const parent = getByTestId("infinity-parent");
-    const prev = getByTestId("infinity-prev");
-    const curr = getByTestId("infinity-curr");
-    const next = getByTestId("infinity-next");
-
-    (prev as any).offsetLeft = 0;
-    (curr as any).offsetLeft = 100;
-    (next as any).offsetLeft = 200;
     (parent as any).scrollLeft = 200;
 
-    act(() => {
+    function goToNextPage() {
+      const prev = getByTestId("infinity-prev");
+      const curr = getByTestId("infinity-curr");
+      const next = getByTestId("infinity-next");
+
+      (prev as any).offsetLeft = 0;
+      (curr as any).offsetLeft = 100;
+      (next as any).offsetLeft = 200;
       parent.dispatchEvent(event);
+    }
+
+    act(() => {
+      goToNextPage();
     });
     expect(container.textContent).toEqual("412341234");
 
     act(() => {
-      parent.dispatchEvent(event);
+      goToNextPage();
     });
     expect(container.textContent).toEqual("341234123");
 
     act(() => {
-      parent.dispatchEvent(event);
+      goToNextPage();
     });
     expect(container.textContent).toEqual("234123412");
 
     act(() => {
-      parent.dispatchEvent(event);
+      goToNextPage();
     });
     expect(container.textContent).toEqual("123412341");
 
     act(() => {
-      parent.dispatchEvent(event);
+      goToNextPage();
     });
     expect(container.textContent).toEqual("412341234");
 
     act(() => {
-      parent.dispatchEvent(event);
+      goToNextPage();
     });
     expect(container.textContent).toEqual("341234123");
   });
@@ -164,36 +186,45 @@ describe("BugFixing", () => {
     event.initEvent("scroll", true, true);
     const elements = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
     const { getByTestId, container } = render(
-      <InfinityScroll ref={createRef()} items={elements} pageSize={3} initialPage={1} />
+      <InfinityScroll
+        ref={createRef()}
+        items={elements}
+        pageSize={3}
+        initialPage={1}
+      />
     );
     expect(container.textContent).toEqual("123456789");
     const parent = getByTestId("infinity-parent");
-    const prev = getByTestId("infinity-prev");
-    const curr = getByTestId("infinity-curr");
-    const next = getByTestId("infinity-next");
-
-    (prev as any).offsetLeft = 0;
-    (curr as any).offsetLeft = 100;
-    (next as any).offsetLeft = 200;
     (parent as any).scrollLeft = 0;
 
-    act(() => {
+    function goToPrevPage() {
+      const prev = getByTestId("infinity-prev");
+      const curr = getByTestId("infinity-curr");
+      const next = getByTestId("infinity-next");
+
+      (prev as any).offsetLeft = 0;
+      (curr as any).offsetLeft = 100;
+      (next as any).offsetLeft = 200;
       parent.dispatchEvent(event);
+    }
+
+    act(() => {
+      goToPrevPage();
     });
     expect(container.textContent).toEqual("789123456");
 
     act(() => {
-      parent.dispatchEvent(event);
+      goToPrevPage();
     });
     expect(container.textContent).toEqual("456789123");
 
     act(() => {
-      parent.dispatchEvent(event);
+      goToPrevPage();
     });
     expect(container.textContent).toEqual("123456789");
 
     act(() => {
-      parent.dispatchEvent(event);
+      goToPrevPage();
     });
     expect(container.textContent).toEqual("789123456");
   });
@@ -201,10 +232,10 @@ describe("BugFixing", () => {
 
 describe("Optimization", () => {
   it("Should slide the keys definitions to reuse divs", () => {
-    expect(keys(0)).toEqual([0, 1, 2])
-    expect(keys(1)).toEqual([1, 2, 0])
-    expect(keys(2)).toEqual([2, 0, 1])
-    expect(keys(3)).toEqual([0, 1, 2])
-    expect(keys(4)).toEqual([1, 2, 0])
-  })
-})
+    expect(keys(0)).toEqual([2, 1, 0].map((a) => `step_${a}`));
+    expect(keys(1)).toEqual([0, 2, 1].map((a) => `step_${a}`));
+    expect(keys(2)).toEqual([1, 0, 2].map((a) => `step_${a}`));
+    expect(keys(3)).toEqual([2, 1, 0].map((a) => `step_${a}`));
+    expect(keys(4)).toEqual([0, 2, 1].map((a) => `step_${a}`));
+  });
+});

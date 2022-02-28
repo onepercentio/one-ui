@@ -145,6 +145,9 @@ export default function Transition({
               ...preTransitionDetails.current,
             }}
             onAnimationEnd={() => {
+              enteringScreenRef.current?.classList.remove(
+                transitionClasses.backward.elementEntering
+              );
               setScreensStack((screensAfterTheCurrentStepEntered) => {
                 if (onDiscardStep) onDiscardStep(prevKeyToRemove);
                 return screensAfterTheCurrentStepEntered.filter(

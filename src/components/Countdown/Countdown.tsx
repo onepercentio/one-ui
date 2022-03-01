@@ -23,8 +23,10 @@ export function calculateTimeFromTimespan(timespan: number): TimeObject {
  **/
 export default function Countdown({
   timeRemaining,
+  onFinish,
 }: {
   timeRemaining: number;
+  onFinish: () => void;
 }) {
   const { formatNumber } = useIntl();
 
@@ -47,8 +49,10 @@ export default function Countdown({
           }
         }
 
-        if (nextHour === 0 && nextMinute === 0 && nextSecond === 0)
+        if (nextHour === 0 && nextMinute === 0 && nextSecond === 0) {
+          onFinish();
           clearInterval(cl);
+        }
 
         return {
           seconds: nextSecond,

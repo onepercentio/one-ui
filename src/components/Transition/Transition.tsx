@@ -7,6 +7,17 @@ import React, {
 } from "react";
 import Styles from "./Transition.module.scss";
 
+export type TransitionTypeDefinitions =
+  | {
+      transitionType?:
+        | TransitionAnimationTypes.SLIDE
+        | TransitionAnimationTypes.POP_FROM_CLICK_ORIGIN;
+    }
+  | {
+      transitionType?: TransitionAnimationTypes.POP_FROM_ELEMENT_ID;
+      elementId: string;
+    };
+
 export type TransitionProps = {
   step: number;
   className?: string;
@@ -15,8 +26,7 @@ export type TransitionProps = {
   children: (React.ReactElement | undefined)[];
   onDiscardStep?: (discardedKey: React.Key) => void;
   lockTransitionWidth?: boolean;
-  transitionType?: TransitionAnimationTypes;
-};
+} & TransitionTypeDefinitions;
 
 function TransitionClasses(
   type: NonNullable<TransitionProps["transitionType"]>
@@ -49,6 +59,7 @@ function TransitionClasses(
         },
       };
     case TransitionAnimationTypes.POP_FROM_CLICK_ORIGIN:
+    case TransitionAnimationTypes.POP_FROM_ELEMENT_ID:
       return {
         backward: {
           elementEntering: Styles.fadeIn,
@@ -74,6 +85,7 @@ export default function Transition({
   onDiscardStep,
   lockTransitionWidth = false,
   transitionType = TransitionAnimationTypes.SLIDE,
+  ...props
 }: TransitionProps) {
   const preTransitionDetails = useRef<{
     transformOrigin: `${number}% ${number}%` | `initial`;
@@ -125,7 +137,6 @@ export default function Transition({
           "data-testid": "transition-container",
           style: {
             ...contentStyle,
-            ...preTransitionDetails.current,
           },
           className: `${transitionClasses.backward.elementExiting} ${
             firstNextScreen.props.className?.replace(
@@ -142,7 +153,6 @@ export default function Transition({
             className={`${transitionClasses.backward.elementEntering} ${contentClassName}`}
             style={{
               ...contentStyle,
-              ...preTransitionDetails.current,
             }}
             onAnimationEnd={() => {
               enteringScreenRef.current?.classList.remove(
@@ -173,14 +183,8 @@ export default function Transition({
           "data-testid": "transition-container",
           style: {
             ...contentStyle,
-            ...preTransitionDetails.current,
           },
-          className: `${transitionClasses.forward.elementExiting} ${
-            lastScreen.props.className?.replace(
-              transitionClasses.backward.elementEntering,
-              ""
-            ) || ""
-          }`,
+          className: `${contentClassName} ${transitionClasses.forward.elementExiting}`,
           onAnimationEnd: () => {
             if (transitionClasses.forward.elementEntering)
               nextScreenRef.current?.classList.remove(
@@ -207,7 +211,6 @@ export default function Transition({
             key={key}
             style={{
               ...contentStyle,
-              ...preTransitionDetails.current,
             }}
             className={`${contentClassName} ${transitionClasses.forward.elementEntering}`}
           >
@@ -227,6 +230,35 @@ export default function Transition({
       containerRef.current!.style.width = "";
   }, [screensStack.length !== 1]);
 
+  useEffect(() => {
+    if (
+      transitionType === TransitionAnimationTypes.POP_FROM_ELEMENT_ID &&
+      "elementId" in props
+    ) {
+      const element = document.querySelector(
+        `#${props.elementId}`
+      ) as HTMLDivElement;
+
+      if (element) {
+        const { clientWidth, clientHeight } = containerRef.current!;
+
+        const offsetX =
+          element.clientLeft + element.offsetLeft + element.clientWidth / 2;
+        const offsetY =
+          element.clientTop + element.offsetTop + element.clientHeight / 2;
+        const percentX = (offsetX * 100) / clientWidth;
+        const percentY = (offsetY * 100) / clientHeight;
+        preTransitionDetails.current.transformOrigin = `${percentX}% ${percentY}%`;
+
+        Object.assign(containerRef.current!.style, {
+          transformOrigin: `${percentX}% ${percentY}%`,
+        });
+      }
+    } else {
+      Object.assign(containerRef.current!.style, preTransitionDetails.current);
+    }
+  }, [screensStack.length]);
+
   return (
     <>
       <section
@@ -239,6 +271,7 @@ export default function Transition({
           const offsetY = clientY - offsetTop;
           const percentX = (offsetX * 100) / clientWidth;
           const percentY = (offsetY * 100) / clientHeight;
+
           preTransitionDetails.current.transformOrigin = `${percentX}% ${percentY}%`;
         }}
         data-testid="transition-controller"
@@ -254,4 +287,5 @@ export default function Transition({
 export enum TransitionAnimationTypes {
   SLIDE,
   POP_FROM_CLICK_ORIGIN,
+  POP_FROM_ELEMENT_ID,
 }

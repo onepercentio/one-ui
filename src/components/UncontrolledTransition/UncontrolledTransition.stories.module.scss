@@ -1,0 +1,21 @@
+.animatedContainer {
+  position: relative;
+  animation-name: pingpong;
+  animation-duration: 5s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+@keyframes pingpong {
+  0% {
+    left: 0%;
+  }
+
+  50% {
+    left: calc(100% - 100px);
+  }
+
+  100% {
+    left: 0%;
+  }
+}

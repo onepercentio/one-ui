@@ -50,6 +50,10 @@ type Props = PropsWithChildren<{
   active: boolean;
   onClick?: (e: any) => void;
   reflection?: boolean;
+  maxParallax?: {
+    x: number;
+    y: number;
+  };
 }> &
   DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
 
@@ -57,7 +61,15 @@ type Props = PropsWithChildren<{
  * It holds a children and animates it according to mouse position
  **/
 function Parallax(
-  { children, className = "", active, onClick, reflection, ...props }: Props,
+  {
+    children,
+    className = "",
+    active,
+    onClick,
+    reflection,
+    maxParallax = MAXIMUM_PARALLAX,
+    ...props
+  }: Props,
   ref: ForwardedRef<HTMLDivElement>
 ) {
   const parallaxableRef = useRef<HTMLDivElement>(null);
@@ -106,12 +118,12 @@ function Parallax(
         const howMuchToRotateY =
           givenTheRelativePositionHowMuchToRotate(
             distanceOffRight,
-            MAXIMUM_PARALLAX.y
+            maxParallax.y
           ) * multiplierRef.current;
         const howMuchToRotateX =
           givenTheRelativePositionHowMuchToRotate(
             distanceOffBottom,
-            MAXIMUM_PARALLAX.x
+            maxParallax.x
           ) * multiplierRef.current;
 
         const howMuchToOpacify = Math.abs(

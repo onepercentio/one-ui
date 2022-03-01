@@ -7,7 +7,10 @@ import React, {
   useState,
 } from "react";
 import Transition from "../Transition";
-import { TransitionProps } from "../Transition/Transition";
+import {
+  TransitionProps,
+  TransitionTypeDefinitions,
+} from "../Transition/Transition";
 
 /**
  * This component handles when a child changes and transition this child change, allowing the finest experiences
@@ -18,15 +21,15 @@ function UncontrolledTransition(
     contentClassName,
     children = <React.Fragment key="default"></React.Fragment>,
     lockTransitionWidth = true,
-    transitionType,
     contentStyle,
+    ...props
   }: {
     className?: string;
     contentClassName?: string;
     children?: React.ReactElement;
     lockTransitionWidth?: boolean;
-    transitionType?: ComponentProps<typeof Transition>["transitionType"];
-  } & Pick<TransitionProps, "contentStyle">,
+  } & Pick<TransitionProps, "contentStyle"> &
+    TransitionTypeDefinitions,
   ref: ForwardedRef<{
     setOrientation: (orientation: "forward" | "backward") => void;
   }>
@@ -75,7 +78,7 @@ function UncontrolledTransition(
           }}
           lockTransitionWidth={lockTransitionWidth}
           contentClassName={contentClassName}
-          transitionType={transitionType}
+          {...props}
         >
           {childStack}
         </Transition>

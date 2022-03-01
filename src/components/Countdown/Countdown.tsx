@@ -28,11 +28,11 @@ export default function Countdown({
 }) {
   const { formatNumber } = useIntl();
 
-  const [t, setT] = useState<TimeObject>();
+  const [t, setT] = useState<TimeObject>(() =>
+    calculateTimeFromTimespan(timeRemaining)
+  );
 
   useEffect(() => {
-    setT(calculateTimeFromTimespan(timeRemaining));
-
     const cl = setInterval(() => {
       setT((prev) => {
         let nextSecond = prev!.seconds - 1;

@@ -20,6 +20,7 @@ export default function FileInput({
   fileProvided,
   file,
   onFile,
+  footer,
   ...props
 }: {
   reason: string;
@@ -28,6 +29,7 @@ export default function FileInput({
   fileProvided: string;
   file?: File;
   onFile: (file: File | undefined) => void;
+  footer: string;
 } & React.HTMLProps<HTMLInputElement>) {
   const inputRef = useRef<HTMLInputElement>(null);
   const {
@@ -45,7 +47,7 @@ export default function FileInput({
   );
 
   return (
-    <>
+    <div className={Styles.container}>
       <Icon />
       <Spacing size="small" />
       <Text type="description">{file ? fileProvided : reason}</Text>
@@ -70,6 +72,9 @@ export default function FileInput({
         type={"file"}
         className={Styles.hidden}
       />
-    </>
+      <Text className={Styles.footer} type="caption">
+        {footer}
+      </Text>
+    </div>
   );
 }

@@ -8,7 +8,10 @@ import Styles from "./AdaptiveSidebar.module.scss";
 export default function AdaptiveSidebar({
   children,
   className = "",
-}: PropsWithChildren<{ className?: string }>) {
+  ...props
+}: PropsWithChildren<
+  { className?: string } & React.HTMLProps<HTMLDivElement>
+>) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -27,6 +30,7 @@ export default function AdaptiveSidebar({
         className={`${Styles.container} ${
           open ? Styles.open : Styles.closed
         } ${className}`}
+        {...props}
       >
         {children}
       </div>

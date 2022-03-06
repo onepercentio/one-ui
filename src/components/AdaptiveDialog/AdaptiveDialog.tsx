@@ -8,8 +8,13 @@ import HeaderCloseBtn from "../HeaderCloseBtn";
 export default function AdaptiveDialog({
   onClose,
   open = false,
+  className = "",
   children,
-}: PropsWithChildren<{ open: boolean; onClose?: () => void }>) {
+}: PropsWithChildren<{
+  className?: string;
+  open: boolean;
+  onClose?: () => void;
+}>) {
   const rootDivRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(open);
   const [expanded, setExpanded] = useState(false);
@@ -37,7 +42,7 @@ export default function AdaptiveDialog({
         expanded ? Styles.expanded : ""
       }`}
     >
-      <div className={Styles.container}>
+      <div className={`${Styles.container} ${className}`}>
         {onClose && (
           <HeaderCloseBtn mode="close" hidden={false} onClick={onClose} />
         )}

@@ -19,7 +19,7 @@ export const InitialImplementation = (args: any) => (
               Example logo el
             </div>
           ),
-          MoreOptions: () => "V",
+          MoreOptions: () => <div>V</div>,
         },
       },
     }}

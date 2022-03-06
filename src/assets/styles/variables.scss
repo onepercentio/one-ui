@@ -7,7 +7,7 @@ $sunsetPink: var(--sunset-pink, #ff3e7d);
 $darkestGray: var(--darkest-gray, #727272);
 $gray: var(--gray, #0f113a);
 $success: var(--success, lightgreen);
-$mainBackgroundColor:  var(--bg-color, white);
+$mainBackgroundColor: var(--bg-color, white);
 
 //FONTS
 $mainFontFamily: var(--main-font, Roboto);
@@ -33,6 +33,11 @@ $textDefaultColor: var(--text-default-color, $digitalBlue);
 
 $buttonPrimaryBackgroundColor: var(--button-primary-bg-color, #1e22aa);
 
+$fileInputBackgroundColor: var(--file-input-bg-color, #f2f6f7);
+$fileInputBorderColor: var(--file-input-border-color, #dce1e8);
+
+$avatarBackgroundColor: var(--avatar-bg-color, $lightGray);
+
 // Animation speed variables
 $almostInstant: var(--animation--speed-almostInstant, 50ms);
 $veryFast: var(--animation--speed-veryfast, 125ms);
@@ -40,4 +45,3 @@ $fast: var(--animation--speed-fast, 250ms);
 $normal: var(--animation--speed-normal, 500ms);
 $slow: var(--animation--speed-slow, 1s);
 $verySlow: var(--animation--speed-veryslow, 2s);
-

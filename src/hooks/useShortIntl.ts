@@ -18,3 +18,24 @@ export default function useShortIntl(): IntlShape & {
     },
   };
 }
+
+type StrMap = {
+  [s: string]: string;
+};
+
+type IsolatedMessages<A extends string, M extends StrMap, P extends string> = {
+  [s1 in `${P}.${keyof M extends string ? keyof M : ""}`]: M[keyof M];
+};
+
+export function isolateMessages<A extends string, M extends StrMap>(
+  preffix: A,
+  strings: M
+) {
+  return Object.entries(strings).reduce(
+    (r, [k, v]) => ({
+      ...r,
+      [`${preffix}.${k}`]: v,
+    }),
+    {} as IsolatedMessages<A, M, typeof preffix>
+  );
+}

@@ -13,6 +13,17 @@ import React, {
 import Text from "../Text";
 import Styles from "./Input.module.scss";
 
+export type InputProps = {
+  error?: string;
+  hideError?: "onfocus";
+  placeholder?: string;
+  disclaimer?: string;
+  icon?: {
+    onClick?: () => void;
+  } & DetailedHTMLProps<React.ImgHTMLAttributes<HTMLImageElement>, any>;
+  Icon?: React.ReactElement;
+} & Omit<React.HTMLProps<HTMLInputElement>, 'ref'>;
+
 /**
  * A transparent input with some prebuilt states common to the application
  **/
@@ -24,16 +35,9 @@ function Input(
     icon,
     Icon,
     autoFocus,
+    disclaimer,
     ...otherProps
-  }: {
-    error?: string;
-    hideError?: "onfocus";
-    placeholder?: string;
-    icon?: {
-      onClick?: () => void;
-    } & DetailedHTMLProps<React.ImgHTMLAttributes<HTMLImageElement>, any>;
-    Icon?: React.ReactElement;
-  } & React.HTMLProps<HTMLInputElement>,
+  }: InputProps,
   ref: ForwardedRef<any>
 ) {
   const [focused, setFocused] = useState(false);
@@ -67,20 +71,34 @@ function Input(
         }}
       />
       <div className={Styles.border} />
-      {error && shouldShowError && (
+      {error && shouldShowError ? (
         <Text
           title={error}
-          data-testid="error-label"
-          className={Styles.error}
+          data-testid={InputTestIds.ERROR}
+          className={Styles.caption}
           type="error"
         >
           {error}
         </Text>
-      )}
+      ) : disclaimer ? (
+        <Text
+          title={disclaimer}
+          type="caption"
+          className={Styles.caption}
+          data-testid={InputTestIds.DISCLAIMER}
+        >
+          {disclaimer}
+        </Text>
+      ) : null}
       {Icon && <div className={Styles.icon}>{Icon}</div>}
       {icon && <img className={Styles.icon} {...icon} />}
     </div>
   );
+}
+
+export enum InputTestIds {
+  DISCLAIMER = "disclaimer",
+  ERROR = "error",
 }
 
 export default forwardRef(Input);

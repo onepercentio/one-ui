@@ -16,6 +16,7 @@ export type WalletConnectionProps = Omit<
 > & {
   isChainIdValid: boolean;
   isProviderAvailable: boolean;
+  isConnectedAndValidChain: boolean;
   connect: () => void;
   disconnect: () => void;
   changeChainId: () => void;
@@ -127,6 +128,7 @@ function Content({
           {...connectionAsyncWrapper}
           isChainIdValid={isChainIdValid}
           isProviderAvailable={isProviderAvailable}
+          isConnectedAndValidChain={isChainIdValid && wallet.isConnected()}
           connect={connect}
           disconnect={disconnect}
           changeChainId={changeChainId}

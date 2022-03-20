@@ -2,7 +2,7 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
-  roots: ["src"],
+  roots: ["src", "WebpackConfigs"],
   moduleNameMapper: {
     "\\.(scss|less)$": "identity-obj-proxy"
   }

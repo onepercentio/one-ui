@@ -21,6 +21,12 @@
   transition: top $almostInstant, left $almostInstant;
   z-index: 1000;
 
+  pointer-events: none;
+
+  &.open {
+    pointer-events: initial;
+  }
+
   &::after,
   &::before {
     content: " ";

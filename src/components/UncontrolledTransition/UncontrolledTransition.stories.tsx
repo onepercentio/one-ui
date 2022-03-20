@@ -183,4 +183,60 @@ export const AnchorBasedTransition = (
   );
 };
 
+export const FadeTransition = (
+  args: ComponentProps<typeof UncontrolledTransition>
+) => {
+  const transRef =
+    useRef<React.ElementRef<typeof UncontrolledTransition>>(null);
+  const [nextPage, setNextPage] = useState(false);
+  const CurrentPage = () => {
+    if (!nextPage)
+      return (
+        <React.Fragment key={"currPage"}>
+          <h1>First page</h1>
+          <button
+            onClick={() => setNextPage((a) => !a)}
+            style={{ margin: "auto" }}
+          >
+            Change page
+          </button>
+        </React.Fragment>
+      );
+    else
+      return (
+        <React.Fragment key={"nextPage"}>
+          <h1>Second page</h1>
+          <button
+            onClick={() => {
+              setNextPage((a) => !a);
+              transRef.current!.setOrientation("backward");
+            }}
+            style={{ margin: "auto" }}
+          >
+            Click me to go back
+          </button>
+        </React.Fragment>
+      );
+  };
+  return (
+    <div
+      style={{
+        backgroundColor: "red",
+        padding: "250px",
+      }}
+    >
+      <UncontrolledTransition
+        ref={transRef}
+        transitionType={TransitionAnimationTypes.FADE}
+        contentStyle={{
+          backgroundColor: "white",
+        }}
+        {...args}
+      >
+        {CurrentPage()}
+      </UncontrolledTransition>
+    </div>
+  );
+};
+
 ClickBasedTransition.args = {} as ComponentProps<typeof UncontrolledTransition>;

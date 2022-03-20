@@ -11,7 +11,8 @@ export type TransitionTypeDefinitions =
   | {
       transitionType?:
         | TransitionAnimationTypes.SLIDE
-        | TransitionAnimationTypes.POP_FROM_CLICK_ORIGIN;
+        | TransitionAnimationTypes.POP_FROM_CLICK_ORIGIN
+        | TransitionAnimationTypes.FADE;
     }
   | {
       transitionType?: TransitionAnimationTypes.POP_FROM_ELEMENT_ID;
@@ -47,6 +48,17 @@ function TransitionClasses(
   };
 } {
   switch (type) {
+    case TransitionAnimationTypes.FADE:
+      return {
+        backward: {
+          elementExiting: Styles.fadeOutAbsolute,
+          elementEntering: Styles.fadeInDelayed,
+        },
+        forward: {
+          elementExiting: Styles.fadeOutAbsolute,
+          elementEntering: Styles.fadeInDelayed,
+        },
+      };
     case TransitionAnimationTypes.SLIDE:
       return {
         backward: {
@@ -288,4 +300,5 @@ export enum TransitionAnimationTypes {
   SLIDE,
   POP_FROM_CLICK_ORIGIN,
   POP_FROM_ELEMENT_ID,
+  FADE,
 }

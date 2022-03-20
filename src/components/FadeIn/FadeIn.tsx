@@ -15,13 +15,14 @@ type FadeInProps = PropsWithChildren<{
   className?: string;
   active?: boolean;
   onClick?: (e: SyntheticEvent<HTMLDivElement>) => void;
+  onHidden?: () => void;
 }>;
 
 /**
  * Receives a children and displays it with a fade in animation, also when it's removed, it hides with a fadeout
  **/
 function FadeIn(
-  { children, className = "", active, onClick }: FadeInProps,
+  { onHidden, children, className = "", active, onClick }: FadeInProps,
   divRef: ForwardedRef<HTMLDivElement>
 ) {
   if (!divRef) {
@@ -40,6 +41,7 @@ function FadeIn(
       const handler = () => {
         prevChildren.current = null;
         trigger((a) => a + 1);
+        if (onHidden && !el.classList.contains(Styles.active)) onHidden();
       };
       el.addEventListener("transitionend", handler);
       return () => {

@@ -38,7 +38,7 @@ function EmailInput(
   return (
     <Input
       {...props}
-      error={localWarning ? props.messages.invalidEmail : undefined}
+      error={localWarning ? props.messages.invalidEmail : props.error}
       onBlur={({ target: { value } }) => {
         setLocalWarning(!!value && !validateEmail(value));
       }}

@@ -3,5 +3,6 @@ export function WaitTimeout(ml = 200) {
     setTimeout(() => {
       r();
     }, ml);
+    if (jest.isMockFunction(setTimeout)) jest.advanceTimersByTime(ml);
   });
 }

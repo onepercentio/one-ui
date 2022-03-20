@@ -12,6 +12,7 @@ type Props = {
   children: JSX.Element;
   anchorRef: RefObject<HTMLElement>;
   open: boolean;
+  className?: string;
 };
 
 function getPositionOnViewport(element: HTMLElement) {
@@ -85,6 +86,7 @@ export default function AnchoredTooltip(props: Props) {
   const tooltipRef = useRef<HTMLDivElement>(null);
 
   function updateTooltipPosition() {
+    if (!anchorRef.current) return;
     const { top, left, shouldAnchorToBottom, offsetIndicatorLeft } =
       calculateTooltipFromAnchor(anchorRef, tooltipRef);
     tooltipRef.current!.style.top = `${top}px`;
@@ -120,7 +122,9 @@ export default function AnchoredTooltip(props: Props) {
       <FadeIn
         onClick={(e) => e.stopPropagation()}
         ref={tooltipRef}
-        className={Styles.tooltipContainer}
+        className={`${Styles.tooltipContainer} ${open ? Styles.open : ""} ${
+          props.className || ""
+        }`}
       >
         {open ? <div>{children}</div> : undefined}
       </FadeIn>

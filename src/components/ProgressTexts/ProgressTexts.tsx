@@ -6,7 +6,7 @@ import Button from "../Button";
 
 type Step = {
   type: "wait" | "final";
-  title: string;
+  title?: string;
   description?: string | React.ReactElement;
   action?: {
     label: string;
@@ -20,12 +20,14 @@ type Step = {
 export default function ProgressTexts({
   steps,
   currentStep,
+  spacingOnEachStep = true,
 }: {
   /**
    * Starts at 0
    */
   currentStep: number;
   steps: Step[];
+  spacingOnEachStep?: boolean;
 }) {
   const _currentStep = steps[currentStep];
   return (
@@ -65,12 +67,12 @@ export default function ProgressTexts({
               _currentStep.type
             )}
           >
-            <h1>{s.title}</h1>
+            {s.title && <h1>{s.title}</h1>}
             {s.description && <p>{s.description}</p>}
             {s.action && (
               <Button onClick={s.action.onClick}>{s.action.label}</Button>
             )}
-            <Spacing size="large" />
+            {spacingOnEachStep !== false ? <Spacing size="large" /> : null}
           </div>
         ) : null;
       })}

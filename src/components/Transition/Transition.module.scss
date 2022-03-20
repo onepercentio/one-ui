@@ -102,3 +102,35 @@ div.fadeIn {
     opacity: 1;
   }
 }
+
+@keyframes fadeInDelayed {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.10;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes fadeOutDelayed {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.10;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.fadeInDelayed {
+  animation-name: fadeInDelayed;
+}
+
+.fadeOutAbsolute {
+  position: absolute;
+  animation-name: fadeOutDelayed;
+}

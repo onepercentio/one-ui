@@ -1,20 +1,45 @@
 import { IntlFormatters, IntlShape, useIntl } from "react-intl";
+import { BigNumber } from "bignumber.js";
 
 export default function useShortIntl(): IntlShape & {
   txt: (
     id: OnepercentUtility.IntlIds,
     params?: Parameters<IntlFormatters["formatMessage"]>[1]
   ) => ReturnType<IntlFormatters["formatMessage"]>;
+  formatBigNumber(
+    number: BigNumber,
+    options?: Parameters<IntlFormatters["formatNumber"]>[1]
+  ): string;
 } {
   const intl = useIntl();
   const { formatMessage } = intl;
   return {
     ...intl,
-    txt: (
-      id: OnepercentUtility.IntlIds,
-      params?: Parameters<IntlFormatters["formatMessage"]>[1]
-    ) => {
+    txt: (id, params) => {
       return formatMessage({ id }, params);
+    },
+    formatBigNumber(bigNumber, options) {
+      const { decimalSeparator } = intl
+        .formatNumberToParts(1000.1)
+        .reduce((r, a) => {
+          if (a.type === "decimal") return { ...r, decimalSeparator: a.value };
+          if (a.type === "group") return { ...r, thousandSeparator: a.value };
+          return r;
+        }, {} as { decimalSeparator: string; thousandSeparator: string });
+
+      const integerPart = bigNumber.integerValue(1);
+      const integer = intl.formatNumber(integerPart.toNumber(), options);
+      const decimals = bigNumber
+        .minus(integerPart)
+        .decimalPlaces(
+          options?.maximumFractionDigits || bigNumber.decimalPlaces(),
+          5
+        )
+        .toString()
+        .replace("0.", "");
+      return `${integer}${
+        decimals !== "0" ? `${decimalSeparator}${decimals}` : ""
+      }`;
     },
   };
 }

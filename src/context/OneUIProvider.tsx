@@ -27,7 +27,7 @@ type ContextSpecs = {
       };
     };
     select: {
-      DropdownIndicator: () => JSX.Element;
+      StateIndicator: (props: { open: boolean }) => JSX.Element;
     };
     header: {
       LogoImage: () => JSX.Element;

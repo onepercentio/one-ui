@@ -44,7 +44,7 @@ function Select<I extends SelectItem>({
     }
 ) &
   Omit<ComponentProps<typeof Input>, "selected" | "onClick">) {
-  const { DropdownIndicator } = useOneUIContext().component.select;
+  const { StateIndicator } = useOneUIContext().component.select;
   const _selected = useMemo(() => {
     return items.find((a) => a.value === selected);
   }, [selected]);
@@ -69,12 +69,8 @@ function Select<I extends SelectItem>({
           value={_selected?.label || label}
           disabled
           Icon={
-            <div
-              className={`${Styles.indicator} ${
-                open && !loading ? Styles.open : ""
-              }`}
-            >
-              {loading ? <Loader /> : <DropdownIndicator />}
+            <div className={`${Styles.indicator}`}>
+              {loading ? <Loader /> : <StateIndicator open={!!open} />}
             </div>
           }
         />

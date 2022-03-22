@@ -1,5 +1,5 @@
 import FadeIn from "../FadeIn";
-import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
+import React, { HTMLAttributes, PropsWithChildren, useEffect, useRef, useState } from "react";
 import Styles from "./Collapsable.module.scss";
 
 /**
@@ -26,7 +26,7 @@ export default function Collapsable({
   /** This will define if the content will be floating under the title or will expand all the container as one */
   mode?: "block" | "float";
   "data-testid"?: string;
-  onContentClick?: HTMLInputElement['onclick'];
+  onContentClick?: HTMLAttributes<HTMLInputElement>['onClick'];
 }>) {
   const contentRef = useRef<HTMLDivElement>(null);
 

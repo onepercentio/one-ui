@@ -1,5 +1,6 @@
 import React from "react";
 import OneUIProvider from "../../context/OneUIProvider";
+import MutableHamburgerButton from "../MutableHamburgerButton";
 import Select from "./Select";
 
 export default {
@@ -12,7 +13,14 @@ export const InitialImplementation = (args: any) => (
     config={{
       component: {
         select: {
-          DropdownIndicator: () => "V",
+          StateIndicator: ({ open }) => (
+            <>
+              <MutableHamburgerButton
+                state={!open ? "arrow-down" : "arrow-up"}
+                size={24}
+              />
+            </>
+          ),
         },
       },
     }}

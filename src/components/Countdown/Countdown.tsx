@@ -26,7 +26,7 @@ export default function Countdown({
   onFinish,
 }: {
   timeRemaining: number;
-  onFinish: () => void;
+  onFinish?: () => void;
 }) {
   const { formatNumber } = useIntl();
 
@@ -50,7 +50,7 @@ export default function Countdown({
         }
 
         if (nextHour === 0 && nextMinute === 0 && nextSecond === 0) {
-          onFinish();
+          if (onFinish) onFinish();
           clearInterval(cl);
         }
 

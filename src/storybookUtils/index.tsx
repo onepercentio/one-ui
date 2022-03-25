@@ -6,8 +6,6 @@ export function extractAllPossibilitiesFromEnumProp<
   K extends keyof P,
   P = ComponentProps<C>
 >(component: C, propName: K): P[K][] {
-  console.warn((component as any).__docgenInfo.props[propName]);
-  
   return (component as any).__docgenInfo.props[propName].type.value.map(
     (a: { value: string }) => JSON.parse(a.value)
   ) as P[K][];

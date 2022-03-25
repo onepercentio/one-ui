@@ -19,22 +19,21 @@
     left: 0%;
   }
 }
-
 .fadeOut {
-  animation: fadeOut;
+  animation: fadeOutAnimation;
   animation-duration: 2s !important;
   animation-timing-function: linear;
   position: absolute;
 }
 .outOfTheWay {
-  animation: fadeOut;
-  animation-duration: 250ms !important;
+  animation: fadeOutAnimation;
+  animation-duration: 2s !important;
   animation-timing-function: linear;
   position: absolute;
 }
 .fadeIn {
   animation: fadeIn;
-  animation-duration: 250ms !important;
+  animation-duration: 2s !important;
   animation-timing-function: linear;
 }
 
@@ -50,7 +49,7 @@
   }
 }
 
-@keyframes fadeOut {
+@keyframes fadeOutAnimation {
   0% {
     background-color: red;
     opacity: 1;

@@ -19,3 +19,45 @@
     left: 0%;
   }
 }
+
+.fadeOut {
+  animation: fadeOut;
+  animation-duration: 2s !important;
+  animation-timing-function: linear;
+  position: absolute;
+}
+.outOfTheWay {
+  animation: fadeOut;
+  animation-duration: 250ms !important;
+  animation-timing-function: linear;
+  position: absolute;
+}
+.fadeIn {
+  animation: fadeIn;
+  animation-duration: 250ms !important;
+  animation-timing-function: linear;
+}
+
+@keyframes fadeIn {
+  0% {
+    background-color: green;
+    opacity: 0;
+  }
+
+  100% {
+    background-color: green;
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    background-color: red;
+    opacity: 1;
+  }
+
+  100% {
+    background-color: red;
+    opacity: 0;
+  }
+}

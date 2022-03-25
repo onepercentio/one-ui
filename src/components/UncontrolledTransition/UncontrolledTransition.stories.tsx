@@ -1,5 +1,13 @@
-import React, { ComponentProps, useRef, useState } from "react";
+import React, {
+  ComponentProps,
+  ElementRef,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import UncontrolledTransition from ".";
+import Button from "../Button";
 import { TransitionAnimationTypes } from "../Transition/Transition";
 import StoriesStyles from "./UncontrolledTransition.stories.module.scss";
 
@@ -235,6 +243,55 @@ export const FadeTransition = (
       >
         {CurrentPage()}
       </UncontrolledTransition>
+    </div>
+  );
+};
+
+export const BUGFIX_BackwardsInconsistency = () => {
+  const [number, setNumber] = useState(10);
+  const ref = useRef<ElementRef<typeof UncontrolledTransition>>(null);
+  const prev = useRef(number);
+  useLayoutEffect(() => {
+    // Here is some logic that decides on demand if it should go backwards or not
+    if (number < prev.current) ref.current?.setOrientation("backward");
+    prev.current = number;
+  }, [number]);
+
+  return (
+    <div>
+      <UncontrolledTransition
+        transitionType={TransitionAnimationTypes.CUSTOM}
+        config={{
+          backward: {
+            elementExiting: StoriesStyles.outOfTheWay,
+            elementEntering: StoriesStyles.fadeIn,
+          },
+          forward: {
+            elementExiting: StoriesStyles.fadeOut,
+            elementEntering: "",
+          },
+        }}
+        ref={ref}
+      >
+        <h1 key={String(number)}>Número {number}</h1>
+      </UncontrolledTransition>
+      <Button
+        onClick={() => {
+          setNumber((prev) => prev - 1);
+        }}
+      >
+        Go back with backwards inside useEffect (bugged as hell)
+      </Button>
+      <Button
+        onClick={() => {
+          ref.current?.setOrientation("backward");
+          setNumber((prev) => prev - 1);
+        }}
+      >
+        Go back setting backward <b>before</b> next screen (works fine)
+      </Button>
+
+      <Button onClick={() => setNumber((prev) => prev + 1)}>Go forward</Button>
     </div>
   );
 };

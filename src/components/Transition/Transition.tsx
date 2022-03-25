@@ -1,4 +1,5 @@
 import React, {
+  AnimationEvent,
   createRef,
   PropsWithChildren,
   useEffect,
@@ -17,6 +18,10 @@ export type TransitionTypeDefinitions =
   | {
       transitionType?: TransitionAnimationTypes.POP_FROM_ELEMENT_ID;
       elementId: string;
+    }
+  | {
+      transitionType?: TransitionAnimationTypes.CUSTOM;
+      config: ReturnType<typeof TransitionClasses>;
     };
 
 export type TransitionProps = {
@@ -30,7 +35,9 @@ export type TransitionProps = {
 } & TransitionTypeDefinitions;
 
 function TransitionClasses(
-  type: NonNullable<TransitionProps["transitionType"]>
+  type: NonNullable<
+    Exclude<TransitionProps["transitionType"], TransitionAnimationTypes.CUSTOM>
+  >
 ): {
   /**
    * Applied to the element that was not visible and is now entering the screen
@@ -96,7 +103,6 @@ export default function Transition({
   className,
   onDiscardStep,
   lockTransitionWidth = false,
-  transitionType = TransitionAnimationTypes.SLIDE,
   ...props
 }: TransitionProps) {
   const preTransitionDetails = useRef<{
@@ -120,7 +126,12 @@ export default function Transition({
   const prevKey = useRef(children[step]?.key);
 
   useEffect(() => {
-    const transitionClasses = TransitionClasses(transitionType);
+    const transitionClasses =
+      props.transitionType === TransitionAnimationTypes.CUSTOM
+        ? props.config
+        : TransitionClasses(
+            props.transitionType || TransitionAnimationTypes.SLIDE
+          );
 
     if (
       prevKey.current !== null &&
@@ -157,6 +168,26 @@ export default function Transition({
             ) || ""
           }`,
         });
+        function animationEndListener(element: AnimationEvent<HTMLDivElement>) {
+          const isAnimationFromExpectedState =
+            enteringScreenRef.current?.classList.contains(
+              transitionClasses.backward.elementEntering
+            );
+          enteringScreenRef.current?.classList.remove(
+            transitionClasses.backward.elementEntering
+          );
+          setScreensStack((screensAfterTheCurrentStepEntered) => {
+            if (onDiscardStep && isAnimationFromExpectedState)
+              onDiscardStep(prevKeyToRemove);
+            return screensAfterTheCurrentStepEntered.filter(
+              (s) => s.key !== String(prevKeyToRemove)
+            );
+          });
+          element.currentTarget.removeEventListener(
+            "animationend",
+            animationEndListener as any
+          );
+        }
         return [
           <div
             ref={enteringScreenRef}
@@ -166,17 +197,7 @@ export default function Transition({
             style={{
               ...contentStyle,
             }}
-            onAnimationEnd={() => {
-              enteringScreenRef.current?.classList.remove(
-                transitionClasses.backward.elementEntering
-              );
-              setScreensStack((screensAfterTheCurrentStepEntered) => {
-                if (onDiscardStep) onDiscardStep(prevKeyToRemove);
-                return screensAfterTheCurrentStepEntered.filter(
-                  (s) => s.key !== String(prevKeyToRemove)
-                );
-              });
-            }}
+            onAnimationEnd={animationEndListener}
           >
             {children[step]}
           </div>,
@@ -197,7 +218,8 @@ export default function Transition({
             ...contentStyle,
           },
           className: `${contentClassName} ${transitionClasses.forward.elementExiting}`,
-          onAnimationEnd: () => {
+          onAnimationEnd: (e: any) => {
+            if (e.target !== e.currentTarget) return;
             if (transitionClasses.forward.elementEntering)
               nextScreenRef.current?.classList.remove(
                 transitionClasses.forward.elementEntering
@@ -244,7 +266,7 @@ export default function Transition({
 
   useEffect(() => {
     if (
-      transitionType === TransitionAnimationTypes.POP_FROM_ELEMENT_ID &&
+      props.transitionType === TransitionAnimationTypes.POP_FROM_ELEMENT_ID &&
       "elementId" in props
     ) {
       const element = document.querySelector(
@@ -301,4 +323,5 @@ export enum TransitionAnimationTypes {
   POP_FROM_CLICK_ORIGIN,
   POP_FROM_ELEMENT_ID,
   FADE,
+  CUSTOM,
 }

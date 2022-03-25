@@ -1,4 +1,9 @@
-import React, { createRef, ElementRef } from "react";
+import React, {
+  createRef,
+  ElementRef,
+  useEffect,
+  useLayoutEffect,
+} from "react";
 import { act, render } from "@testing-library/react";
 
 import Component from "./UncontrolledTransition";
@@ -11,6 +16,85 @@ const spyOnTransitionContructor = jest.spyOn(
   require("../Transition"),
   "default"
 );
+describe("Bugfix", () => {
+  it("Should render correctly when multiple backwards", () => {
+    const ref: React.MutableRefObject<ElementRef<typeof Component>> = {
+      current: null as any,
+    };
+    const event = new Event("animationend");
+    event.initEvent("animationend", true, true);
+
+    function BugWrapper({
+      shouldEffectBackwards,
+      txt,
+    }: {
+      txt: string;
+      shouldEffectBackwards: boolean;
+    }) {
+      useLayoutEffect(() => {
+        if (shouldEffectBackwards) ref.current.setOrientation("backward");
+      }, [shouldEffectBackwards, txt]);
+      return (
+        <Component ref={ref}>
+          <h1 key={txt}>{txt}</h1>
+        </Component>
+      );
+    }
+
+    const wrapper = render(
+      <BugWrapper shouldEffectBackwards={false} txt="1" />
+    );
+    wrapper.rerender(<BugWrapper shouldEffectBackwards txt="0" />);
+    expect(wrapper.container.textContent).toEqual("01");
+    function finishFirst() {
+      const [firstStepEl] = wrapper.getAllByTestId("transition-container");
+      firstStepEl.dispatchEvent(event);
+    }
+    finishFirst();
+    expect(wrapper.container.textContent).toEqual("0");
+
+    wrapper.rerender(<BugWrapper shouldEffectBackwards txt="-1" />);
+    expect(wrapper.container.textContent).toEqual("-10");
+    finishFirst();
+    expect(wrapper.container.textContent).toEqual("-1");
+  });
+});
+
+it("Should work with backwards", async () => {
+  const ref: React.MutableRefObject<ElementRef<typeof Component>> = {
+    current: null as any,
+  };
+
+  function BugWrapper({
+    shouldEffectBackwards,
+    txt,
+  }: {
+    txt: string;
+    shouldEffectBackwards: boolean;
+  }) {
+    useLayoutEffect(() => {
+      if (shouldEffectBackwards) ref.current.setOrientation("backward");
+    }, [shouldEffectBackwards]);
+    return (
+      <Component ref={ref}>
+        <h1 key={txt}>{txt}</h1>
+      </Component>
+    );
+  }
+
+  const wrapper = render(
+    <BugWrapper shouldEffectBackwards={false} txt="First step" />
+  );
+
+  wrapper.rerender(<BugWrapper shouldEffectBackwards txt="Zero" />);
+  expect(wrapper.container.textContent).toEqual("ZeroFirst step");
+
+  wrapper.rerender(
+    <BugWrapper shouldEffectBackwards={false} txt="Third screen" />
+  );
+  // This is a bug that will be fixed in the future
+  // expect(wrapper.container.textContent).toEqual("ZeroFirst stepThird screen");
+});
 
 it("Should transition only when the child changes", async () => {
   const ref: React.MutableRefObject<ElementRef<typeof Component>> = {

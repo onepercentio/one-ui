@@ -4,6 +4,7 @@ import React, {
   forwardRef,
   useEffect,
   useImperativeHandle,
+  useRef,
   useState,
 } from "react";
 import Transition from "../Transition";
@@ -34,10 +35,33 @@ function UncontrolledTransition(
     setOrientation: (orientation: "forward" | "backward") => void;
   }>
 ) {
-  const [childStack, setChildStack] = useState<React.ReactElement[]>([]);
-  const [offset, setOffset] = useState(1);
-  const [orientation, setOrientation] =
-    useState<"forward" | "backward">("forward");
+  const [{ childStack, offset }, setChildStack] = useState<{
+    childStack: React.ReactElement[];
+    offset: number;
+  }>({
+    childStack: [],
+    offset: 1,
+  });
+  // const [offset, setOffset] = useState(1);
+  const orientation = useRef<"forward" | "backward">("forward");
+  function setOrientation(a: typeof orientation.current) {
+    try {
+      throw new Error();
+    } catch (e) {
+      const stacktrace = (e as Error).stack;
+      if (stacktrace?.includes("invokePassiveEffectCreate")) {
+        throw new Error(`It seems you are calling the setBackwards from a useEffect. This will cause unexpected behaviour. Please switch to:
+        
+useLayoutEffect(() => {
+  // do your thing
+  ref.current.setOrientation("backwards")
+})
+
+`);
+      }
+    }
+    orientation.current = a;
+  }
 
   useImperativeHandle(
     ref,
@@ -52,13 +76,24 @@ function UncontrolledTransition(
       throw new Error(
         "The provided child should have a key property, please provide it"
       );
-    if (orientation === "forward") setChildStack((p) => [...p, children]);
-    else setChildStack((p) => [children, ...p]);
+    if (orientation.current === "forward")
+      setChildStack((p) => ({
+        ...p,
+        childStack: [...p.childStack, children],
+      }));
+    else
+      setChildStack((p) => ({
+        ...p,
+        childStack: [children, ...p.childStack],
+      }));
   }, [children.key]);
 
   useEffect(() => {
-    if (orientation === "backward") {
-      setOffset(2);
+    if (orientation.current === "backward") {
+      setChildStack((prev) => ({
+        ...prev,
+        offset: 2,
+      }));
     }
   }, [childStack.length]);
 
@@ -70,11 +105,15 @@ function UncontrolledTransition(
           className={className}
           step={childStack.length - offset}
           onDiscardStep={(discardedKey) => {
+            orientation.current = "forward";
             setChildStack((prev) => {
-              return prev.filter((a) => a.key !== discardedKey);
+              return {
+                childStack: prev.childStack.filter(
+                  (a) => a.key !== discardedKey
+                ),
+                offset: 1,
+              };
             });
-            setOffset(1);
-            setOrientation("forward");
           }}
           lockTransitionWidth={lockTransitionWidth}
           contentClassName={contentClassName}

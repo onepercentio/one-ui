@@ -85,10 +85,7 @@ function Parallax(
       initialPositionRef.current = getComputedStyle(el).transform;
       if (initialPositionRef.current === "none")
         initialPositionRef.current = "";
-      el.setAttribute(
-        "style",
-        `transform: ${initialPositionRef.current} rotateX(0deg) rotateY(0deg) translateZ(0px) !important;`
-      );
+      el.style.transform = `${initialPositionRef.current} rotateX(0deg) rotateY(0deg) translateZ(0px)`;
     }
     // eslint-disable-next-line
   }, [active]);
@@ -133,14 +130,12 @@ function Parallax(
           Math.abs(Math.abs(distanceOffRight - 0.5) / 0.5),
           Math.abs(Math.abs(distanceOffBottom - 0.5) / 0.5)
         );
-        el.setAttribute(
-          "style",
-          `transform: ${
-            initialPositionRef.current
-          }  rotateY(${howMuchToRotateY}deg) rotateX(${-howMuchToRotateX}deg) translateZ(${
-            multiplierRef.current === 1 ? 0 : -30
-          }px) !important;`
-        );
+
+        el.style.transform = `${
+          initialPositionRef.current
+        } rotateY(${howMuchToRotateY}deg) rotateX(${-howMuchToRotateX}deg) translateZ(${
+          multiplierRef.current === 1 ? 0 : -30
+        }px)`;
 
         if (reflectionRef.current) {
           reflectionRef.current.style.left = `${(1 - distanceOffRight) * 100}%`;
@@ -210,12 +205,9 @@ function Parallax(
             )
           );
         }
-        el.setAttribute(
-          "style",
-          `transform: matrix3d(${_inverseMatrix.join(
-            ","
-          )}) rotateX(${-_beta!}deg) rotateY(${_gamma}deg) !important;`
-        );
+        el.style.transform = `matrix3d(${_inverseMatrix.join(
+          ","
+        )}) rotateX(${-_beta!}deg) rotateY(${_gamma}deg)`;
       };
       window.addEventListener("deviceorientation", orientationListener);
       window.addEventListener("touchend", () => {
@@ -235,10 +227,7 @@ function Parallax(
         el.removeEventListener("touchstart", mouseDownHandler);
         el.removeEventListener("touchend", mouseUpHandler);
         // el.style.transform = initialPositionRef.current!;
-        el.setAttribute(
-          "style",
-          `transform: rotateX(0deg) rotateY(0deg) translateZ(0px) !important;`
-        );
+        el.style.transform = `rotateX(0deg) rotateY(0deg) translateZ(0px)`;
       };
     }
   }, [active]);

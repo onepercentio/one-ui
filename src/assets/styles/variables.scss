@@ -38,6 +38,8 @@ $fileInputBorderColor: var(--file-input-border-color, #dce1e8);
 
 $avatarBackgroundColor: var(--avatar-bg-color, $lightGray);
 
+$pixelatedGuideBackground: var(--pixelated-scan-bg, var(--digital-blue));
+
 // Animation speed variables
 $almostInstant: var(--animation--speed-almostInstant, 50ms);
 $veryFast: var(--animation--speed-veryfast, 125ms);

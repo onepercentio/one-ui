@@ -1,4 +1,14 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  ElementRef,
+  ForwardedRef,
+  forwardRef,
+  RefObject,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Styles from "./PixelatedScan.module.scss";
 import chromajs from "chroma-js";
 
@@ -43,34 +53,28 @@ export default function PixelatedScan({
         ref={tableRef}
       >
         {rowsDef.map((_, iRow, _rows) => (
-          <div key={`${iRow}`}>
-            {lineDef.map((_, iColumn, _columns) => {
-              return (
-                <GridItem
-                  key={`${iRow}-${iColumn}`}
-                  baseColor={color}
-                  size={config!.squareSize}
-                  lineCount={config!.howMuchLines}
-                  lineIndex={iRow}
-                  onFinish={
-                    iRow === _rows.length - 6 && iColumn === _columns.length - 1
-                      ? () => {
-                          tableRef.current!.classList.remove(Styles.iterate);
-                          iteration.current += 1;
-                          if (iteration.current % 2 === 1)
-                            tableRef.current!.classList.add(Styles.inverse);
-                          else
-                            tableRef.current!.classList.remove(Styles.inverse);
-                          setTimeout(() => {
-                            tableRef.current!.classList.add(Styles.iterate);
-                          }, 100);
-                        }
-                      : undefined
+          <GridRow
+            key={`${iRow}`}
+            squares={lineDef}
+            size={config!.squareSize}
+            baseColor={color}
+            lineCount={config!.howMuchLines}
+            lineIndex={iRow}
+            onFinish={
+              iRow === _rows.length - 6
+                ? () => {
+                    tableRef.current!.classList.remove(Styles.iterate);
+                    iteration.current += 1;
+                    if (iteration.current % 2 === 1)
+                      tableRef.current!.classList.add(Styles.inverse);
+                    else tableRef.current!.classList.remove(Styles.inverse);
+                    setTimeout(() => {
+                      tableRef.current!.classList.add(Styles.iterate);
+                    }, 100);
                   }
-                />
-              );
-            })}
-          </div>
+                : undefined
+            }
+          />
         ))}
         <div className={Styles.guide} />
       </div>
@@ -78,30 +82,27 @@ export default function PixelatedScan({
   );
 }
 
-function GridItem({
+function GridRow({
+  onFinish,
+  squares,
   size,
+  baseColor,
   lineCount,
   lineIndex,
-  baseColor = "#ff0",
-  onFinish,
 }: {
+  squares: Array<any>;
+  onFinish?: () => void;
   size: number;
+  baseColor?: string;
   lineCount: number;
   lineIndex: number;
-  baseColor?: string;
-  onFinish?: () => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  function calculateNewRandomColorStrength() {
-    const color = chromajs.hex(baseColor).alpha(1 - Math.random() * 0.3);
-    return color;
-  }
-  const [randomColorStrength, setRandomColorStrength] =
-    useState<chromajs.Color>(calculateNewRandomColorStrength);
+  const gridItemsRefs = useRef<(ElementRef<typeof GridItem> | null)[]>([]);
 
   useEffect(() => {
     function updateColor() {
-      setRandomColorStrength(calculateNewRandomColorStrength());
+      gridItemsRefs.current.forEach((i) => i?.updateColor());
     }
     ref.current?.addEventListener("animationend", updateColor);
 
@@ -111,15 +112,62 @@ function GridItem({
   }, []);
   return (
     <div
-      ref={ref}
       className={Styles.gridAnimate}
       onAnimationEnd={onFinish}
       style={{
+        animationDelay: `${(AnimDuration / lineCount) * (lineIndex - 1)}ms`,
+      }}
+    >
+      {squares.map((_, i) => (
+        <GridItem
+          ref={(refNode) => (gridItemsRefs.current[i] = refNode)}
+          key={i}
+          size={size}
+          baseColor={baseColor}
+        />
+      ))}
+    </div>
+  );
+}
+
+function _GridItem(
+  {
+    size,
+    baseColor = "#ff0",
+  }: {
+    size: number;
+    baseColor?: string;
+  },
+  externalRef: ForwardedRef<{ updateColor: () => void }>
+) {
+  const ref = useRef<HTMLDivElement>(null);
+  function calculateNewRandomColorStrength() {
+    const color = chromajs.hex(baseColor).alpha(1 - Math.random() * 0.3);
+    return color;
+  }
+  const [randomColorStrength, setRandomColorStrength] =
+    useState<chromajs.Color>(calculateNewRandomColorStrength);
+
+  useImperativeHandle(
+    externalRef,
+    () => ({
+      updateColor: () => {
+        setRandomColorStrength(calculateNewRandomColorStrength());
+      },
+    }),
+    []
+  );
+
+  return (
+    <div
+      ref={ref}
+      className={Styles.gridItem}
+      style={{
         width: size,
         height: size,
-        animationDelay: `${(AnimDuration / lineCount) * (lineIndex - 1)}ms`,
         ...({ "--pixel-color": randomColorStrength.hex() } as any),
       }}
     />
   );
 }
+const GridItem = forwardRef(_GridItem);

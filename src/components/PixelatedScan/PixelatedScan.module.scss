@@ -34,10 +34,18 @@ $animationDuration: #{$animationDurationMs}ms;
   overflow: hidden;
   > * {
     display: flex;
+    opacity: 0;
+    &.guide {
+      opacity: 1;
+    }
   }
   &.inverse {
     transform: rotateX(180deg);
   }
+}
+
+.gridItem {
+  background-color: var(--pixel-color);
 }
 
 .gridAnimate {
@@ -50,13 +58,13 @@ $animationDuration: #{$animationDurationMs}ms;
   }
   .gridAnimate {
     animation-name: onAndOff;
+    will-change: opacity;
   }
 }
 
 @keyframes onAndOff {
   0% {
     opacity: 0;
-    background-color: var(--pixel-color);
   }
 
   10% {
@@ -64,7 +72,7 @@ $animationDuration: #{$animationDurationMs}ms;
   }
 
   100% {
-    background-color: #ff00;
+    opacity: 0;
   }
 }
 

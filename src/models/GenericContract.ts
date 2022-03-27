@@ -24,10 +24,12 @@ import {
   type MapTypeToJS<L> = L extends "string"
     ? string
     : L extends "address"
-    ? string
-    : L extends "uint256"
-    ? string
-    : unknown;
+      ? string
+      : L extends "uint256"
+        ? string
+        : L extends "bool" 
+          ? boolean 
+          : unknown;
   
   type ExtractFromObj<R extends (AllABIs[number] & {type: "function"})> = {
     [K in R["outputs"][number]["name"]]: MapTypeToJS<

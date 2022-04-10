@@ -126,6 +126,7 @@ export default function Transition({
   const prevKey = useRef(children[step]?.key);
 
   useEffect(() => {
+    containerRef.current!.style.overflow = "hidden";
     const transitionClasses =
       props.transitionType === TransitionAnimationTypes.CUSTOM
         ? props.config
@@ -290,6 +291,10 @@ export default function Transition({
       }
     } else {
       Object.assign(containerRef.current!.style, preTransitionDetails.current);
+    }
+
+    if (screensStack.length === 1) {
+      containerRef.current!.style.overflow = "";
     }
   }, [screensStack.length]);
 

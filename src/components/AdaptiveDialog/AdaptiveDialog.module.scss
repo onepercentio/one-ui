@@ -68,6 +68,8 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  max-height: 90% !important;
+  overscroll-behavior: contain;
   @media screen and (orientation: "portrait") {
     min-height: initial;
     align-items: flex-start;

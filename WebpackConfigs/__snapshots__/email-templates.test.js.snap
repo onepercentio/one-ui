@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Should warn the user when there are no templates mapped 1`] = `
+Array [
+  Array [
+    "[32mNo templates were found. If you want to create a static template, please create a file with name [37m{htmlName}.static.tsx[39m[32m (ex: some-template.static.tsx)[39m",
+  ],
+]
+`;

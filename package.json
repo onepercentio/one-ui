@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "description": "A set of reusable components created through the development of Onepercent projects",
   "files": [
-    "dist"
+    "dist",
+    "WebpackConfigs"
   ],
   "repository": "git@github.com:onepercentio/one-ui.git",
   "author": "Murilo Oliveira de Araujo <muritavo@outlook.com>",

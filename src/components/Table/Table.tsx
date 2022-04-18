@@ -1,8 +1,6 @@
 import React, {
   createContext,
   ElementRef,
-  PropsWithChildren,
-  ReactElement,
   useContext,
   useMemo,
   useRef,
@@ -37,9 +35,8 @@ export default function Table<I extends any>({
   items,
   className = "",
 }: TableProps<I>) {
-  const transitionRef = useRef<
-    ElementRef<typeof UncontrolledTransition> | HTMLDivElement
-  >(null);
+  const transitionRef =
+    useRef<ElementRef<typeof UncontrolledTransition> | HTMLDivElement>(null);
   const {
     controls: {
       NextPage = ({ disabled }) => (
@@ -104,7 +101,9 @@ export default function Table<I extends any>({
             >
               <PrevPage disabled={paginable.currentPage === 1} />
             </span>
-            <span className={Styles.paging}>{`${paginable.currentPage}/${pages}`}</span>
+            <span
+              className={Styles.paging}
+            >{`${paginable.currentPage}/${pages}`}</span>
             <span
               className={Styles.iterable}
               onClick={() => {

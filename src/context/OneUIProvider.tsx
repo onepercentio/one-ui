@@ -8,6 +8,17 @@ type DeepPartial<T> = {
 
 type ContextSpecs = {
   component: {
+    text: {
+      className: {
+        [k in React.ComponentProps<
+          typeof import("../components/Text")["default"]
+        >["type"]]?: string;
+      };
+    };
+    input: {
+      className: string;
+      border: boolean;
+    };
     fileInput: {
       Icon: () => JSX.Element;
     };
@@ -68,7 +79,7 @@ export function ProtectVariableAccess(obj?: any, basePath: string[] = []): any {
       if (variable === Symbol.toPrimitive) return () => value;
       if (value === undefined) {
         const path = [...basePath, variable.toString()];
-        if (/[^A-Z]/.test(String(variable).charAt(0)))
+        if (/[^A-Z]/.test(String(variable).charAt(0))) {
           debouncedError(
             `A component is using the UI config ${path.join(".")}.
           
@@ -79,7 +90,14 @@ import OneUIProvider from "@onepercent/one-ui/dist/context/OneUIProvider";
     ...
   </OneUIProvider>`
           );
-        else debouncedError.cancel();
+          switch (basePath.join(".")) {
+            case "component.text":
+            case "component.input":
+              return {};
+          }
+        } else {
+          debouncedError.cancel();
+        }
       }
       if (
         (typeof value === "object" && !Array.isArray(value)) ||

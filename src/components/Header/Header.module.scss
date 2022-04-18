@@ -12,10 +12,6 @@
   z-index: 100;
 }
 
-.sectionDivider {
-  margin-left: auto;
-}
-
 .logo {
   align-self: stretch;
   display: flex;
@@ -67,7 +63,6 @@
   z-index: 1000;
   > * {
     cursor: pointer;
-    background: $mainBackgroundColor;
     backdrop-filter: var(--header-submenu-backdrop, initial);
     padding: 12px 32px;
     margin-bottom: 8px;
@@ -105,5 +100,20 @@
 .mobileOnly {
   @media screen and (min-width: 640px) {
     display: none;
+  }
+}
+
+.options-right {
+  .logo {
+    margin-right: auto;
+  }
+  .sectionDivider {
+    margin-left: initial;
+  }
+}
+
+.options-left {
+  .sectionDivider {
+    margin-left: auto;
   }
 }

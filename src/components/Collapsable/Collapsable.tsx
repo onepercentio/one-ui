@@ -1,6 +1,13 @@
 import FadeIn from "../FadeIn";
-import React, { HTMLAttributes, PropsWithChildren, useEffect, useRef, useState } from "react";
+import React, {
+  HTMLAttributes,
+  PropsWithChildren,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import Styles from "./Collapsable.module.scss";
+import { updateTooltipPosition } from "../AnchoredTooltip/AnchoredTooltip";
 
 /**
  * Wrapps some content on a collapsable header
@@ -26,15 +33,17 @@ export default function Collapsable({
   /** This will define if the content will be floating under the title or will expand all the container as one */
   mode?: "block" | "float";
   "data-testid"?: string;
-  onContentClick?: HTMLAttributes<HTMLInputElement>['onClick'];
+  onContentClick?: HTMLAttributes<HTMLInputElement>["onClick"];
 }>) {
   const contentRef = useRef<HTMLDivElement>(null);
+  const toggleRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const el = contentRef.current!;
     if (open) {
       el.style.height = el.scrollHeight + "px";
       el.parentElement!.style.position = "relative";
+      updateTooltipPosition(el, toggleRef.current!);
       const onTransitionEnd = () => {
         el.style.height = "auto";
       };
@@ -69,6 +78,7 @@ export default function Collapsable({
       } ${className}`}
     >
       <div
+        ref={toggleRef}
         onClick={() => onToggleOpen(!open)}
         id={_collapsableId("header", id)}
       >

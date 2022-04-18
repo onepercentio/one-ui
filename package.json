@@ -1,6 +1,6 @@
 {
   "name": "@onepercent/one-ui",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "A set of reusable components created through the development of Onepercent projects",
   "files": [
     "dist",
@@ -70,7 +70,7 @@
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "prebuild": "cd src",
-    "copy-css": "cpy --cwd='src' '**/*.{scss,svg}' '../dist' --parents",
+    "copy-css": "cpy --cwd=\"src\" \"**/*.{scss,svg}\" \"../dist\" --parents",
     "build": "tsc && npm run copy-css",
     "postbuild": "cd ..",
     "prepare": "npm run build",

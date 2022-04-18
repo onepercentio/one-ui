@@ -71,7 +71,7 @@
     "build-storybook": "build-storybook",
     "prebuild": "cd src",
     "copy-css": "cpy --cwd='src' '**/*.{scss,svg}' '../dist' --parents",
-    "build": "tsc --project ../tsconfig.build.json && npm run copy-css",
+    "build": "tsc && npm run copy-css",
     "postbuild": "cd ..",
     "prepare": "npm run build",
     "dev": "tsc --watch",

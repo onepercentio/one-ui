@@ -43,7 +43,7 @@ export default function Collapsable({
     if (open) {
       el.style.height = el.scrollHeight + "px";
       el.parentElement!.style.position = "relative";
-      updateTooltipPosition(el, toggleRef.current!);
+      if (mode === "float") updateTooltipPosition(el, toggleRef.current!, true);
       const onTransitionEnd = () => {
         el.style.height = "auto";
       };
@@ -78,12 +78,12 @@ export default function Collapsable({
       } ${className}`}
     >
       <div
-        ref={toggleRef}
         onClick={() => onToggleOpen(!open)}
         id={_collapsableId("header", id)}
       >
         {title}
       </div>
+      <div ref={toggleRef} />
       <div
         ref={contentRef}
         className={`${Styles.content} ${

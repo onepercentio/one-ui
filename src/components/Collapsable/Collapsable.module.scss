@@ -22,9 +22,10 @@
   transition: height $fast ease-in;
   height: 0px;
   &.float {
-    position: absolute;
+    position: fixed;
     z-index: 100;
     background: $mainBackgroundColor;
+    overflow: auto;
   }
 }
 

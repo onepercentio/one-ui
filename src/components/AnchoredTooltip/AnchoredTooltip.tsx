@@ -77,10 +77,15 @@ function calculateTooltipFromAnchor(
 
 export function updateTooltipPosition(
   tooltipRef: HTMLDivElement,
-  anchorRef: HTMLElement
+  anchorRef: HTMLElement,
+  limitToViewport?: boolean
 ) {
   const { top, left, shouldAnchorToBottom, offsetIndicatorLeft } =
     calculateTooltipFromAnchor(anchorRef, tooltipRef);
+  if (limitToViewport) {
+    const maxHeight = window.innerHeight - top;
+    tooltipRef.style.maxHeight = `${maxHeight - 32}px`;
+  }
   tooltipRef.style.top = `${top}px`;
   tooltipRef.style.left = `${left}px`;
   tooltipRef.style.setProperty(

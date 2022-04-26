@@ -69,6 +69,9 @@ const debouncedError = debounce((message: string) => {
   (event as any).error = new Error(message);
   window.dispatchEvent(event);
 }, 100);
+
+const IGNORED_KEYS = ["className"];
+
 export function ProtectVariableAccess(obj?: any, basePath: string[] = []): any {
   const proxyInstance = new Proxy(() => obj || {}, {
     apply: (target) => {
@@ -80,8 +83,9 @@ export function ProtectVariableAccess(obj?: any, basePath: string[] = []): any {
       if (value === undefined) {
         const path = [...basePath, variable.toString()];
         if (/[^A-Z]/.test(String(variable).charAt(0))) {
-          debouncedError(
-            `A component is using the UI config ${path.join(".")}.
+          if (!IGNORED_KEYS.includes(path[path.length - 1]))
+            debouncedError(
+              `A component is using the UI config ${path.join(".")}.
           
 Please define it using:
 import OneUIProvider from "@onepercent/one-ui/dist/context/OneUIProvider";
@@ -89,7 +93,7 @@ import OneUIProvider from "@onepercent/one-ui/dist/context/OneUIProvider";
   <OneUIProvider config={THE_MISSING_CONFIG}>
     ...
   </OneUIProvider>`
-          );
+            );
           switch (basePath.join(".")) {
             case "component.text":
             case "component.input":

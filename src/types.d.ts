@@ -18,3 +18,9 @@ export type BasicContext<T extends object> = {
 export type DistributiveOmit<T, K extends keyof any> = T extends any
   ? Omit<T, K>
   : never;
+
+declare global {
+  interface Window {
+    ethereum: any;
+  }
+}

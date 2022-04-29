@@ -199,7 +199,9 @@ function DebuggingHelper(
       {Object.entries(anchorInfo).map(([name, value]) => {
         return (
           <p>
-            <b>{name}</b>: {value}
+            <>
+              <b>{name}</b>: {value}
+            </>
           </p>
         );
       })}

@@ -83,6 +83,13 @@ export function ProtectVariableAccess(obj?: any, basePath: string[] = []): any {
       if (value === undefined) {
         const path = [...basePath, variable.toString()];
         if (/[^A-Z]/.test(String(variable).charAt(0))) {
+          switch (basePath.join(".")) {
+            case "component.text.className":
+              return undefined;
+            case "component.text":
+            case "component.input":
+              return {};
+          }
           if (!IGNORED_KEYS.includes(path[path.length - 1]))
             debouncedError(
               `A component is using the UI config ${path.join(".")}.
@@ -94,11 +101,6 @@ import OneUIProvider from "@onepercent/one-ui/dist/context/OneUIProvider";
     ...
   </OneUIProvider>`
             );
-          switch (basePath.join(".")) {
-            case "component.text":
-            case "component.input":
-              return {};
-          }
         } else {
           debouncedError.cancel();
         }

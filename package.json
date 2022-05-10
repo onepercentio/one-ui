@@ -75,13 +75,12 @@
     "copy-css": "cpy --cwd=\"src\" \"**/*.{scss,svg}\" \"../dist\" --parents",
     "build": "tsc && npm run copy-css",
     "postbuild": "cd ..",
-    "prepare": "npm run build",
     "dev": "tsc --watch",
     "test:watch": "jest --watchAll --coverage",
     "deploy:storybook": "yarn build-storybook; firebase deploy --only hosting"
   },
   "peerDependencies": {
     "chroma-js": "^2.4.2",
-    "use-wallet": "^0.13.4"
+    "use-wallet": "^0.13.6"
   }
 }

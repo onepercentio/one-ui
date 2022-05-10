@@ -1,0 +1,50 @@
+.resetSection {
+  min-height: 0px;
+  transition: width 400ms;
+  transition-timing-function: linear;
+  > * {
+    min-width: auto !important;
+  }
+}
+
+.resetButton {
+  min-width: 0px !important;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  text-align: center;
+}
+
+@keyframes fadeInDelayed {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes fadeOutDelayed {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.fadeInDelayed {
+  position: absolute;
+  animation-name: fadeInDelayed;
+  animation-duration: 500ms !important;
+}
+
+.fadeOutAbsolute {
+  animation-name: fadeOutDelayed;
+  animation-duration: 500ms !important;
+}

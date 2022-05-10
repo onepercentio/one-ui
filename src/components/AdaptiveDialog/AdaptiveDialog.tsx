@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
 import Styles from "./AdaptiveDialog.module.scss";
-import HeaderCloseBtn from "../HeaderCloseBtn";
+import MutableHamburgerButton from "../MutableHamburgerButton";
 
 /**
  * This component implements a generic drawer that displays it as a drawer on mobile and as a modal on desktop
@@ -21,7 +21,7 @@ export default function AdaptiveDialog({
 
   useEffect(() => {
     if (open) {
-      startOfModal.current!.focus()
+      startOfModal.current!.focus();
       document.body.style.overflow = "hidden";
       setIsVisible(true);
       const toggleVisbility = (e: AnimationEvent) => {
@@ -75,7 +75,12 @@ export default function AdaptiveDialog({
         <div ref={firstAnchor} tabIndex={0} onFocus={onFocusAnchors} />
         <div ref={startOfModal} tabIndex={0} />
         {onClose && (
-          <HeaderCloseBtn mode="close" hidden={false} onClick={onClose} />
+          <MutableHamburgerButton
+            className={Styles.closeBtn}
+            onClick={onClose}
+            state="closed"
+            size={24}
+          />
         )}
         <div
           className={Styles.indicator}

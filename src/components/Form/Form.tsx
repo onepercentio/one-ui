@@ -1,8 +1,20 @@
-import React, { ComponentProps, useMemo, useState } from "react";
+import React, {
+  ComponentProps,
+  ForwardedRef,
+  forwardRef,
+  FunctionComponent,
+  MutableRefObject,
+  ReactElement,
+  RefObject,
+  useImperativeHandle,
+  useMemo,
+  useState,
+} from "react";
 import Input from "../Input";
 import Button from "../Button";
 import Loader from "../Loader";
 import EmailInput from "../EmailInput";
+import AdaptiveButton from "../AdaptiveButton";
 
 type BaseForm = { [k: string]: string };
 
@@ -24,22 +36,70 @@ type FieldDefinition<
     }
   : { type: "text" });
 
-export default function FirebaseForm<M extends BaseForm>({
-  submitting,
-  onSubmit,
-  submited,
+type ClassName = string;
+
+function AdvancedAction({
   config,
-  messages,
-}: {
-  error: string;
-  submitting: boolean;
-  submited?: boolean;
-  onSubmit: (data: M) => void;
-  config: { [k in keyof M]: FieldDefinition<M, k, FieldTypes> };
-  messages: {
-    submit: string;
-  };
+  submited,
+  submitting,
+  isValid,
+  onClick,
+}: Pick<ComponentProps<typeof FirebaseForm>, "submited" | "submitting"> & {
+  config: Exclude<ComponentProps<typeof FirebaseForm>["submitBtn"], string>;
+  isValid: boolean;
+  onClick: () => void;
 }) {
+  const [key, Element, className] =
+    submited === false
+      ? ["error", ...config.error]
+      : submited === true
+      ? ["success", ...config.success]
+      : submitting
+      ? ["loading", ...config.loading]
+      : ["default", ...config.label];
+
+  const salt = useMemo(() => Date.now(), [key]);
+
+  return (
+    <AdaptiveButton
+      variant="filled"
+      className={className}
+      disabled={!isValid}
+      onClick={onClick}
+    >
+      <Element key={key + salt} />
+    </AdaptiveButton>
+  );
+}
+
+export type FormInterface = {
+  clear: () => void;
+};
+
+function FirebaseForm<M extends BaseForm>(
+  {
+    submitting,
+    onSubmit,
+    submited,
+    config,
+    submitBtn,
+  }: {
+    ref?: RefObject<FormInterface>;
+    submitting: boolean;
+    onSubmit: (data: M) => void;
+    submited?: boolean;
+    config: { [k in keyof M]: FieldDefinition<M, k, FieldTypes> };
+    submitBtn:
+      | string
+      | {
+          label: [FunctionComponent] | [FunctionComponent, ClassName];
+          loading: [FunctionComponent] | [FunctionComponent, ClassName];
+          error: [FunctionComponent] | [FunctionComponent, ClassName];
+          success: [FunctionComponent] | [FunctionComponent, ClassName];
+        };
+  },
+  ref: ForwardedRef<FormInterface>
+) {
   const [form, setform] = useState<Partial<M>>({});
   const isValid = useMemo(
     () =>
@@ -52,6 +112,15 @@ export default function FirebaseForm<M extends BaseForm>({
   async function sendContact(_form: typeof form) {
     onSubmit(_form as M);
   }
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      clear: () => setform({}),
+    }),
+    [ref]
+  );
+
   return (
     <>
       {Object.keys(config).map((c) => {
@@ -69,7 +138,7 @@ export default function FirebaseForm<M extends BaseForm>({
                     : undefined
                 }
                 placeholder={config[c].placeholder}
-                value={form[c]}
+                value={form[c] || ""}
                 hideError={"onfocus"}
                 onChange={({ target: { value } }: any) =>
                   setform({
@@ -102,33 +171,48 @@ export default function FirebaseForm<M extends BaseForm>({
               />
             );
           case "textarea":
-            return <Input
-              key={c}
-              name={c}
-              hideError={"onfocus"}
-              error={
-                form[c] && invalidMessage !== true ? invalidMessage : undefined
-              }
-              placeholder={config[c].placeholder}
-              value={form[c]}
-              onChange={({ target: { value } }: any) =>
-                setform({
-                  ...form,
-                  [c]: value,
-                })
-              }
-              multiline={fieldConfig.lines}
-            />;
+            return (
+              <Input
+                key={c}
+                name={c}
+                hideError={"onfocus"}
+                error={
+                  form[c] && invalidMessage !== true
+                    ? invalidMessage
+                    : undefined
+                }
+                placeholder={config[c].placeholder}
+                value={form[c] || ""}
+                onChange={({ target: { value } }: any) =>
+                  setform({
+                    ...form,
+                    [c]: value,
+                  })
+                }
+                multiline={fieldConfig.lines}
+              />
+            );
         }
       })}
-      <Button
-        variant="filled"
-        disabled={submitting || !isValid || submited !== undefined}
-        onClick={() => sendContact(form as any)}
-      >
-        {messages.submit}&nbsp;
-        {submitting && <Loader />}
-      </Button>
+      {typeof submitBtn === "string" ? (
+        <Button
+          variant="filled"
+          disabled={submitting || !isValid || submited !== undefined}
+          onClick={() => sendContact(form as any)}
+        >
+          {submitBtn}&nbsp;
+          {submitting && <Loader />}
+        </Button>
+      ) : (
+        <AdvancedAction
+          config={submitBtn}
+          isValid={isValid}
+          onClick={() => sendContact(form as any)}
+          submitting={submitting}
+          submited={submited}
+        />
+      )}
     </>
   );
 }
+export default forwardRef(FirebaseForm) as typeof FirebaseForm;

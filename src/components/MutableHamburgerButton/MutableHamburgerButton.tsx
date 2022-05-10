@@ -7,13 +7,16 @@ import Styles from "./MutableHamburgerButton.module.scss";
 export default function MutableHamburgerButton({
   state = "default",
   size,
+  className = "",
+  ...props
 }: {
   state?: "default" | "closed" | "arrow-up" | "arrow-down";
   size: number;
-}) {
+} & React.HTMLProps<HTMLDivElement>) {
   return (
     <div
-      className={`${Styles.container} ${Styles[state]}`}
+      {...props}
+      className={`${Styles.container} ${Styles[state]} ${className}`}
       style={{ fontSize: `${size}px` }}
     >
       <div />

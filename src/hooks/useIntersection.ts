@@ -5,7 +5,6 @@ export default function useIntersection() {
   const { current: observer } = useRef(
     ("IntersectionObserver" in window) ? new IntersectionObserver((els) => {
       els.forEach((e, i) => {
-        console.warn("Something", i, e);
         const result = targetMap.find((el) => el[0] === e.target as any);
         if (result && e.isIntersecting) {
           result[1]();

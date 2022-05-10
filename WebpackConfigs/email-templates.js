@@ -28,7 +28,6 @@ function parseResultsrToEntries(results) {
   return results.reduce((entries, filePath) => {
     const [_, fileName] = /[\\/]([^\\/]+).(static|email).tsx/.exec(filePath);
     entries[fileName] = filePath;
-    console.warn(fileName);
     return entries;
   }, {});
 }

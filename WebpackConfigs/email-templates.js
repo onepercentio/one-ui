@@ -16,7 +16,7 @@ const chalk = require("chalk");
 
 function findAllStaticGeneration() {
   const glob = require("glob");
-  const results = glob.sync("**/*.static.tsx", {
+  const results = glob.sync("**/*.+(static|email).tsx", {
     cwd: join(resolve("."), "src"),
     absolute: true,
   });
@@ -26,8 +26,9 @@ function findAllStaticGeneration() {
 
 function parseResultsrToEntries(results) {
   return results.reduce((entries, filePath) => {
-    const [_, fileName] = /[\\/]([^\\/]+).static.tsx/.exec(filePath);
+    const [_, fileName] = /[\\/]([^\\/]+).(static|email).tsx/.exec(filePath);
     entries[fileName] = filePath;
+    console.warn(fileName);
     return entries;
   }, {});
 }
@@ -40,19 +41,20 @@ async function loadGenerator() {
   } catch (e) {
     switch (e.code) {
       case "MODULE_NOT_FOUND":
-        const ans = await require("inquirer").prompt([
-          {
-            type: "confirm",
-            message:
-              "The email webpack config factory was not found. Would you like to create the file?",
-            name: "createFactory",
-            default: false,
-          },
-        ]);
-        if (ans.createFactory) {
-          writeFileSync(
-            "./webpack-email-config-factory.js",
-            `module.exports = function webpackConfigFactory(pathToRoot, environment) {
+        if (e.message.split("\n")[0].includes("config-factory")) {
+          const ans = await require("inquirer").prompt([
+            {
+              type: "confirm",
+              message:
+                "The email webpack config factory was not found. Would you like to create the file?",
+              name: "createFactory",
+              default: false,
+            },
+          ]);
+          if (ans.createFactory) {
+            writeFileSync(
+              "./webpack-email-config-factory.js",
+              `module.exports = function webpackConfigFactory(pathToRoot, environment) {
   const config = /** Here you place the function that will create the base webpack config */;
   const baseHtml = /** Here you place the path to the base html file */
   return {
@@ -60,16 +62,17 @@ async function loadGenerator() {
     baseHtml
   }
 }`
-          );
-          console.log(require("chalk").green("File created"));
-        } else {
-          console.log(
-            require("chalk").yellow(
-              "This command will only work when there is a valid configuration"
-            )
-          );
+            );
+            console.log(require("chalk").green("File created"));
+          } else {
+            console.log(
+              require("chalk").yellow(
+                "This command will only work when there is a valid configuration"
+              )
+            );
+          }
+          process.exit(0);
         }
-        process.exit(0);
       default:
         console.warn("An unexpected error has ocurred:", e);
         process.exit(1);
@@ -147,6 +150,24 @@ function createConfig(
         loader: join(__dirname, "loaders", "static-loader"),
         options: {
           features,
+        },
+      },
+    ],
+  });
+  whereToPlaceTheNewLoaderPath.splice(1, 0, {
+    test: /\.email\.tsx/,
+    use: [
+      {
+        loader: babelLoader.loader,
+        options: babelLoader.options,
+      },
+      {
+        loader: join(__dirname, "loaders", "static-loader"),
+        options: {
+          features: {
+            ...features,
+            inlineCSS: true
+          },
         },
       },
     ],

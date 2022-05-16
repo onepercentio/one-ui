@@ -103,11 +103,6 @@ useLayoutEffect(() => {
     }
   }, [childStack.length]);
 
-  console.warn(
-    "Child stack length",
-    childStack.map((a) => a.key)
-  );
-
   return (
     <>
       {childStack.length ? (

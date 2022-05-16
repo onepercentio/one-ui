@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useIntl } from "react-intl";
 
 export type TimeObject = {
   hours: number;
@@ -18,6 +17,10 @@ export function calculateTimeFromTimespan(timespan: number): TimeObject {
   };
 }
 
+const IntegerFormatter = new Intl.NumberFormat(undefined, {
+  minimumIntegerDigits: 2,
+});
+
 /**
  * You five it some time, and a countdown is shown
  **/
@@ -28,8 +31,6 @@ export default function Countdown({
   timeRemaining: number;
   onFinish?: () => void;
 }) {
-  const { formatNumber } = useIntl();
-
   const [t, setT] = useState<TimeObject>(() =>
     calculateTimeFromTimespan(timeRemaining)
   );
@@ -69,11 +70,9 @@ export default function Countdown({
 
   return (
     <span>
-      {`${formatNumber(t!.hours, {
-        minimumIntegerDigits: 2,
-      })}:${formatNumber(t!.minutes, {
-        minimumIntegerDigits: 2,
-      })}:${formatNumber(t!.seconds, { minimumIntegerDigits: 2 })}`}
+      {`${IntegerFormatter.format(t!.hours)}:${IntegerFormatter.format(
+        t!.minutes
+      )}:${IntegerFormatter.format(t!.seconds)}`}
     </span>
   );
 }

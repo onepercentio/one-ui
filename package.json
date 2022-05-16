@@ -1,6 +1,6 @@
 {
-  "name": "@onepercent/one-ui",
-  "version": "0.1.2",
+  "name": "@onepercentio/one-ui",
+  "version": "0.1.5",
   "description": "A set of reusable components created through the development of Onepercent projects",
   "files": [
     "dist",
@@ -9,7 +9,6 @@
   "repository": "git@github.com:onepercentio/one-ui.git",
   "author": "Murilo Oliveira de Araujo <muritavo@outlook.com>",
   "license": "MIT",
-  "private": true,
   "types": "src/types.d.ts",
   "devDependencies": {
     "@babel/core": "^7.16.0",

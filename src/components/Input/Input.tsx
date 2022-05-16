@@ -10,6 +10,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useOneUIContext } from "../../context/OneUIProvider";
 import Text from "../Text";
 import Styles from "./Input.module.scss";
 
@@ -18,11 +19,13 @@ export type InputProps = {
   hideError?: "onfocus";
   placeholder?: string;
   disclaimer?: string;
+  multiline?: number;
+  border?: boolean;
   icon?: {
     onClick?: () => void;
   } & DetailedHTMLProps<React.ImgHTMLAttributes<HTMLImageElement>, any>;
   Icon?: React.ReactElement;
-} & Omit<React.HTMLProps<HTMLInputElement>, 'ref'>;
+} & Omit<React.HTMLProps<HTMLInputElement | HTMLTextAreaElement>, "ref">;
 
 /**
  * A transparent input with some prebuilt states common to the application
@@ -36,12 +39,19 @@ function Input(
     Icon,
     autoFocus,
     disclaimer,
+    multiline,
+    border: propBorder,
     ...otherProps
   }: InputProps,
   ref: ForwardedRef<any>
 ) {
+  const {
+    component: {
+      input: { className, border: globalBorder = true },
+    },
+  } = useOneUIContext();
   const [focused, setFocused] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
   useImperativeHandle(ref, () => inputRef.current, []);
   const shouldShowError = useMemo(() => {
     if (hideError === "onfocus") return !focused;
@@ -55,11 +65,21 @@ function Input(
       return () => clearTimeout(t);
     }
   }, [autoFocus]);
+  const Component = multiline ? "textarea" : "input";
+  const withBorder = useMemo(() => {
+    if (propBorder !== undefined) return propBorder;
+    return globalBorder;
+  }, [propBorder, globalBorder]);
   return (
-    <div className={`${Styles.inputContainer} ${false ? Styles.withIcon : ""}`}>
-      <input
-        ref={inputRef}
+    <div
+      className={`${Styles.inputContainer} ${
+        false ? Styles.withIcon : ""
+      } ${className}`}
+    >
+      <Component
+        ref={inputRef as any}
         placeholder={placeholder}
+        rows={multiline}
         {...otherProps}
         onFocus={(e) => {
           setFocused(true);
@@ -70,7 +90,7 @@ function Input(
           if (otherProps.onBlur) otherProps.onBlur(e);
         }}
       />
-      <div className={Styles.border} />
+      {withBorder && <div className={Styles.border} />}
       {error && shouldShowError ? (
         <Text
           title={error}

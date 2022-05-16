@@ -10,6 +10,8 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  transition: backdrop-filter $veryFast linear;
+  backdrop-filter: var(--adaptive-dialog-backdrop-backdrop, initial);
 
   @media screen and (orientation: "portrait") {
     align-items: flex-end;
@@ -53,7 +55,7 @@
 }
 
 .container {
-  > div:first-child {
+  > .closeBtn {
     position: absolute;
     right: 16px;
     top: 16px;

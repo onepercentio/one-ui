@@ -2,6 +2,8 @@ import React, {
   ComponentProps,
   ForwardedRef,
   forwardRef,
+  MutableRefObject,
+  RefObject,
   useEffect,
   useImperativeHandle,
   useRef,
@@ -33,13 +35,15 @@ function UncontrolledTransition(
     TransitionTypeDefinitions,
   ref: ForwardedRef<{
     setOrientation: (orientation: "forward" | "backward") => void;
+    sectionRef: RefObject<HTMLDivElement>;
   }>
 ) {
+  const sectionRef = useRef<HTMLDivElement>(null);
   const [{ childStack, offset }, setChildStack] = useState<{
     childStack: React.ReactElement[];
     offset: number;
   }>({
-    childStack: [],
+    childStack: [children],
     offset: 1,
   });
   // const [offset, setOffset] = useState(1);
@@ -67,6 +71,7 @@ useLayoutEffect(() => {
     ref,
     () => ({
       setOrientation,
+      sectionRef,
     }),
     []
   );
@@ -76,6 +81,7 @@ useLayoutEffect(() => {
       throw new Error(
         "The provided child should have a key property, please provide it"
       );
+    if (childStack.length === 1 && childStack[0].key === children.key) return;
     if (orientation.current === "forward")
       setChildStack((p) => ({
         ...p,
@@ -101,6 +107,7 @@ useLayoutEffect(() => {
     <>
       {childStack.length ? (
         <Transition
+          ref={sectionRef}
           contentStyle={contentStyle}
           className={className}
           step={childStack.length - offset}

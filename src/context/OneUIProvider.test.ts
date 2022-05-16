@@ -4,8 +4,6 @@ const loggingSpy = jest.spyOn(console, "error");
 
 loggingSpy.mockImplementation(() => {});
 
-jest.mock("lodash", () => ({ debounce: () => (a: any) => console.error(a) }));
-
 describe("The proxy that protects variable access", () => {
   it("Should work when there is no object (the provider is not added yet)", () => {
     ProtectVariableAccess();

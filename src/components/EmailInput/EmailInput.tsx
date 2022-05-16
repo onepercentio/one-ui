@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import Input from "../Input";
 
-function validateEmail(email: string) {
+export function validateEmail(email: string) {
   return /@.*\./.test(email);
 }
 

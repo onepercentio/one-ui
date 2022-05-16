@@ -20,30 +20,27 @@ function getPositionOnViewport(element: HTMLElement) {
 }
 
 function calculateTooltipFromAnchor(
-  anchorRef: RefObject<HTMLElement>,
-  tooltipRef: RefObject<HTMLDivElement>
+  anchorRef: HTMLElement,
+  tooltipRef: HTMLDivElement
 ) {
-  const anchorPosition = getPositionOnViewport(anchorRef.current!);
+  const anchorPosition = getPositionOnViewport(anchorRef);
 
-  const shouldAnchorToBottom =
-    tooltipRef.current!.clientHeight > anchorPosition.top;
+  const shouldAnchorToBottom = tooltipRef.clientHeight > anchorPosition.top;
 
-  let top = anchorPosition.top - tooltipRef.current!.clientHeight;
+  let top = anchorPosition.top - tooltipRef.clientHeight;
 
   let left =
-    anchorPosition.left +
-    anchorPosition.width / 2 -
-    tooltipRef.current!.clientWidth / 2;
+    anchorPosition.left + anchorPosition.width / 2 - tooltipRef.clientWidth / 2;
 
   if (shouldAnchorToBottom)
-    top += tooltipRef.current!.clientHeight + anchorRef.current!.clientHeight;
+    top += tooltipRef.clientHeight + anchorRef.clientHeight;
 
   if (top < 0) top = 0;
-  const offset = top + tooltipRef.current!.clientHeight - window.innerHeight;
+  const offset = top + tooltipRef.clientHeight - window.innerHeight;
   if (offset > 0) {
     top -= offset;
   }
-  const offsetLeft = left + tooltipRef.current!.clientWidth - window.innerWidth;
+  const offsetLeft = left + tooltipRef.clientWidth - window.innerWidth;
   if (offsetLeft > 0) {
     left -= offsetLeft;
   }
@@ -51,12 +48,12 @@ function calculateTooltipFromAnchor(
     left = 0;
   }
 
-  const maxLeftOffsetIndicator = tooltipRef.current!.clientWidth / 2 - 60;
-  const tooltipCenter = tooltipRef.current!.clientWidth / 2 + left;
+  const maxLeftOffsetIndicator = tooltipRef.clientWidth / 2 - 60;
+  const tooltipCenter = tooltipRef.clientWidth / 2 + left;
   const anchorPositionCenter = anchorPosition.left + anchorPosition.width / 2;
 
   const offsetTooltip = anchorPositionCenter - tooltipCenter;
-  const minOffsetTooltip = -(tooltipRef.current!.clientWidth / 2) + 60;
+  const minOffsetTooltip = -(tooltipRef.clientWidth / 2) + 60;
 
   const offsetIndicatorLeft =
     offsetLeft > 0
@@ -78,6 +75,32 @@ function calculateTooltipFromAnchor(
   };
 }
 
+export function updateTooltipPosition(
+  tooltipRef: HTMLDivElement,
+  anchorRef: HTMLElement,
+  limitToViewport?: boolean
+) {
+  const { top, left, shouldAnchorToBottom, offsetIndicatorLeft } =
+    calculateTooltipFromAnchor(anchorRef, tooltipRef);
+  if (limitToViewport) {
+    const maxHeight = window.innerHeight - top;
+    tooltipRef.style.maxHeight = `${maxHeight - 32}px`;
+  }
+  tooltipRef.style.top = `${top}px`;
+  tooltipRef.style.left = `${left}px`;
+  tooltipRef.style.setProperty(
+    "--anchor-indicator-offset-left",
+    `${offsetIndicatorLeft}px`
+  );
+  if (shouldAnchorToBottom) {
+    tooltipRef.classList.remove(Styles.anchoredTop);
+    tooltipRef.classList.add(Styles.anchoredBottom);
+  } else {
+    tooltipRef.classList.add(Styles.anchoredTop);
+    tooltipRef.classList.remove(Styles.anchoredBottom);
+  }
+}
+
 /**
  * This tooltip anchors itself to an element and handles positioning relative to the anchored element
  **/
@@ -85,30 +108,13 @@ export default function AnchoredTooltip(props: Props) {
   const { open, children, anchorRef } = props;
   const tooltipRef = useRef<HTMLDivElement>(null);
 
-  function updateTooltipPosition() {
-    if (!anchorRef.current) return;
-    const { top, left, shouldAnchorToBottom, offsetIndicatorLeft } =
-      calculateTooltipFromAnchor(anchorRef, tooltipRef);
-    tooltipRef.current!.style.top = `${top}px`;
-    tooltipRef.current!.style.left = `${left}px`;
-    tooltipRef.current!.style.setProperty(
-      "--anchor-indicator-offset-left",
-      `${offsetIndicatorLeft}px`
-    );
-    if (shouldAnchorToBottom) {
-      tooltipRef.current!.classList.remove(Styles.anchoredTop);
-      tooltipRef.current!.classList.add(Styles.anchoredBottom);
-    } else {
-      tooltipRef.current!.classList.add(Styles.anchoredTop);
-      tooltipRef.current!.classList.remove(Styles.anchoredBottom);
-    }
-  }
-
   useEffect(() => {
     if (open) {
-      updateTooltipPosition();
+      if (anchorRef.current && tooltipRef.current)
+        updateTooltipPosition(tooltipRef.current, anchorRef.current);
       const scrollHandler = () => {
-        updateTooltipPosition();
+        if (anchorRef.current && tooltipRef.current)
+          updateTooltipPosition(tooltipRef.current, anchorRef.current);
       };
       window.addEventListener("scroll", scrollHandler);
       return () => {
@@ -169,15 +175,20 @@ function DebuggingHelper(
     >
       Calculated info:
       <br />
-      {Object.entries(
-        calculateTooltipFromAnchor(props.anchorRef, props.tooltipRef)
-      ).map(([k, v]) => {
-        return (
-          <p>
-            <b>{k}</b>: {typeof v !== "boolean" ? v : v ? "true" : "false"}
-          </p>
-        );
-      })}
+      {props.anchorRef.current &&
+        props.tooltipRef.current &&
+        Object.entries(
+          calculateTooltipFromAnchor(
+            props.anchorRef.current,
+            props.tooltipRef.current
+          )
+        ).map(([k, v]) => {
+          return (
+            <p>
+              <b>{k}</b>: {typeof v !== "boolean" ? v : v ? "true" : "false"}
+            </p>
+          );
+        })}
       Window info:
       <br />
       <p>

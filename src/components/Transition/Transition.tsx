@@ -1,8 +1,12 @@
 import React, {
   AnimationEvent,
   createRef,
+  ForwardedRef,
+  forwardRef,
+  MutableRefObject,
   PropsWithChildren,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -95,22 +99,28 @@ function TransitionClasses(
 /**
  * Handles the transition between multiple children and recycling of elements
  **/
-export default function Transition({
-  step,
-  contentStyle,
-  contentClassName = "",
-  children,
-  className,
-  onDiscardStep,
-  lockTransitionWidth = false,
-  ...props
-}: TransitionProps) {
+function Transition(
+  {
+    step,
+    contentStyle,
+    contentClassName = "",
+    children,
+    className,
+    onDiscardStep,
+    lockTransitionWidth = false,
+    ...props
+  }: TransitionProps,
+  _containerRef: MutableRefObject<HTMLDivElement | null>
+) {
+  const containerRef = useMemo(
+    () => _containerRef || createRef(),
+    [_containerRef]
+  );
   const preTransitionDetails = useRef<{
     transformOrigin: `${number}% ${number}%` | `initial`;
   }>({
     transformOrigin: "initial",
   });
-  const containerRef = useRef<HTMLElement>(null);
   const [screensStack, setScreensStack] = useState([
     <div
       data-testid="transition-container"
@@ -330,3 +340,5 @@ export enum TransitionAnimationTypes {
   FADE,
   CUSTOM,
 }
+
+export default forwardRef(Transition);

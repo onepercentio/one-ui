@@ -1,7 +1,6 @@
 import React, { PropsWithChildren, useEffect, useState } from "react";
 import { useOneUIContext } from "../../context/OneUIProvider";
 import Collapsable from "../Collapsable";
-import Select from "../Select";
 import Text from "../Text";
 import Styles from "./Header.module.scss";
 
@@ -18,6 +17,7 @@ type User = {
 type MoreOptions = Option[];
 
 type Props = PropsWithChildren<{
+  optionsAlignment?: "left" | "right";
   user?: User;
   options: Option[];
   moreOptions?: MoreOptions;
@@ -46,7 +46,7 @@ export default function Header(props: Props) {
     }
   }, [showMoreOptions]);
   return (
-    <header className={Styles.header}>
+    <header className={`${Styles.header} ${Styles[`options-${props.optionsAlignment || "left"}`]}`}>
       <div className={Styles.logo}>
         <LogoImage />
         <div className={Styles.logoDivider} />

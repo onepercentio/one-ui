@@ -16,6 +16,7 @@ export default function AdaptiveSidebar({
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (process.env.NODE_ENV === "test") return;
     containerRef.current!.scrollTo({
       left: 0,
       behavior: "smooth",

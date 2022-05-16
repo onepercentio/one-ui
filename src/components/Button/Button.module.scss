@@ -9,7 +9,7 @@
   border: none;
   transition: color $fast;
   color: $digitalBlue;
-  border-radius: 8px;
+  border-radius: $buttonBorderRadius;
   &:disabled {
     cursor: initial;
   }
@@ -26,7 +26,7 @@
 
 .filled {
   background-color: $buttonPrimaryBackgroundColor;
-  color: white;
+  color: $buttonTextColor;
   border-width: 0px;
   &:disabled {
     color: $mediumGray;

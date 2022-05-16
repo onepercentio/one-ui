@@ -101,7 +101,7 @@ function prerenderRequire() {
 
 function createConfig(
   baseConfig,
-  mainHtml,
+  mainHtml = join(__dirname, "templates", "index.html"),
   features = {
     inlineCSS: true,
   },

@@ -104,5 +104,5 @@
     "skipLibCheck": true /* Skip type checking all .d.ts files. */,
   },
   "exclude": ["cypress", "dist", "node_modules"],
-  "include": ["src"]
+  "include": ["src", "cypress"]
 }

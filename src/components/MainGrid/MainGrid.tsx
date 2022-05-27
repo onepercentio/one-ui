@@ -21,7 +21,7 @@ function MainGrid(
     rightContent?: React.ReactElement;
     children: React.ReactElement;
   },
-  ref: ForwardedRef<ElementRef<typeof UncontrolledTransition>>
+  ref: ForwardedRef<Pick<ElementRef<typeof UncontrolledTransition>, "setOrientation">>
 ) {
   const refs = [
     useRef<ElementRef<typeof UncontrolledTransition>>(null),

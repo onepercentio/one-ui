@@ -23,5 +23,6 @@ declare global {
   interface Window {
     ethereum: any;
     PRERENDER: boolean;
+    Cypress: any;
   }
 }

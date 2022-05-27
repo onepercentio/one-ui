@@ -110,10 +110,11 @@ function Transition(
     lockTransitionWidth = false,
     ...props
   }: TransitionProps,
-  _containerRef: MutableRefObject<HTMLDivElement | null>
+  _containerRef: ForwardedRef<HTMLDivElement | null>
 ) {
   const containerRef = useMemo(
-    () => _containerRef || createRef(),
+    () =>
+      (_containerRef as MutableRefObject<HTMLDivElement | null>) || createRef(),
     [_containerRef]
   );
   const preTransitionDetails = useRef<{

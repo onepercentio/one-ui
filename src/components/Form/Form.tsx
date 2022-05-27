@@ -44,8 +44,8 @@ function AdvancedAction({
   submitting,
   isValid,
   onClick,
-}: Pick<ComponentProps<typeof FirebaseForm>, "submited" | "submitting"> & {
-  config: Exclude<ComponentProps<typeof FirebaseForm>["submitBtn"], string>;
+}: Pick<FirebaseFormProps<{}>, "submited" | "submitting"> & {
+  config: Exclude<FirebaseFormProps<{}>["submitBtn"], string>;
   isValid: boolean;
   onClick: () => void;
 }) {
@@ -76,28 +76,23 @@ export type FormInterface = {
   clear: () => void;
 };
 
+type FirebaseFormProps<M extends BaseForm> = {
+  ref?: RefObject<FormInterface>;
+  submitting: boolean;
+  onSubmit: (data: M) => void;
+  submited?: boolean;
+  config: { [k in keyof M]: FieldDefinition<M, k, FieldTypes> };
+  submitBtn:
+    | string
+    | {
+        label: [FunctionComponent] | [FunctionComponent, ClassName];
+        loading: [FunctionComponent] | [FunctionComponent, ClassName];
+        error: [FunctionComponent] | [FunctionComponent, ClassName];
+        success: [FunctionComponent] | [FunctionComponent, ClassName];
+      };
+};
 function FirebaseForm<M extends BaseForm>(
-  {
-    submitting,
-    onSubmit,
-    submited,
-    config,
-    submitBtn,
-  }: {
-    ref?: RefObject<FormInterface>;
-    submitting: boolean;
-    onSubmit: (data: M) => void;
-    submited?: boolean;
-    config: { [k in keyof M]: FieldDefinition<M, k, FieldTypes> };
-    submitBtn:
-      | string
-      | {
-          label: [FunctionComponent] | [FunctionComponent, ClassName];
-          loading: [FunctionComponent] | [FunctionComponent, ClassName];
-          error: [FunctionComponent] | [FunctionComponent, ClassName];
-          success: [FunctionComponent] | [FunctionComponent, ClassName];
-        };
-  },
+  { submitting, onSubmit, submited, config, submitBtn }: FirebaseFormProps<M>,
   ref: ForwardedRef<FormInterface>
 ) {
   const [form, setform] = useState<Partial<M>>({});

@@ -183,7 +183,7 @@ export async function initTestFirebase(
   await testEnv.withSecurityRulesDisabled(async (ctx) => {
     const firestore = ctx.firestore({
       experimentalForceLongPolling: true,
-    }) as any;
+    });
 
     const storage = ctx.storage() as any;
     if (setupEnv) await setupEnv(firestore, storage, testEnv);

@@ -27,11 +27,13 @@ $hamburgerOffset: 24;
 }
 
 .container {
-    box-sizing: border-box;
+  box-sizing: border-box;
   height: 100%;
 
   @media screen and (max-width: 640px) {
-    padding-top: #{$hamburgerSize + $hamburgerOffset * 2}px;
+    &.defaultPadding {
+      padding-top: #{$hamburgerSize + $hamburgerOffset * 2}px;
+    }
     position: fixed;
     width: 100%;
     overflow: auto;

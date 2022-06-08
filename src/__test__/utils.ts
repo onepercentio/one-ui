@@ -22,20 +22,23 @@ class FirebaseEmulatorInterface {
   private process!: any;
 
   private killRelatedPorts() {
-    for (let port of [4400, 8055]) {
+    for (let port of [4000, 4400, 8055, 8080]) {
       try {
         if (window.Cypress)
-          cy.exec(`kill $(lsof -t -i:${port})`, { failOnNonZeroExit: false });
+          cy.exec(`yarn kill-port ${port}`, { failOnNonZeroExit: true })
         else
           require("child_process").execSync(`kill -9 $(lsof -t -i:${port})`, {
             stdio: "ignore",
           });
-      } catch (e) {}
+      } catch (e) {
+        console.error("Error when killing port", port, e);
+      }
     }
+    cy.wait(5000);
   }
 
   waitUntilUp() {
-    cy.wrap(null).then(() => {
+    cy.wrap("Waiting the emulator to be up").then({ timeout: 60000 }, () => {
       return new Cypress.Promise(async (res, rej) => {
         let breakLoop = false;
         const timeout = setTimeout(() => {
@@ -45,23 +48,23 @@ class FirebaseEmulatorInterface {
         }, 30000);
         while (!breakLoop) {
           try {
-            await fetch("http://localhost:4000", {
+            await fetch(`http://${window.location.hostname}:4000`, {
               mode: "no-cors",
             });
             res();
             clearTimeout(timeout);
             break;
-          } catch (e) {}
+          } catch (e) { }
           await WaitTimeout(1000);
         }
       });
     });
   }
 
-  start(fakeProjectName: string) {
+  start(fakeProjectName: string, databaseToImport?: string) {
     this.killRelatedPorts();
     if (window.Cypress) {
-      const command = `firebase emulators:start -P ${fakeProjectName} &`;
+      const command = `firebase emulators:start -P ${fakeProjectName} ${databaseToImport ? `--import ${databaseToImport}` : ""}`;
       cy.on("fail", (error) => {
         if (error.message.includes(command)) return false;
       });

@@ -3,6 +3,7 @@
 $slice: 1/7;
 
 .container {
+  box-sizing: content-box;
   cursor: pointer;
   width: 1em;
   height: 1em;
@@ -77,6 +78,28 @@ $slice: 1/7;
     }
     > :nth-child(3) {
       transform: translateX(-0.1em) translateY(-#{$slice * 2}em) rotateZ(45deg);
+    }
+  }
+
+  &.search {
+    > :nth-child(1) {
+      $rate: 1.8;
+      width: #{$slice * $rate}em;
+      height: #{$slice * $rate}em;
+      border-radius: #{$slice * $rate * 2}em;
+      background-color: transparent;
+      border: #{$slice / 1.35}em solid black;
+      transform: translateX(-0.15em);
+    }
+    > :nth-child(2) {
+      transform: translateX(0.12em) translateY(-0.05em) rotateZ(45deg);
+      height: #{$slice / 1.35}em;
+      width: 0.55em;
+    }
+    > :nth-child(3) {
+      transform: translateX(0.12em) translateY(-#{($slice*1.3) + 0.05}em)  rotateZ(45deg);
+      height: #{$slice / 1.35}em;
+      width: 0.55em;
     }
   }
 }

@@ -1,7 +1,5 @@
-import React, { ComponentProps, useRef, useState } from "react";
+import React, { ComponentProps } from "react";
 import WalletConnectionWrapper from "./WalletConnectionWrapper";
-import { TransitionAnimationTypes } from "../Transition/Transition";
-import StoriesStyles from "./UncontrolledTransition.stories.module.scss";
 import AdaptiveDialog from "../AdaptiveDialog";
 import Button from "../Button";
 
@@ -17,6 +15,7 @@ export const BasicUsage = (
     <WalletConnectionWrapper
       {...args}
       Content={({
+        chainId,
         error,
         loading,
         isChainIdValid,
@@ -39,7 +38,7 @@ export const BasicUsage = (
           <p>Error: {String(error)}</p>
           <p>Loading: {String(loading)}</p>
           <p>
-            Valid chain ({args.allowedChainId}): {String(isChainIdValid)}
+            Valid chain ({args.chain.id}): {String(isChainIdValid)} ({chainId})
           </p>
           <p>Provider available ({String(isProviderAvailable)})</p>
           <h2>actions</h2>
@@ -87,7 +86,13 @@ export const UsageWithActionProps = (
 };
 
 BasicUsage.args = {
-  allowedChainId: 80001, ///MUMBAI
+  chain: {
+    id: 80001,
+    name: "Polygon Testnet",
+    rpcUrl: "https://rpc-mumbai.matic.today/",
+    explorerUrl: "https://mumbai.polygonscan.com/",
+    currency: "MATIC",
+  },
 } as ComponentProps<typeof WalletConnectionWrapper>;
 
 UsageWithActionProps.args = {

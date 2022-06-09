@@ -2,6 +2,7 @@ import React, {
   createRef,
   ForwardedRef,
   forwardRef,
+  PropsWithChildren,
   useEffect,
   useImperativeHandle,
   useMemo,
@@ -10,23 +11,32 @@ import React, {
 import { useWallet, UseWalletProvider } from "use-wallet";
 import useAsyncControl from "../../hooks/useAsyncControl";
 
-export type WalletConnectionProps = Omit<
-  ReturnType<typeof useAsyncControl>,
-  "process"
-> & {
-  isChainIdValid: boolean;
-  isProviderAvailable: boolean;
-  isConnectedAndValidChain: boolean;
-  connect: () => void;
-  disconnect: () => void;
-  changeChainId: () => void;
-};
+export type WalletConnectionProps = PropsWithChildren<
+  Omit<ReturnType<typeof useAsyncControl>, "process"> & {
+    chainId?: number;
+    isChainIdValid: boolean;
+    isProviderAvailable: boolean;
+    isConnectedAndValidChain: boolean;
+    isConnected: boolean;
+    wallet?: string;
+
+    connect: () => void;
+    disconnect: () => void;
+    changeChainId: () => void;
+  }
+>;
 
 type Props = {
   /**
    * The chain id that the user is expected to connect to
    */
-  allowedChainId: number;
+  chain: {
+    id: number;
+    rpcUrl: string;
+    explorerUrl: string;
+    name: string;
+    currency: string;
+  };
 
   /**
    * When the user doesn't have a provider like metamask available
@@ -50,7 +60,7 @@ type Props = {
  * This component handles a lot of cenarios when dealing with the wallet connection to different providers (ex: Metamask)
  **/
 function WalletConnectionWrapper(
-  props: Props,
+  props: PropsWithChildren<Props>,
   ref: ForwardedRef<{
     connect: () => Promise<void>;
     disconnect: () => void;
@@ -66,15 +76,18 @@ function WalletConnectionWrapper(
 function Content({
   ProviderUnavailable,
   ChainIdInvalid,
-  allowedChainId,
+  chain,
   Content,
   compRef,
-}: Props & {
-  compRef: ForwardedRef<{
-    connect: () => Promise<void>;
-    disconnect: () => void;
-  }>;
-}) {
+  children,
+}: PropsWithChildren<
+  Props & {
+    compRef: ForwardedRef<{
+      connect: () => Promise<void>;
+      disconnect: () => void;
+    }>;
+  }
+>) {
   const wallet = useWallet();
   const connectionAsyncWrapper = useAsyncControl();
   const connect = async () => {
@@ -101,20 +114,41 @@ function Content({
   );
   const [isProviderAvailable] = useState(() => !!window.ethereum);
   const isChainIdValid = useMemo(
-    () => (wallet.isConnected() ? wallet.chainId === allowedChainId : true),
-    [wallet, allowedChainId]
+    () => (wallet.isConnected() ? wallet.chainId === chain.id : true),
+    [wallet, chain.id]
   );
 
-  function changeChainId() {
+  async function changeChainId() {
     wallet.reset();
-    window.ethereum.request({
-      method: "wallet_switchEthereumChain",
-      params: [
-        {
-          chainId: `0x${allowedChainId.toString(16).padStart(2, "0")}`,
-        },
-      ],
-    });
+    try {
+      await window.ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [
+          {
+            chainId: `0x${chain.id.toString(16).padStart(2, "0")}`,
+          },
+        ],
+      });
+    } catch (e: any) {
+      switch (e.code) {
+        case 4902:
+          window.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [
+              {
+                chainId: `0x${chain.id.toString(16).padStart(2, "0")}`,
+                chainName: chain.name,
+                rpcUrls: [chain.rpcUrl],
+                blockExplorerUrls: [chain.explorerUrl],
+                nativeCurrency: {
+                  symbol: chain.currency,
+                  decimals: 18,
+                },
+              },
+            ],
+          });
+      }
+    }
     wallet.connect("injected");
   }
   return (
@@ -132,7 +166,12 @@ function Content({
           connect={connect}
           disconnect={disconnect}
           changeChainId={changeChainId}
-        />
+          chainId={wallet.chainId}
+          isConnected={wallet.isConnected()}
+          wallet={wallet.account}
+        >
+          {children}
+        </Content>
       }
     </>
   );

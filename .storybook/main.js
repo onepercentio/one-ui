@@ -1,3 +1,5 @@
+const { ProvidePlugin } = require("webpack");
+
 module.exports = {
   stories: ["../src/**/*.stories.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
   addons: [
@@ -22,6 +24,12 @@ module.exports = {
       assert: require.resolve("assert/build/assert"),
       os: require.resolve("os-browserify/browser"),
     };
+    config.plugins.push(
+      new ProvidePlugin({
+        Buffer: ["buffer", "Buffer"],
+        process: "process/browser",
+      })
+    );
 
     return config;
   },

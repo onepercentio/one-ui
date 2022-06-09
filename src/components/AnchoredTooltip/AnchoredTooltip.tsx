@@ -5,6 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useOneUIContext } from "../../context/OneUIProvider";
 import FadeIn from "../FadeIn";
 import Styles from "./AnchoredTooltip.module.scss";
 
@@ -107,6 +108,8 @@ export function updateTooltipPosition(
 export default function AnchoredTooltip(props: Props) {
   const { open, children, anchorRef } = props;
   const tooltipRef = useRef<HTMLDivElement>(null);
+  const { component: { tooltip: { className = "" } = {} } = {} } =
+    useOneUIContext();
 
   useEffect(() => {
     if (open) {
@@ -130,7 +133,7 @@ export default function AnchoredTooltip(props: Props) {
         ref={tooltipRef}
         className={`${Styles.tooltipContainer} ${open ? Styles.open : ""} ${
           props.className || ""
-        }`}
+        } ${className}`}
       >
         {open ? <div>{children}</div> : undefined}
       </FadeIn>

@@ -50,6 +50,9 @@ type ContextSpecs = {
         NextPage: ({ disabled }: { disabled: boolean }) => JSX.Element;
       };
     };
+    tooltip: {
+      className?: string
+    }
   };
 };
 

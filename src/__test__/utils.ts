@@ -34,7 +34,6 @@ class FirebaseEmulatorInterface {
         console.error("Error when killing port", port, e);
       }
     }
-    cy.wait(5000);
   }
 
   waitUntilUp() {
@@ -62,9 +61,12 @@ class FirebaseEmulatorInterface {
   }
 
   start(fakeProjectName: string, databaseToImport?: string) {
+    if (sessionStorage.getItem("last-database") === databaseToImport)
+      return;
     this.killRelatedPorts();
     if (window.Cypress) {
       const command = `firebase emulators:start -P ${fakeProjectName} ${databaseToImport ? `--import ${databaseToImport}` : ""}`;
+
       cy.on("fail", (error) => {
         if (error.message.includes(command)) return false;
       });
@@ -72,8 +74,9 @@ class FirebaseEmulatorInterface {
         if (error.message.includes(command)) return false;
       });
       cy.exec(command, {
-        timeout: 1000, // Instant fail
+        timeout: 10000, // Instant fail
       });
+      sessionStorage.setItem("last-database", databaseToImport)
     } else {
       this.process = require("child_process").spawn(
         "firebase",

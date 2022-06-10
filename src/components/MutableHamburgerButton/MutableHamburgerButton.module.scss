@@ -88,7 +88,7 @@ $slice: 1/7;
       height: #{$slice * $rate}em;
       border-radius: #{$slice * $rate * 2}em;
       background-color: transparent;
-      border: #{$slice / 1.35}em solid black;
+      border: #{$slice / 1.35}em solid var(--mutable-hamburger-background, $digitalBlue);
       transform: translateX(-0.15em);
     }
     > :nth-child(2) {

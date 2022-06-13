@@ -72,6 +72,18 @@ function WalletConnectionWrapper(
     </UseWalletProvider>
   );
 }
+/**
+ * This component handles a lot of cenarios when dealing with the wallet connection to different providers (ex: Metamask)
+ **/
+function _BaseWalletConnectionWrapper(
+  props: PropsWithChildren<Props>,
+  ref: ForwardedRef<{
+    connect: () => Promise<void>;
+    disconnect: () => void;
+  }>
+) {
+  return <Content compRef={ref || createRef()} {...props} />;
+}
 
 function Content({
   ProviderUnavailable,
@@ -113,10 +125,7 @@ function Content({
     [wallet]
   );
   const [isProviderAvailable] = useState(() => !!window.ethereum);
-  const isChainIdValid = useMemo(
-    () => (wallet.isConnected() ? wallet.chainId === chain.id : true),
-    [wallet, chain.id]
-  );
+  const isChainIdValid = useMemo(() => false, [wallet, chain.id]);
 
   async function changeChainId() {
     wallet.reset();
@@ -162,12 +171,12 @@ function Content({
           {...connectionAsyncWrapper}
           isChainIdValid={isChainIdValid}
           isProviderAvailable={isProviderAvailable}
-          isConnectedAndValidChain={isChainIdValid && wallet.isConnected()}
+          isConnectedAndValidChain={isChainIdValid && false}
           connect={connect}
           disconnect={disconnect}
           changeChainId={changeChainId}
           chainId={wallet.chainId}
-          isConnected={wallet.isConnected()}
+          isConnected={false}
           wallet={wallet.account}
         >
           {children}
@@ -178,3 +187,6 @@ function Content({
 }
 
 export default forwardRef(WalletConnectionWrapper);
+export const BaseWalletConnectionWrapper = forwardRef(
+  _BaseWalletConnectionWrapper
+);

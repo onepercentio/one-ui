@@ -114,7 +114,7 @@ function Content({
   };
   useEffect(() => {
     const autoConnect = !!localStorage.getItem("auto_connect");
-    if (autoConnect) connect();
+    if (autoConnect && !wallet.account) connect();
   }, []);
   useImperativeHandle(
     compRef,

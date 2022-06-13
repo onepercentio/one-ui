@@ -131,7 +131,6 @@ function Content({
   );
 
   async function changeChainId() {
-    wallet.reset();
     try {
       await window.ethereum.request({
         method: "wallet_switchEthereumChain",
@@ -161,7 +160,6 @@ function Content({
           });
       }
     }
-    wallet.connect("injected");
   }
   return (
     <>

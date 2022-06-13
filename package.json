@@ -1,6 +1,6 @@
 {
   "name": "@onepercentio/one-ui",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A set of reusable components created through the development of Onepercent projects",
   "files": [
     "dist",
@@ -82,7 +82,8 @@
     "postbuild": "cd ..",
     "dev": "tsc --watch",
     "test:watch": "jest --watchAll --coverage",
-    "deploy:storybook": "yarn build-storybook; firebase deploy --only hosting"
+    "deploy:storybook": "yarn build-storybook; firebase deploy --only hosting",
+    "prepublish": "yarn build"
   },
   "peerDependencies": {
     "chroma-js": "^2.4.2",

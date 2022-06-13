@@ -125,7 +125,10 @@ function Content({
     [wallet]
   );
   const [isProviderAvailable] = useState(() => !!window.ethereum);
-  const isChainIdValid = useMemo(() => false, [wallet, chain.id]);
+  const isChainIdValid = useMemo(
+    () => (wallet.isConnected() ? wallet.chainId === chain.id : true),
+    [wallet, chain.id]
+  );
 
   async function changeChainId() {
     wallet.reset();
@@ -171,12 +174,12 @@ function Content({
           {...connectionAsyncWrapper}
           isChainIdValid={isChainIdValid}
           isProviderAvailable={isProviderAvailable}
-          isConnectedAndValidChain={isChainIdValid && false}
+          isConnectedAndValidChain={isChainIdValid && wallet.isConnected()}
           connect={connect}
           disconnect={disconnect}
           changeChainId={changeChainId}
           chainId={wallet.chainId}
-          isConnected={false}
+          isConnected={wallet.isConnected()}
           wallet={wallet.account}
         >
           {children}

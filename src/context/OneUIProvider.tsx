@@ -1,5 +1,5 @@
 import { debounce } from "lodash";
-import React from "react";
+import React, { useEffect } from "react";
 import { createContext, PropsWithChildren, useContext } from "react";
 
 type DeepPartial<T> = {
@@ -51,8 +51,8 @@ type ContextSpecs = {
       };
     };
     tooltip: {
-      className?: string
-    }
+      className?: string;
+    };
   };
 };
 
@@ -73,58 +73,48 @@ const debouncedError = debounce((message: string) => {
   window.dispatchEvent(event);
 }, 100);
 
-const IGNORED_KEYS = ["className"];
+function ErrorWrapper(
+  originalObject: any,
+  path: string = "config"
+): typeof Proxy {
+  return new Proxy(originalObject || {}, {
+    get(_target, key) {
+      try {
+        const value = originalObject[key];
+        if (typeof value === "undefined" || typeof value === "object")
+          return ErrorWrapper(value, [path, key].filter(Boolean).join("."));
+        return value;
+      } catch (e) {
+        const pathJson = path
+          .split(".")
+          .concat(key as string)
+          .reduce((result, key, idx, arr) => {
+            (arr.slice(0, idx).reduce((r, k) => (r as any)[k], result) as any)[
+              key
+            ] = idx === arr.length - 1 ? `THE_MISSING_CONFIG` : {};
+            return result;
+          }, {});
+        throw new Error(
+          `A component is using the UI config ${[path, key].join(".")}.
 
-export function ProtectVariableAccess(obj?: any, basePath: string[] = []): any {
-  const proxyInstance = new Proxy(() => obj || {}, {
-    apply: (target) => {
-      return String(target());
-    },
-    get: (ctx, variable) => {
-      const value = ctx()[variable as keyof ReturnType<typeof ctx>];
-      if (variable === Symbol.toPrimitive) return () => value;
-      if (value === undefined) {
-        const path = [...basePath, variable.toString()];
-        if (/[^A-Z]/.test(String(variable).charAt(0))) {
-          switch (basePath.join(".")) {
-            case "component.text.className":
-              return undefined;
-            case "component.text":
-            case "component.input":
-              return {};
-          }
-          if (!IGNORED_KEYS.includes(path[path.length - 1]))
-            debouncedError(
-              `A component is using the UI config ${path.join(".")}.
-          
 Please define it using:
 import OneUIProvider from "@onepercent/one-ui/dist/context/OneUIProvider";
+
+  ...
+${`<OneUIProvider config={${JSON.stringify(pathJson, null, 4)}}>
 ...
-  <OneUIProvider config={THE_MISSING_CONFIG}>
-    ...
-  </OneUIProvider>`
-            );
-        } else {
-          debouncedError.cancel();
-        }
+</OneUIProvider>`.replace(/[ ]/g, "-")}`
+        );
       }
-      if (
-        (typeof value === "object" && !Array.isArray(value)) ||
-        (value === undefined && /[^A-Z]/.test(String(variable).charAt(0)))
-      )
-        return ProtectVariableAccess(value, [...basePath, variable.toString()]);
-      return value;
     },
   });
-  return proxyInstance;
 }
 
 export function useOneUIContext() {
   const context = useContext(Context);
 
-  if (process.env.NODE_ENV === "development") {
-    return ProtectVariableAccess(context) as ContextSpecs;
-  }
+  if (process.env.NODE_ENV === "development")
+    return ErrorWrapper(context) as unknown as ContextSpecs;
 
   return context as ContextSpecs;
 }

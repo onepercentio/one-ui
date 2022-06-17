@@ -16,27 +16,33 @@ import Loader from "../Loader";
 import EmailInput from "../EmailInput";
 import AdaptiveButton from "../AdaptiveButton";
 
-type BaseForm = { [k: string]: string };
+export type BaseForm = { [k: string]: string | number | any };
+export type FormForm = { [k: string]: string | number }
 
-type FieldTypes = "email" | "text" | "textarea";
+export type FieldTypes = "email" | "text" | "textarea" | "select" | "number";
 
-type FieldDefinition<
+export type FieldDefinition<
   M extends BaseForm,
   F extends keyof M,
   T extends FieldTypes
 > = {
   validator: (v: M[F] | undefined, f: Partial<M>) => string | true;
   placeholder?: string;
-} & (T extends "email"
+} & (T extends "select"
+  ? {
+      type: "select";
+      choices: ComponentProps<typeof import("../Select")["default"]>["items"];
+    }
+  : T extends "email"
   ? { type: "email"; messages: ComponentProps<typeof EmailInput>["messages"] }
   : T extends "textarea"
   ? {
       type: "textarea";
       lines: number;
     }
-  : { type: "text" });
+  : { type: "text" | "number" });
 
-type ClassName = string;
+export type ClassName = string;
 
 function AdvancedAction({
   config,
@@ -76,7 +82,7 @@ export type FormInterface = {
   clear: () => void;
 };
 
-type FirebaseFormProps<M extends BaseForm> = {
+type FirebaseFormProps<M extends FormForm> = {
   ref?: RefObject<FormInterface>;
   submitting: boolean;
   onSubmit: (data: M) => void;
@@ -122,7 +128,11 @@ function FirebaseForm<M extends BaseForm>(
         const fieldConfig = config[c];
         const invalidMessage = fieldConfig.validator(form[c], form);
         switch (fieldConfig.type) {
+          case "select":
+            return null;
           case "text":
+          case "number":
+            const isNumber = fieldConfig.type === "number";
             return (
               <Input
                 key={c}
@@ -133,14 +143,18 @@ function FirebaseForm<M extends BaseForm>(
                     : undefined
                 }
                 placeholder={config[c].placeholder}
-                value={form[c] || ""}
+                value={!isNumber ? form[c] || "" : undefined}
                 hideError={"onfocus"}
-                onChange={({ target: { value } }: any) =>
+                onChange={({ target: { value } }: any) => {
+                  let _value = isNumber ? Number(value) : value;
+                  if (isNumber && Number.isNaN(_value)) {
+                    _value = undefined;
+                  }
                   setform({
                     ...form,
-                    [c]: value,
-                  })
-                }
+                    [c]: _value,
+                  });
+                }}
               />
             );
           case "email":
@@ -156,7 +170,7 @@ function FirebaseForm<M extends BaseForm>(
                     : undefined
                 }
                 placeholder={config[c].placeholder}
-                value={form[c] || ""}
+                value={(form[c] as string) || ""}
                 onChange={(email) =>
                   setform({
                     ...form,

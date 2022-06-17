@@ -36,45 +36,14 @@ class FirebaseEmulatorInterface {
     }
   }
 
-  waitUntilUp() {
-    cy.wrap("Waiting the emulator to be up").then({ timeout: 60000 }, () => {
-      return new Cypress.Promise(async (res, rej) => {
-        let breakLoop = false;
-        const timeout = setTimeout(() => {
-          breakLoop = true;
-          rej("Could not receive ok from firebase emulator");
-          clearTimeout(timeout);
-        }, 30000);
-        while (!breakLoop) {
-          try {
-            await fetch(`http://${window.location.hostname}:4000`, {
-              mode: "no-cors",
-            });
-            res();
-            clearTimeout(timeout);
-            break;
-          } catch (e) { }
-          await WaitTimeout(1000);
-        }
-      });
-    });
-  }
-
-  start(fakeProjectName: string, databaseToImport?: string) {
+  start(fakeProjectName: string, databaseToImport?: string = "") {
     if (sessionStorage.getItem("last-database") === databaseToImport)
       return;
     this.killRelatedPorts();
     if (window.Cypress) {
-      const command = `firebase emulators:start -P ${fakeProjectName} ${databaseToImport ? `--import ${databaseToImport}` : ""}`;
-
-      cy.on("fail", (error) => {
-        if (error.message.includes(command)) return false;
-      });
-      cy.on("uncaught:exception", (error) => {
-        if (error.message.includes(command)) return false;
-      });
+      const command = `yarn start-emulator ${fakeProjectName} ${databaseToImport}`;
       cy.exec(command, {
-        timeout: 10000, // Instant fail
+        timeout: 60000, // Instant fail
       });
       sessionStorage.setItem("last-database", databaseToImport)
     } else {

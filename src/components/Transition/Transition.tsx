@@ -17,7 +17,8 @@ export type TransitionTypeDefinitions =
       transitionType?:
         | TransitionAnimationTypes.SLIDE
         | TransitionAnimationTypes.POP_FROM_CLICK_ORIGIN
-        | TransitionAnimationTypes.FADE;
+        | TransitionAnimationTypes.FADE
+        | TransitionAnimationTypes.COIN_FLIP;
     }
   | {
       transitionType?: TransitionAnimationTypes.POP_FROM_ELEMENT_ID;
@@ -59,6 +60,17 @@ function TransitionClasses(
   };
 } {
   switch (type) {
+    case TransitionAnimationTypes.COIN_FLIP:
+      return {
+        backward: {
+          elementExiting: Styles.flipBottomUpOut,
+          elementEntering: Styles.flipBottomUpIn,
+        },
+        forward: {
+          elementExiting: Styles.flipBottomUpOut,
+          elementEntering: Styles.flipBottomUpIn,
+        },
+      };
     case TransitionAnimationTypes.FADE:
       return {
         backward: {
@@ -174,7 +186,7 @@ function Transition(
             ...contentStyle,
           },
           className: `${transitionClasses.backward.elementExiting} ${
-            firstNextScreen.props.className?.replace(
+            firstNextScreen?.props.className?.replace(
               transitionClasses.backward.elementEntering,
               ""
             ) || ""
@@ -322,7 +334,13 @@ function Transition(
           const percentX = (offsetX * 100) / clientWidth;
           const percentY = (offsetY * 100) / clientHeight;
 
-          preTransitionDetails.current.transformOrigin = `${percentX}% ${percentY}%`;
+          if (
+            props.transitionType ===
+              TransitionAnimationTypes.POP_FROM_ELEMENT_ID ||
+            props.transitionType ===
+              TransitionAnimationTypes.POP_FROM_CLICK_ORIGIN
+          )
+            preTransitionDetails.current.transformOrigin = `${percentX}% ${percentY}%`;
         }}
         data-testid="transition-controller"
         ref={containerRef}
@@ -339,6 +357,7 @@ export enum TransitionAnimationTypes {
   POP_FROM_CLICK_ORIGIN,
   POP_FROM_ELEMENT_ID,
   FADE,
+  COIN_FLIP,
   CUSTOM,
 }
 

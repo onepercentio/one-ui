@@ -2,6 +2,7 @@
 // object.watch
 if (!Object.prototype.watch)
   Object.prototype.watch = function (propsToWatchFor, handler) {
+    (this._handlers || (this._handlers = [])).push(handler)
     propsToWatchFor.forEach((prop) => {
       var oldval = this[prop],
         newval = oldval,
@@ -11,7 +12,8 @@ if (!Object.prototype.watch)
         setter = function (val) {
           if (this._watchTimer) clearTimeout(this._watchTimer);
           this._watchTimer = setTimeout(() => {
-            handler.call();
+            for (let handler of this._handlers)
+              handler.call();
             clearTimeout(this._watchTimer);
             delete this._watchTimer;
           }, 0);
@@ -21,12 +23,13 @@ if (!Object.prototype.watch)
         };
       if (delete this[prop]) {
         // can't watch constants
-        if (Object.defineProperty)
-          // ECMAScript 5
+        if (Object.defineProperty) {
+          // ECMAScript 5          
           Object.defineProperty(this, prop, {
             get: getter,
             set: setter,
           });
+        }
         else if (
           Object.prototype.__defineGetter__ &&
           Object.prototype.__defineSetter__
@@ -37,14 +40,9 @@ if (!Object.prototype.watch)
         }
       }
     });
-    function _unwatch(prop) {
-      var val = this[prop];
-      delete this[prop]; // remove accessors
-      this[prop] = val;
-    }
-    this.unwatch = function () {
-      propsToWatchFor.forEach((prop) => {
-        _unwatch(prop);
-      });
+    this.unwatch = () => {
+      this._handlers.splice(this._handlers.indexOf(handler), 1);
     };
+
+    return this.unwatch
   };

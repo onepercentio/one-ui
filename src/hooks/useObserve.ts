@@ -13,7 +13,9 @@ export default function useObserve<T extends any>(
   const [_, ss] = useState(0);
   useLayoutEffect(() => {
     return (object as Object).watch(keysToObserve as any, () => {
-      ss((p) => p + 1);
+      ss((p) => {
+        return p + 1
+      });
     });
   }, [object]);
 }

@@ -46,6 +46,7 @@ div.exitLeft {
 
 div.fadeOut {
   animation-name: fadeOut;
+  position: absolute;
 }
 
 @keyframes fadeOut {
@@ -58,17 +59,15 @@ div.fadeOut {
 }
 
 div.scaleIn {
-  animation-fill-mode: initial;
+  animation-fill-mode: forwards;
   animation-name: scaleIn;
 }
 
 @keyframes scaleIn {
   0% {
-    position: absolute;
     transform: scale(0);
   }
   100% {
-    position: absolute;
     transform: scale(1);
   }
 }

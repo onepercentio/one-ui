@@ -1,15 +1,18 @@
-import { debounce } from "lodash";
+import debounce from "lodash/debounce";
+import get from "lodash/get";
+import { Get } from "type-fest";
 import React, { useEffect } from "react";
 import { createContext, PropsWithChildren, useContext } from "react";
+import { FieldPath } from "../utils";
 
 type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends Function ? T[P] : DeepPartial<T[P]>;
 };
 
 type ContextSpecs = {
-  component: {
-    text: {
-      className: {
+  component?: {
+    text?: {
+      className?: {
         [k in React.ComponentProps<
           typeof import("../components/Text")["default"]
         >["type"]]?: string;
@@ -67,18 +70,15 @@ export default function OneUIProvider({
   return <Context.Provider value={config}>{children}</Context.Provider>;
 }
 
-const debouncedError = debounce((message: string) => {
-  const event = new Event("error");
-  (event as any).error = new Error(message);
-  window.dispatchEvent(event);
-}, 100);
-
 function ErrorWrapper(
   originalObject: any,
   path: string = "config"
 ): typeof Proxy {
   return new Proxy(originalObject || {}, {
     get(_target, key) {
+      if (key === Symbol.toPrimitive) {
+        return () => _target[key];
+      }
       try {
         const value = originalObject[key];
         if (typeof value === "undefined" || typeof value === "object")
@@ -117,4 +117,12 @@ export function useOneUIContext() {
     return ErrorWrapper(context) as unknown as ContextSpecs;
 
   return context as ContextSpecs;
+}
+
+export function useOneUIConfig<
+  P extends FieldPath<ContextSpecs>,
+  T extends Get<ContextSpecs, P>
+>(prop: P, defaultValue?: T): NonNullable<Get<ContextSpecs, P>> {
+  const context = useContext(Context);
+  return ErrorWrapper(get(context, prop) || defaultValue) as NonNullable<T>;
 }

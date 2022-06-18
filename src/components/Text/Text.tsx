@@ -1,5 +1,5 @@
 import React, { ForwardedRef, forwardRef } from "react";
-import { useOneUIContext } from "../../context/OneUIProvider";
+import { useOneUIConfig } from "../../context/OneUIProvider";
 import Styles from "./Text.module.scss";
 
 /**
@@ -30,11 +30,7 @@ function Text(
   >,
   ref: ForwardedRef<HTMLParagraphElement>
 ) {
-  const {
-    component: {
-      text: { className: classNameType },
-    },
-  } = useOneUIContext();
+  const classNameType = useOneUIConfig("component.text.className", {});
 
   return (
     <p
@@ -49,4 +45,4 @@ function Text(
   );
 }
 
-export default forwardRef(Text)
+export default forwardRef(Text);

@@ -20,7 +20,7 @@ enum Example {
   Success,
 }
 export const TargetUsage = () => {
-  const [s, ss] = useState<Example>(Example.Content);
+  const [s, ss] = useState<Example>(Example.Error);
 
   const child = useMemo(() => {
     switch (s) {

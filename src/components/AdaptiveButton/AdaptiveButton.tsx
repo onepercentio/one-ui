@@ -33,9 +33,16 @@ export default function AdaptiveButton({
         const lastChild = sectionDiv.lastChild as HTMLDivElement;
         if (lastChild) {
           const contentWidth = lastChild.clientWidth;
-          sectionDiv.style.width = `${contentWidth}px`;
+          const targetWidth = `${contentWidth}px`;
+          sectionDiv.style.width = targetWidth;
           function transEnd() {
-            sectionDiv!.style.width = "";
+            setTimeout(() => {
+              if (sectionDiv?.style.width === `${contentWidth}px`)
+                sectionDiv!.style.width = "";
+            }, 100);
+
+            if (sectionDiv)
+              sectionDiv.removeEventListener("transitionend", transEnd);
           }
           sectionDiv.addEventListener("transitionend", transEnd);
         }

@@ -10,7 +10,7 @@ type DeepPartial<T> = {
 };
 
 type ContextSpecs = {
-  component?: {
+  component: {
     text?: {
       className?: {
         [k in React.ComponentProps<

@@ -37,6 +37,7 @@ $hamburgerOffset: 24;
     position: fixed;
     width: 100%;
     overflow: auto;
+    z-index: 1000;
 
     &.open {
       transition: transform $veryFast ease-out;

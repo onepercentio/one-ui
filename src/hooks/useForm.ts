@@ -5,7 +5,7 @@ type Intermediary<F extends BaseForm> = {
     form: F,
     formValidation: {
         [k in keyof F]: string
-    },
+    } & { isValid: string | true },
     set: <K extends keyof F>(k: K, value: F[K]) => void
 }
 export type FormControls<C extends FormConfig<any>> = Intermediary<C extends FormConfig<infer F> ? F : never>

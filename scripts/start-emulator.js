@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const fetch = require("node-fetch");
 const { spawn } = require("child_process");
 function WaitTimeout(ml = 200) {

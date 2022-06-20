@@ -7,13 +7,17 @@ interface Object {
 }
 
 export default function useObserve<T extends any>(
-  object: T,
+  toObserve: T | T[],
   keysToObserve: (keyof T)[]
 ) {
   const [_, ss] = useState(0);
   useLayoutEffect(() => {
-    return (object as Object).watch(keysToObserve as any, () => {
-      ss((p) => p + 1);
-    });
-  }, [object]);
+    const arr = Array.isArray(toObserve) ? toObserve : [toObserve]
+    for (let object of arr)
+      return (object as Object).watch(keysToObserve as any, () => {
+        ss((p) => {
+          return p + 1
+        });
+      });
+  }, [toObserve]);
 }

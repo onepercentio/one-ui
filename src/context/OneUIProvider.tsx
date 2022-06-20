@@ -1,6 +1,9 @@
-import { debounce } from "lodash";
-import React from "react";
+import debounce from "lodash/debounce";
+import get from "lodash/get";
+import { Get } from "type-fest";
+import React, { useEffect } from "react";
 import { createContext, PropsWithChildren, useContext } from "react";
+import { FieldPath } from "../utils";
 
 type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends Function ? T[P] : DeepPartial<T[P]>;
@@ -8,8 +11,8 @@ type DeepPartial<T> = {
 
 type ContextSpecs = {
   component: {
-    text: {
-      className: {
+    text?: {
+      className?: {
         [k in React.ComponentProps<
           typeof import("../components/Text")["default"]
         >["type"]]?: string;
@@ -51,8 +54,8 @@ type ContextSpecs = {
       };
     };
     tooltip: {
-      className?: string
-    }
+      className?: string;
+    };
   };
 };
 
@@ -67,64 +70,59 @@ export default function OneUIProvider({
   return <Context.Provider value={config}>{children}</Context.Provider>;
 }
 
-const debouncedError = debounce((message: string) => {
-  const event = new Event("error");
-  (event as any).error = new Error(message);
-  window.dispatchEvent(event);
-}, 100);
+function ErrorWrapper(
+  originalObject: any,
+  path: string = "config"
+): typeof Proxy {
+  return new Proxy(originalObject || {}, {
+    get(_target, key) {
+      if (key === Symbol.toPrimitive) {
+        return () => _target[key];
+      }
+      try {
+        const value = originalObject[key];
+        if (typeof value === "undefined" || typeof value === "object")
+          return ErrorWrapper(value, [path, key].filter(Boolean).join("."));
+        return value;
+      } catch (e) {
+        const pathJson = path
+          .split(".")
+          .concat(key as string)
+          .reduce((result, key, idx, arr) => {
+            (arr.slice(0, idx).reduce((r, k) => (r as any)[k], result) as any)[
+              key
+            ] = idx === arr.length - 1 ? `THE_MISSING_CONFIG` : {};
+            return result;
+          }, {});
+        throw new Error(
+          `A component is using the UI config ${[path, key].join(".")}.
 
-const IGNORED_KEYS = ["className"];
-
-export function ProtectVariableAccess(obj?: any, basePath: string[] = []): any {
-  const proxyInstance = new Proxy(() => obj || {}, {
-    apply: (target) => {
-      return String(target());
-    },
-    get: (ctx, variable) => {
-      const value = ctx()[variable as keyof ReturnType<typeof ctx>];
-      if (variable === Symbol.toPrimitive) return () => value;
-      if (value === undefined) {
-        const path = [...basePath, variable.toString()];
-        if (/[^A-Z]/.test(String(variable).charAt(0))) {
-          switch (basePath.join(".")) {
-            case "component.text.className":
-              return undefined;
-            case "component.text":
-            case "component.input":
-              return {};
-          }
-          if (!IGNORED_KEYS.includes(path[path.length - 1]))
-            debouncedError(
-              `A component is using the UI config ${path.join(".")}.
-          
 Please define it using:
 import OneUIProvider from "@onepercent/one-ui/dist/context/OneUIProvider";
+
+  ...
+${`<OneUIProvider config={${JSON.stringify(pathJson, null, 4)}}>
 ...
-  <OneUIProvider config={THE_MISSING_CONFIG}>
-    ...
-  </OneUIProvider>`
-            );
-        } else {
-          debouncedError.cancel();
-        }
+</OneUIProvider>`.replace(/[ ]/g, "-")}`
+        );
       }
-      if (
-        (typeof value === "object" && !Array.isArray(value)) ||
-        (value === undefined && /[^A-Z]/.test(String(variable).charAt(0)))
-      )
-        return ProtectVariableAccess(value, [...basePath, variable.toString()]);
-      return value;
     },
   });
-  return proxyInstance;
 }
 
 export function useOneUIContext() {
   const context = useContext(Context);
 
-  if (process.env.NODE_ENV === "development") {
-    return ProtectVariableAccess(context) as ContextSpecs;
-  }
+  if (process.env.NODE_ENV === "development")
+    return ErrorWrapper(context) as unknown as ContextSpecs;
 
   return context as ContextSpecs;
+}
+
+export function useOneUIConfig<
+  P extends FieldPath<ContextSpecs>,
+  T extends Get<ContextSpecs, P>
+>(prop: P, defaultValue?: T): NonNullable<Get<ContextSpecs, P>> {
+  const context = useContext(Context);
+  return ErrorWrapper(get(context, prop) || defaultValue) as NonNullable<T>;
 }

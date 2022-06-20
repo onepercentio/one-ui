@@ -46,6 +46,7 @@ div.exitLeft {
 
 div.fadeOut {
   animation-name: fadeOut;
+  position: absolute;
 }
 
 @keyframes fadeOut {
@@ -58,17 +59,15 @@ div.fadeOut {
 }
 
 div.scaleIn {
-  animation-fill-mode: initial;
+  animation-fill-mode: forwards;
   animation-name: scaleIn;
 }
 
 @keyframes scaleIn {
   0% {
-    position: absolute;
     transform: scale(0);
   }
   100% {
-    position: absolute;
     transform: scale(1);
   }
 }
@@ -107,7 +106,7 @@ div.fadeIn {
     opacity: 0;
   }
   50% {
-    opacity: 0.10;
+    opacity: 0.1;
   }
   100% {
     opacity: 1;
@@ -118,7 +117,7 @@ div.fadeIn {
     opacity: 1;
   }
   50% {
-    opacity: 0.10;
+    opacity: 0.1;
   }
   100% {
     opacity: 0;
@@ -132,4 +131,58 @@ div.fadeIn {
 .fadeOutAbsolute {
   position: absolute;
   animation-name: fadeOutDelayed;
+}
+
+@keyframes flip {
+  0% {
+    transform: rotateX(0deg);
+  }
+
+  25% {
+    transform: rotateX(36deg);
+  }
+
+  50% {
+    transform: rotateX(90deg);
+  }
+
+  75% {
+    transform: rotateX(90deg);
+  }
+
+  100% {
+    transform: rotateX(90deg);
+  }
+}
+@keyframes flipIn {
+  0% {
+    transform: rotateX(90deg);
+  }
+
+  25% {
+    transform: rotateX(90deg);
+  }
+
+  50% {
+    transform: rotateX(90deg);
+  }
+
+  75% {
+    transform: rotateX(36deg);
+  }
+
+  100% {
+    transform: rotateX(0deg);
+  }
+}
+.flipBottomUpOut {
+  transform-origin: 50% 50% !important;
+  position: absolute !important;
+  animation-name: flip;
+  animation-timing-function: linear !important;
+}
+.flipBottomUpIn {
+  transform-origin: 50% 50% !important;
+  animation-name: flipIn;
+  animation-timing-function: linear !important;
 }

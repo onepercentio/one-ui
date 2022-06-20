@@ -6,17 +6,25 @@ export default function useShortIntl(): IntlShape & {
     id: OnepercentUtility.IntlIds,
     params?: Parameters<IntlFormatters["formatMessage"]>[1]
   ) => ReturnType<IntlFormatters["formatMessage"]>;
+  formatToDoubleDecimal(number: number, options?: Parameters<IntlFormatters["formatNumber"]>[1]): string
   formatBigNumber(
     number: BigNumber,
     options?: Parameters<IntlFormatters["formatNumber"]>[1]
   ): string;
 } {
   const intl = useIntl();
-  const { formatMessage } = intl;
+  const { formatMessage, formatNumber } = intl;
   return {
     ...intl,
     txt: (id, params) => {
       return formatMessage({ id }, params);
+    },
+    formatToDoubleDecimal(val: number, options = {}) {
+      return formatNumber(val, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+        ...options
+      })
     },
     formatBigNumber(bigNumber, options) {
       const { decimalSeparator } = intl
@@ -37,9 +45,8 @@ export default function useShortIntl(): IntlShape & {
         )
         .toString()
         .replace("0.", "");
-      return `${integer}${
-        decimals !== "0" ? `${decimalSeparator}${decimals}` : ""
-      }`;
+      return `${integer}${decimals !== "0" ? `${decimalSeparator}${decimals}` : ""
+        }`;
     },
   };
 }

@@ -72,6 +72,18 @@ function WalletConnectionWrapper(
     </UseWalletProvider>
   );
 }
+/**
+ * This component handles a lot of cenarios when dealing with the wallet connection to different providers (ex: Metamask)
+ **/
+function _BaseWalletConnectionWrapper(
+  props: PropsWithChildren<Props>,
+  ref: ForwardedRef<{
+    connect: () => Promise<void>;
+    disconnect: () => void;
+  }>
+) {
+  return <Content compRef={ref || createRef()} {...props} />;
+}
 
 function Content({
   ProviderUnavailable,
@@ -102,7 +114,7 @@ function Content({
   };
   useEffect(() => {
     const autoConnect = !!localStorage.getItem("auto_connect");
-    if (autoConnect) connect();
+    if (autoConnect && !wallet.account) connect();
   }, []);
   useImperativeHandle(
     compRef,
@@ -119,7 +131,6 @@ function Content({
   );
 
   async function changeChainId() {
-    wallet.reset();
     try {
       await window.ethereum.request({
         method: "wallet_switchEthereumChain",
@@ -149,7 +160,6 @@ function Content({
           });
       }
     }
-    wallet.connect("injected");
   }
   return (
     <>
@@ -178,3 +188,6 @@ function Content({
 }
 
 export default forwardRef(WalletConnectionWrapper);
+export const BaseWalletConnectionWrapper = forwardRef(
+  _BaseWalletConnectionWrapper
+);

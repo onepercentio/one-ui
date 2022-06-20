@@ -40,6 +40,7 @@
     margin: auto;
     position: relative;
     left: var(--anchor-indicator-offset-left, 0px);
+    z-index: -1;
   }
 
   &::before {

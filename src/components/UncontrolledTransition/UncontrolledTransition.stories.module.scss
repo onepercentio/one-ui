@@ -6,6 +6,10 @@
   animation-timing-function: linear;
 }
 
+.resetHeight {
+  min-height: initial;
+}
+
 @keyframes pingpong {
   0% {
     left: 0%;

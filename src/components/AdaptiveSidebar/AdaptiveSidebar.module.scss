@@ -30,13 +30,14 @@ $hamburgerOffset: 24;
   box-sizing: border-box;
   height: 100%;
 
-  @media screen and (max-width: 640px) {
+  @media screen and (max-width: 639px) {
     &.defaultPadding {
       padding-top: #{$hamburgerSize + $hamburgerOffset * 2}px;
     }
     position: fixed;
     width: 100%;
     overflow: auto;
+    z-index: 1000;
 
     &.open {
       transition: transform $veryFast ease-out;

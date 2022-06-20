@@ -247,6 +247,83 @@ export const FadeTransition = (
   );
 };
 
+const firstEmoji = 0x1f604;
+const emojisCount = 0x1f64f - firstEmoji;
+function CoinFlipItem() {
+  const [flippedTheCoin, setFlipped] = useState(() => Math.random() > 0.5);
+  const [head, setHead] = useState(
+    (0 + Math.floor(99 * Math.random())).toString()
+  );
+  const [tails, setTails] = useState(
+    String.fromCodePoint(firstEmoji + Math.floor(emojisCount * Math.random()))
+  );
+
+  useEffect(() => {
+    setTimeout(() => {
+      setFlipped((prev) => !prev);
+    }, 500 + Math.random() * 2000);
+    return () => {
+      if (flippedTheCoin)
+        setHead((0 + Math.floor(99 * Math.random())).toString());
+      else
+        setTails(
+          String.fromCodePoint(
+            firstEmoji + Math.floor(emojisCount * Math.random())
+          )
+        );
+    };
+  }, [flippedTheCoin]);
+
+  const CoinSide = () => (
+    <div
+      onClick={() => {
+        setFlipped((prev) => !prev);
+      }}
+      style={{
+        cursor: "pointer",
+        width: "100px",
+        height: "100px",
+        borderRadius: "50px",
+        backgroundColor: flippedTheCoin ? "red" : "green",
+        fontSize: "60px",
+        textAlign: "center",
+        lineHeight: "100px",
+        position: "relative",
+      }}
+    >
+      {!flippedTheCoin ? head : tails}
+    </div>
+  );
+
+  return (
+    <>
+      <UncontrolledTransition
+        transitionType={TransitionAnimationTypes.COIN_FLIP}
+        className={StoriesStyles.resetHeight}
+      >
+        <CoinSide key={!flippedTheCoin ? "heads" : "tail"} />
+      </UncontrolledTransition>
+    </>
+  );
+}
+export const CoinFlip = () => {
+  return (
+    <>
+      <h1>
+        This story displays the animation of flipping between two elements on
+        html
+      </h1>
+      <h2>This is more usefull with square elements</h2>
+
+      <div style={{ display: "flex", flexWrap: "wrap", position: "relative" }}>
+        {new Array(100).fill(undefined).map(() => (
+          <CoinFlipItem />
+        ))}
+      </div>
+    </>
+  );
+};
+
 export const BUGFIX_BackwardsInconsistency = () => {
   const [number, setNumber] = useState(10);
   const ref = useRef<ElementRef<typeof UncontrolledTransition>>(null);

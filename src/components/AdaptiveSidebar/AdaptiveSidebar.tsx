@@ -11,6 +11,7 @@ const DefaultVisibilityControl = ({ open }: { open: boolean }) => (
  * A component that you can put anywhere but hides when small enough and shows the control via a fixed floating button
  **/
 export default function AdaptiveSidebar({
+  open: externalOpen,
   children,
   className = "",
   visibilityControlComponent:
@@ -18,14 +19,19 @@ export default function AdaptiveSidebar({
   ...props
 }: PropsWithChildren<
   {
+    /** To control AdaptiveSidebar externally
+     * (created for flows that requires floating views when on mobile)
+     **/
+    open?: boolean;
     className?: string;
-    visibilityControlComponent: (props: {
+    visibilityControlComponent?: (props: {
       open: boolean;
     }) => React.ReactElement;
   } & React.HTMLProps<HTMLDivElement>
 >) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const _open = externalOpen === undefined ? open : externalOpen;
 
   useEffect(() => {
     if (process.env.NODE_ENV === "test") return;
@@ -34,24 +40,28 @@ export default function AdaptiveSidebar({
       behavior: "smooth",
       top: 0,
     });
-  }, [open]);
+  }, [_open]);
+  const externalControl = externalOpen !== undefined;
 
   return (
     <>
       <div
         ref={containerRef}
         className={`${Styles.container} ${
+          !externalControl &&
           DefaultVisibilityControl === VisibilityControlComponent
             ? Styles.defaultPadding
             : ""
-        } ${open ? Styles.open : Styles.closed} ${className}`}
+        } ${_open ? Styles.open : Styles.closed} ${className}`}
         {...props}
       >
-        <ScrollAndFocusLock open={open}>{children}</ScrollAndFocusLock>
+        <ScrollAndFocusLock open={_open}>{children}</ScrollAndFocusLock>
       </div>
-      <div className={Styles.hamburger} onClick={() => setOpen((a) => !a)}>
-        <VisibilityControlComponent open={open} />
-      </div>
+      {!externalControl && (
+        <div className={Styles.hamburger} onClick={() => setOpen((a) => !a)}>
+          <VisibilityControlComponent open={_open} />
+        </div>
+      )}
     </>
   );
 }

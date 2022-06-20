@@ -1,4 +1,5 @@
 import React, {
+  ChangeEventHandler,
   ComponentProps,
   DetailedHTMLProps,
   ForwardedRef,
@@ -15,6 +16,7 @@ import Text from "../Text";
 import Styles from "./Input.module.scss";
 
 export type InputProps = {
+  decoration?: React.ReactElement | null;
   error?: string;
   hideError?: "onfocus";
   placeholder?: string;
@@ -25,7 +27,8 @@ export type InputProps = {
     onClick?: () => void;
   } & DetailedHTMLProps<React.ImgHTMLAttributes<HTMLImageElement>, any>;
   Icon?: React.ReactElement;
-} & Omit<React.HTMLProps<HTMLInputElement | HTMLTextAreaElement>, "ref">;
+  onChange?: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>
+} & Omit<React.HTMLProps<HTMLInputElement | HTMLTextAreaElement>, "ref" | "onChange">;
 
 /**
  * A transparent input with some prebuilt states common to the application
@@ -40,6 +43,7 @@ function Input(
     autoFocus,
     disclaimer,
     multiline,
+    decoration = null,
     border: propBorder,
     ...otherProps
   }: InputProps,
@@ -76,6 +80,7 @@ function Input(
         false ? Styles.withIcon : ""
       } ${className}`}
     >
+      {decoration}
       <Component
         ref={inputRef as any}
         placeholder={placeholder}

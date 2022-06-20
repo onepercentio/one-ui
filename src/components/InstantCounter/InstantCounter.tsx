@@ -54,10 +54,10 @@ function InstantCounter(
       const intervalId = setInterval(() => {
         initialValue.current! += incrementBy;
         spanRef.current!.innerHTML = formatNumber(
-          Math.round(initialValue.current!),
+          initialValue.current!,
           formatOptions
         );
-        if (Math.round(initialValue.current) === to) {
+        if (Math.round(initialValue.current) === Math.round(to)) {
           clearInterval(intervalId);
         }
       }, 1000 / framesPerSecond);
@@ -65,7 +65,7 @@ function InstantCounter(
         clearInterval(intervalId);
       };
     }
-  }, [started]);
+  }, [started, to]);
   return (
     <>
       <span ref={spanRef} />

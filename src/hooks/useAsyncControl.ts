@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { CommonErrorCodes } from "../types";
 
 export default function useAsyncControl<E extends CommonErrorCodes>() {
   const [error, setError] = useState<E>();
   const [loading, setLoading] = useState<boolean>(false);
 
-  const _process = async (asyncFn: () => Promise<any>) => {
+  const _process = useCallback(async (asyncFn: () => Promise<any>) => {
     try {
       setLoading(true);
       setError(undefined);
@@ -16,7 +16,7 @@ export default function useAsyncControl<E extends CommonErrorCodes>() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   return {
     process: _process,

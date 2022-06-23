@@ -88,7 +88,7 @@
     "postbuild": "cd ..",
     "dev": "tsc --watch",
     "test:watch": "jest --watchAll --coverage",
-    "deploy:storybook": "yarn build-storybook; firebase deploy --only hosting",
+    "deploy:storybook": "yarn build-storybook && firebase deploy --only hosting",
     "prepublish": "yarn build"
   },
   "peerDependencies": {

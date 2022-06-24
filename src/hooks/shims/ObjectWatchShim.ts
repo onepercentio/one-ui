@@ -1,6 +1,6 @@
 // @ts-nocheck
 // object.watch
-if (!Object.prototype.watch)
+if (!Object.prototype.watch) {
   Object.prototype.watch = function (propsToWatchFor, handler) {
     (this._handlers || (this._handlers = [])).push(handler)
     propsToWatchFor.forEach((prop) => {
@@ -21,28 +21,35 @@ if (!Object.prototype.watch)
           newval = val;
           return true;
         };
-      if (delete this[prop]) {
-        // can't watch constants
-        if (Object.defineProperty) {
-          // ECMAScript 5          
-          Object.defineProperty(this, prop, {
-            get: getter,
-            set: setter,
-          });
+      try {
+
+        if (delete this[prop]) {
+          // can't watch constants
+          if (Object.defineProperty) {
+            // ECMAScript 5          
+            Object.defineProperty(this, prop, {
+              get: getter,
+              set: setter,
+            });
+          }
+          else if (
+            Object.prototype.__defineGetter__ &&
+            Object.prototype.__defineSetter__
+          ) {
+            // legacy
+            Object.prototype.__defineGetter__.call(this, prop, getter);
+            Object.prototype.__defineSetter__.call(this, prop, setter);
+          }
         }
-        else if (
-          Object.prototype.__defineGetter__ &&
-          Object.prototype.__defineSetter__
-        ) {
-          // legacy
-          Object.prototype.__defineGetter__.call(this, prop, getter);
-          Object.prototype.__defineSetter__.call(this, prop, setter);
-        }
-      }
+      } catch (e) { }
     });
-    this.unwatch = () => {
+
+    return () => {
       this._handlers.splice(this._handlers.indexOf(handler), 1);
     };
-
-    return this.unwatch
   };
+  Object.defineProperty(Object.prototype, 'watch', {
+    enumerable: false,
+    configurable: true
+  });
+}

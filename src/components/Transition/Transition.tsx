@@ -180,18 +180,23 @@ function Transition(
         const enteringScreenRef = createRef<HTMLDivElement>();
         const [firstNextScreen, ...restOfScreens] =
           screensBeforeChangingStep.filter((a) => a.key !== String(key));
-        const clonedFirst = React.cloneElement(firstNextScreen, {
-          "data-testid": "transition-container",
-          style: {
-            ...contentStyle,
-          },
-          className: `${transitionClasses.backward.elementExiting} ${
-            firstNextScreen?.props.className?.replace(
-              transitionClasses.backward.elementEntering,
-              ""
-            ) || ""
-          }`,
-        });
+
+        const clonedFirst = firstNextScreen ? (
+          React.cloneElement(firstNextScreen, {
+            "data-testid": "transition-container",
+            style: {
+              ...contentStyle,
+            },
+            className: `${transitionClasses.backward.elementExiting} ${
+              firstNextScreen?.props.className?.replace(
+                transitionClasses.backward.elementEntering,
+                ""
+              ) || ""
+            }`,
+          })
+        ) : (
+          <React.Fragment />
+        );
         function animationEndListener(element: AnimationEvent<HTMLDivElement>) {
           const isAnimationFromExpectedState =
             enteringScreenRef.current?.classList.contains(
@@ -236,30 +241,33 @@ function Transition(
         const lastIndex = screensBeforeChangingStep.length - 1;
         const lastScreen = screensBeforeChangingStep[lastIndex];
         const nextScreenRef = createRef<HTMLDivElement>();
-        const clonedLast = React.cloneElement(lastScreen, {
-          "data-testid": "transition-container",
-          style: {
-            ...contentStyle,
-          },
-          className: `${contentClassName} ${transitionClasses.forward.elementExiting}`,
-          onAnimationEnd: (e: any) => {
-            if (e.target !== e.currentTarget) return;
-            if (transitionClasses.forward.elementEntering)
-              nextScreenRef.current?.classList.remove(
-                transitionClasses.forward.elementEntering
-              );
-            if (onDiscardStep) onDiscardStep(prevKeyToRemove);
-            setScreensStack((screensAfterTheCurrentStepEntered) => {
-              const nextState = screensAfterTheCurrentStepEntered.filter(
-                (s) => {
-                  return s.key !== String(prevKeyToRemove);
-                }
-              );
-              return nextState;
-            });
-          },
-        });
-
+        const clonedLast = lastScreen ? (
+          React.cloneElement(lastScreen, {
+            "data-testid": "transition-container",
+            style: {
+              ...contentStyle,
+            },
+            className: `${contentClassName} ${transitionClasses.forward.elementExiting}`,
+            onAnimationEnd: (e: any) => {
+              if (e.target !== e.currentTarget) return;
+              if (transitionClasses.forward.elementEntering)
+                nextScreenRef.current?.classList.remove(
+                  transitionClasses.forward.elementEntering
+                );
+              if (onDiscardStep) onDiscardStep(prevKeyToRemove);
+              setScreensStack((screensAfterTheCurrentStepEntered) => {
+                const nextState = screensAfterTheCurrentStepEntered.filter(
+                  (s) => {
+                    return s.key !== String(prevKeyToRemove);
+                  }
+                );
+                return nextState;
+              });
+            },
+          })
+        ) : (
+          <React.Fragment />
+        );
         return [
           ...screensBeforeChangingStep.slice(0, lastIndex),
           clonedLast,

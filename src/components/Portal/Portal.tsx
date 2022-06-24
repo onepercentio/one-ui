@@ -15,7 +15,16 @@ export default function Portal({
   const [target, setTarget] = useState<Element | null>();
 
   useEffect(() => {
-    setTarget(document.querySelector(`[data-one-portal="${to}"]`) || null);
+    const els = document.querySelectorAll(`[data-one-portal="${to}"]`);
+    let latestEl: any;
+    els.forEach((el: any) => {
+      latestEl =
+        Number(el.getAttribute("data-timestamp")) >
+        Number(latestEl?.timestamp || 0)
+          ? el
+          : latestEl;
+    });
+    setTarget(latestEl || null);
   }, []);
 
   return target === undefined ? null : (
@@ -30,7 +39,14 @@ export function PortalReceiver({
   name: string;
   className?: string;
 }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const timestamp = useMemo(() => Date.now(), []);
   return (
-    <div className={`${Styles.portal} ${className}`} data-one-portal={name} />
+    <div
+      className={`${Styles.portal} ${className}`}
+      data-one-portal={name}
+      ref={ref}
+      data-timestamp={timestamp}
+    />
   );
 }

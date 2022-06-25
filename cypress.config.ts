@@ -14,5 +14,11 @@ export default defineConfig({
       framework: "create-react-app",
       bundler: "webpack",
     },
+    defaultCommandTimeout: 15000,
+    blockHosts: ['*.com'],
+    setupNodeEvents(on, config) { },
+    viewportHeight: 1080,
+    viewportWidth: 1920,
+    specPattern: './cypress/**/*.test.tsx',
   },
 });

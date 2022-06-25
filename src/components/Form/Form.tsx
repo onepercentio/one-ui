@@ -1,8 +1,10 @@
 import React, {
   ComponentProps,
+  DetailedHTMLProps,
   ForwardedRef,
   forwardRef,
   FunctionComponent,
+  HTMLAttributes,
   MutableRefObject,
   ReactElement,
   RefObject,
@@ -17,7 +19,7 @@ import EmailInput from "../EmailInput";
 import AdaptiveButton from "../AdaptiveButton";
 
 export type BaseForm = { [k: string]: string | number | any };
-export type FormForm = { [k: string]: string | number }
+export type FormForm = { [k: string]: string | number };
 
 export type FieldTypes = "email" | "text" | "textarea" | "select" | "number";
 
@@ -40,7 +42,10 @@ export type FieldDefinition<
       type: "textarea";
       lines: number;
     }
-  : { type: "text" | "number" });
+  : {
+      type: "text" | "number";
+      inputProps?: ComponentProps<typeof Input>;
+    });
 
 export type ClassName = string;
 
@@ -135,6 +140,7 @@ function FirebaseForm<M extends BaseForm>(
             const isNumber = fieldConfig.type === "number";
             return (
               <Input
+                {...fieldConfig.inputProps}
                 key={c}
                 name={c}
                 error={

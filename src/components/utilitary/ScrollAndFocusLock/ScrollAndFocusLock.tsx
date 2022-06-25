@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useEffect, useRef } from "react";
-
+import Styles from "./ScrollAndFocusLock.module.scss";
 /**
  * This utilitary component shall be used to lock the focus and disable scroll over the wrapped component
  **/
@@ -18,10 +18,10 @@ export default function ScrollAndFocusLock({
   useEffect(() => {
     if (open) {
       startOfModal.current!.focus();
-      document.body.style.overflow = "hidden";
+      document.body.classList.add(Styles.lockClass)
 
       return () => {
-        document.body.style.overflow = "";
+        document.body.classList.remove(Styles.lockClass)
       };
     }
   }, [open]);

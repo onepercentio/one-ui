@@ -1,5 +1,6 @@
 import debounce from "lodash/debounce";
 import get from "lodash/get";
+import merge from "lodash/merge";
 import { Get } from "type-fest";
 import React, { useEffect } from "react";
 import { createContext, PropsWithChildren, useContext } from "react";
@@ -9,7 +10,7 @@ type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends Function ? T[P] : DeepPartial<T[P]>;
 };
 
-type ContextSpecs = {
+export type ContextSpecs = {
   component: {
     text?: {
       className?: {
@@ -67,35 +68,42 @@ export default function OneUIProvider({
   children,
   config,
 }: PropsWithChildren<{ config: ContextConfigSpecs }>) {
-  return <Context.Provider value={config}>{children}</Context.Provider>;
+  const prevCtx = useContext(Context);
+  return (
+    <Context.Provider value={merge(prevCtx, config)}>
+      {children}
+    </Context.Provider>
+  );
 }
 
 function ErrorWrapper(
   originalObject: any,
   path: string = "config"
 ): typeof Proxy {
-  return new Proxy(originalObject || {}, {
-    get(_target, key) {
-      if (key === Symbol.toPrimitive) {
-        return () => _target[key];
-      }
-      try {
-        const value = originalObject[key];
-        if (typeof value === "undefined" || typeof value === "object")
-          return ErrorWrapper(value, [path, key].filter(Boolean).join("."));
-        return value;
-      } catch (e) {
-        const pathJson = path
-          .split(".")
-          .concat(key as string)
-          .reduce((result, key, idx, arr) => {
-            (arr.slice(0, idx).reduce((r, k) => (r as any)[k], result) as any)[
-              key
-            ] = idx === arr.length - 1 ? `THE_MISSING_CONFIG` : {};
-            return result;
-          }, {});
-        throw new Error(
-          `A component is using the UI config ${[path, key].join(".")}.
+  return new Proxy(
+    typeof originalObject !== "object" ? {} : originalObject || {},
+    {
+      get(_target, key) {
+        if (key === Symbol.toPrimitive) {
+          return () => _target[key];
+        }
+        try {
+          const value = originalObject[key];
+          if (typeof value === "undefined" || typeof value === "object")
+            return ErrorWrapper(value, [path, key].filter(Boolean).join("."));
+          return value;
+        } catch (e) {
+          const pathJson = path
+            .split(".")
+            .concat(key as string)
+            .reduce((result, key, idx, arr) => {
+              (
+                arr.slice(0, idx).reduce((r, k) => (r as any)[k], result) as any
+              )[key] = idx === arr.length - 1 ? `THE_MISSING_CONFIG` : {};
+              return result;
+            }, {});
+          throw new Error(
+            `A component is using the UI config ${[path, key].join(".")}.
 
 Please define it using:
 import OneUIProvider from "@onepercent/one-ui/dist/context/OneUIProvider";
@@ -104,10 +112,11 @@ import OneUIProvider from "@onepercent/one-ui/dist/context/OneUIProvider";
 ${`<OneUIProvider config={${JSON.stringify(pathJson, null, 4)}}>
 ...
 </OneUIProvider>`.replace(/[ ]/g, "-")}`
-        );
-      }
-    },
-  });
+          );
+        }
+      },
+    }
+  );
 }
 
 export function useOneUIContext() {
@@ -124,5 +133,10 @@ export function useOneUIConfig<
   T extends Get<ContextSpecs, P>
 >(prop: P, defaultValue?: T): NonNullable<Get<ContextSpecs, P>> {
   const context = useContext(Context);
-  return ErrorWrapper(get(context, prop) || defaultValue) as NonNullable<T>;
+  if (process.env.NODE_ENV === "development") {
+    const val = get(context, prop);
+    if (typeof val === "string") return val as any;
+    return ErrorWrapper(val || defaultValue) as NonNullable<T>;
+  }
+  return get(context, prop) || defaultValue;
 }

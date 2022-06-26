@@ -28,23 +28,25 @@ export default function AdaptiveButton({
     const sectionDiv = uncontrolledRef.current!.sectionRef.current;
     if (sectionDiv) sectionDiv.style.width = `${sectionDiv.clientWidth}px`;
     setTimeout(() => {
-      const sectionDiv = uncontrolledRef.current!.sectionRef.current;
-      if (sectionDiv) {
-        const lastChild = sectionDiv.lastChild as HTMLDivElement;
-        if (lastChild) {
-          const contentWidth = lastChild.clientWidth;
-          const targetWidth = `${contentWidth}px`;
-          sectionDiv.style.width = targetWidth;
-          function transEnd() {
-            setTimeout(() => {
-              if (sectionDiv?.style.width === `${contentWidth}px`)
-                sectionDiv!.style.width = "";
-            }, 100);
+      if (uncontrolledRef.current) {
+        const sectionDiv = uncontrolledRef.current.sectionRef.current;
+        if (sectionDiv) {
+          const lastChild = sectionDiv.lastChild as HTMLDivElement;
+          if (lastChild) {
+            const contentWidth = lastChild.clientWidth;
+            const targetWidth = `${contentWidth}px`;
+            sectionDiv.style.width = targetWidth;
+            function transEnd() {
+              setTimeout(() => {
+                if (sectionDiv?.style.width === `${contentWidth}px`)
+                  sectionDiv!.style.width = "";
+              }, 100);
 
-            if (sectionDiv)
-              sectionDiv.removeEventListener("transitionend", transEnd);
+              if (sectionDiv)
+                sectionDiv.removeEventListener("transitionend", transEnd);
+            }
+            sectionDiv.addEventListener("transitionend", transEnd);
           }
-          sectionDiv.addEventListener("transitionend", transEnd);
         }
       }
     }, 100);

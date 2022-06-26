@@ -1,6 +1,7 @@
 import debounce from "lodash/debounce";
 import get from "lodash/get";
 import merge from "lodash/merge";
+import clone from "lodash/cloneDeep";
 import { Get } from "type-fest";
 import React, { useEffect } from "react";
 import { createContext, PropsWithChildren, useContext } from "react";
@@ -70,7 +71,7 @@ export default function OneUIProvider({
 }: PropsWithChildren<{ config: ContextConfigSpecs }>) {
   const prevCtx = useContext(Context);
   return (
-    <Context.Provider value={merge(prevCtx, config)}>
+    <Context.Provider value={merge(clone(prevCtx), config)}>
       {children}
     </Context.Provider>
   );

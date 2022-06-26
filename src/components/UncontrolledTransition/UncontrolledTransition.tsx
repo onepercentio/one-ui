@@ -2,6 +2,7 @@ import React, {
   ComponentProps,
   ForwardedRef,
   forwardRef,
+  Key,
   MutableRefObject,
   RefObject,
   useEffect,
@@ -25,12 +26,14 @@ function UncontrolledTransition(
     children = <React.Fragment key="default"></React.Fragment>,
     lockTransitionWidth = true,
     contentStyle,
+    onDiscardStep,
     ...props
   }: {
     className?: string;
     contentClassName?: string;
     children?: React.ReactElement;
     lockTransitionWidth?: boolean;
+    onDiscardStep?: (key: Key) => void;
   } & Pick<TransitionProps, "contentStyle"> &
     TransitionTypeDefinitions,
   ref: ForwardedRef<{
@@ -112,6 +115,7 @@ useLayoutEffect(() => {
           className={className}
           step={childStack.length - offset}
           onDiscardStep={(discardedKey) => {
+            if (onDiscardStep) onDiscardStep(discardedKey);
             orientation.current = "forward";
             setChildStack((prev) => {
               return {

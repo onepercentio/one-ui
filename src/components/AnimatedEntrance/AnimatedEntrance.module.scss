@@ -1,0 +1,71 @@
+@keyframes expand {
+  0% {
+    transform: translateX(100%);
+  }
+
+  35% {
+    transform: translateX(100%);
+  }
+
+  85% {
+    transform: translateX(-5%);
+  }
+
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+@keyframes nothing {
+  100% {
+    transform: translateX(100%);
+  }
+
+  65% {
+    transform: translateX(100%);
+  }
+
+  50% {
+    opacity: 0;
+  }
+
+  15% {
+    transform: translateX(-5%);
+    opacity: 1;
+  }
+
+  0% {
+    transform: translateX(0%);
+  }
+}
+$duration: 1s;
+
+.elementExiting {
+  animation-duration: $duration !important;
+  animation-name: nothing;
+  position: absolute;
+}
+
+.elementEntering {
+  animation-duration: $duration !important;
+  animation-name: expand;
+}
+.elementExitingReverse {
+  animation-duration: $duration !important;
+  animation-name: nothing;
+}
+
+.elementEnteringReverse {
+  animation-duration: $duration !important;
+  animation-name: expand;
+  position: absolute;
+}
+
+.resetHeight {
+  transition: max-height $duration/2 $duration * 0.2;
+  min-height: initial;
+  > * {
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
+  }
+}

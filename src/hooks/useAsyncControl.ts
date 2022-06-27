@@ -3,7 +3,7 @@ import { CommonErrorCodes } from "../types";
 
 export default function useAsyncControl<E extends CommonErrorCodes, F extends {
   [k: string]: (...args: any[]) => Promise<any>
-} | undefined = {}>(functionsToWrap: F) {
+} | undefined = {}>(functionsToWrap?: F) {
   const [error, setError] = useState<E>();
   const [loading, setLoading] = useState<boolean>(false);
 

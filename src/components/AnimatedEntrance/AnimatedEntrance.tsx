@@ -12,14 +12,44 @@ import { TransitionAnimationTypes } from "../Transition";
 import UncontrolledTransition from "../UncontrolledTransition";
 import Styles from "./AnimatedEntrance.module.scss";
 
+export enum EntranceType {
+  SLIDE_AND_EXPAND,
+  EXPAND,
+}
+
+const CONFIGS_BY_ENTRANCE_TYPE = {
+  [EntranceType.SLIDE_AND_EXPAND]: {
+    forward: {
+      elementEntering: Styles.elementEntering,
+      elementExiting: Styles.elementExiting,
+    },
+    backward: {
+      elementEntering: Styles.elementEnteringReverse,
+      elementExiting: Styles.elementExitingReverse,
+    },
+  },
+  [EntranceType.EXPAND]: {
+    forward: {
+      elementEntering: Styles.elementExpanding,
+      elementExiting: Styles.elementShrinking,
+    },
+    backward: {
+      elementEntering: Styles.elementExpandingReverse,
+      elementExiting: Styles.elementShrinkingReverse,
+    },
+  },
+};
+
 export function AnimatedEntranceItem({
   children,
   noEntranceAnimation,
   onRemoveChildren,
+  entranceType,
 }: {
   children: ReactElement;
   noEntranceAnimation: boolean;
   onRemoveChildren: (key: Key) => void;
+  entranceType: EntranceType;
 }) {
   const uncontRef = useRef<ElementRef<typeof UncontrolledTransition>>(null);
   const [screen, setScreen] = useState(
@@ -47,26 +77,22 @@ export function AnimatedEntranceItem({
     };
   }, [screen]);
 
+  const className = useMemo(
+    () => (!noEntranceAnimation ? Styles.maxHeight : ""),
+    [String(children.key).includes("-nullated")]
+  );
+
   return (
     <UncontrolledTransition
       ref={uncontRef}
       transitionType={TransitionAnimationTypes.CUSTOM}
-      className={Styles.resetHeight}
+      className={`${Styles.resetHeight} ${className}`}
       lockTransitionWidth
       key={String(children.key).replace("-nullated", "")}
       onDiscardStep={(k) => {
         if (k !== "null") onRemoveChildren(k!);
       }}
-      config={{
-        forward: {
-          elementEntering: Styles.elementEntering,
-          elementExiting: Styles.elementExiting,
-        },
-        backward: {
-          elementEntering: Styles.elementEnteringReverse,
-          elementExiting: Styles.elementExitingReverse,
-        },
-      }}
+      config={CONFIGS_BY_ENTRANCE_TYPE[entranceType]}
     >
       {screen}
     </UncontrolledTransition>
@@ -78,8 +104,10 @@ export function AnimatedEntranceItem({
  **/
 export default function AnimatedEntrance({
   children,
+  entranceType = EntranceType.SLIDE_AND_EXPAND,
 }: {
   children: ReactElement[];
+  entranceType?: EntranceType;
 }) {
   const firstRef = useRef(true);
   useEffect(() => {
@@ -126,6 +154,7 @@ export default function AnimatedEntrance({
         <AnimatedEntranceItem
           key={String(child.key!).replace("-nullated", "")}
           noEntranceAnimation={firstRef.current}
+          entranceType={entranceType}
           onRemoveChildren={(k) =>
             (prevChildren.current = prevChildren.current.filter(
               (a) => a.key !== String(k) + "-nullated"

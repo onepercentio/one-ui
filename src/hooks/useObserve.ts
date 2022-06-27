@@ -11,13 +11,14 @@ export default function useObserve<T extends any>(
   keysToObserve: (keyof T)[]
 ) {
   const [_, ss] = useState(0);
-  useLayoutEffect(() => {    
+  useLayoutEffect(() => {
     const arr = Array.isArray(toObserve) ? toObserve : [toObserve]
-    for (let object of arr)
-      return (object as Object).watch(keysToObserve as any, () => {
-        ss((p) => {
-          return p + 1
-        });
+    const unwatchers = arr.map(object => (object as Object).watch(keysToObserve as any, () => {
+      ss((p) => {
+        return p + 1
       });
+    }))
+
+    return () => unwatchers.forEach(unwatch => unwatch())
   }, [toObserve]);
 }

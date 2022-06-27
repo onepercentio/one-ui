@@ -16,7 +16,7 @@
   }
 }
 
-@keyframes nothing {
+@keyframes exiting {
   100% {
     transform: translateX(100%);
   }
@@ -42,7 +42,7 @@ $duration: 1s;
 
 .elementExiting {
   animation-duration: $duration !important;
-  animation-name: nothing;
+  animation-name: exiting;
   position: absolute;
 }
 
@@ -52,7 +52,7 @@ $duration: 1s;
 }
 .elementExitingReverse {
   animation-duration: $duration !important;
-  animation-name: nothing;
+  animation-name: exiting;
 }
 
 .elementEnteringReverse {
@@ -64,8 +64,43 @@ $duration: 1s;
 .resetHeight {
   transition: max-height $duration/2 $duration * 0.2;
   min-height: initial;
+  align-items: flex-start !important;
   > * {
     justify-content: flex-start !important;
-    align-items: flex-start !important;
   }
+}
+
+.maxHeight {
+  max-height: 0px;
+}
+
+@keyframes nothing {
+  100% {
+    transform: translateX(0%);
+  }
+
+  0% {
+    transform: translateX(0%);
+  }
+}
+
+.elementShrinking {
+  animation-duration: $duration !important;
+  animation-name: nothing;
+  position: absolute;
+}
+
+.elementExpanding {
+  animation-duration: $duration !important;
+  animation-name: nothing;
+}
+.elementShrinkingReverse {
+  animation-duration: $duration !important;
+  animation-name: nothing;
+}
+
+.elementExpandingReverse {
+  animation-duration: $duration !important;
+  animation-name: nothing;
+  position: absolute;
 }

@@ -2,6 +2,7 @@ import React from "react";
 import { mount } from "cypress/react";
 
 import { InitialImplementation as Component } from "../../../../src/components/AnimatedEntrance/AnimatedEntrance.stories";
+import * as AllExamples from "../../../../src/components/AnimatedEntrance/AnimatedEntrance.stories";
 
 function renderScreen(props: React.ComponentProps<typeof Component>) {
   return mount(<Component {...props} />);
@@ -11,7 +12,16 @@ it("Should at least render :)", () => {
   renderScreen({});
 });
 
-it.only(`Should reveal a component
+it.only("All examples mount at least", () => {
+  for (let ExampleName in AllExamples) {
+    if (ExampleName === 'default') return;
+    const Example = AllExamples[ExampleName];
+    mount(<Example {...Example.args}/>)
+    cy.wait(2000);
+  }
+})
+
+it(`Should reveal a component
 Should animate exiting of a component`, () => {
   mount(<Component />);
   for (let i = 0; i < 5; i++) cy.get("button").last().click();

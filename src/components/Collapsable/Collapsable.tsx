@@ -138,8 +138,6 @@ class _CollapsableInterface {
 
 /**
  * A helper function for interacting with collapsables without a reference
- * @param id
- * @returns
  */
 export function CollapsableInterface(id: string) {
   return new _CollapsableInterface(id);

@@ -1,3 +1,4 @@
+import { mount } from "cypress/react";
 import { ComponentProps, PropsWithChildren } from "react";
 import OneUIProvider, {
   useOneUIConfig,
@@ -20,4 +21,20 @@ it("Should return the string when the value exists", () => {
   ).then((r) => {
     expect(r.current).to.eq("someclassname");
   });
+});
+it.only("Should give false when comparing", () => {
+  function Wrap() {
+    const classes = useOneUIConfig("component.text.className", {});
+    return (
+      <div>
+        {/* <h1 className={classes.boldTitle}>Access: </h1> */}
+        <h1 className={classes.boldTitle || "SOMETHING"}>Or: </h1>
+      </div>
+    );
+  }
+  mount(
+    <OneUIProvider config={{}}>
+      <Wrap />
+    </OneUIProvider>
+  );
 });

@@ -5,7 +5,7 @@ import Styles from "./Text.module.scss";
 /**
  * A component to hold all text variantions
  **/
-function Text(
+export function _Text(
   {
     type,
     children,
@@ -28,13 +28,12 @@ function Text(
         | "content";
     } & React.HTMLAttributes<HTMLParagraphElement>
   >,
-  ref: ForwardedRef<HTMLParagraphElement>
 ) {
   const classNameType = useOneUIConfig("component.text.className", {});
 
   return (
     <p
-      ref={ref}
+      ref={arguments[1]}
       className={`${Styles.text} ${
         classNameType[type] || Styles[type]
       } ${className} ${otherProps.onClick ? Styles.iteractible : ""}`}
@@ -45,4 +44,4 @@ function Text(
   );
 }
 
-export default forwardRef(Text);
+export default forwardRef(_Text);

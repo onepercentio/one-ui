@@ -11,7 +11,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useOneUIContext } from "../../context/OneUIProvider";
+import { useOneUIConfig, useOneUIContext } from "../../context/OneUIProvider";
 import Text from "../Text";
 import Styles from "./Input.module.scss";
 
@@ -27,8 +27,11 @@ export type InputProps = {
     onClick?: () => void;
   } & DetailedHTMLProps<React.ImgHTMLAttributes<HTMLImageElement>, any>;
   Icon?: React.ReactElement;
-  onChange?: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>
-} & Omit<React.HTMLProps<HTMLInputElement | HTMLTextAreaElement>, "ref" | "onChange">;
+  onChange?: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+} & Omit<
+  React.HTMLProps<HTMLInputElement | HTMLTextAreaElement>,
+  "ref" | "onChange"
+>;
 
 /**
  * A transparent input with some prebuilt states common to the application
@@ -49,11 +52,8 @@ function Input(
   }: InputProps,
   ref: ForwardedRef<any>
 ) {
-  const {
-    component: {
-      input: { className, border: globalBorder = true },
-    },
-  } = useOneUIContext();
+  const className = useOneUIConfig("component.input.className");
+  const globalBorder = useOneUIConfig("component.input.border");
   const [focused, setFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
   useImperativeHandle(ref, () => inputRef.current, []);

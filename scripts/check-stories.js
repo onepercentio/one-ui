@@ -1,4 +1,4 @@
-const { writeFileSync, existsSync } = require("fs");
+const { writeFileSync, existsSync, mkdirSync } = require("fs");
 const { resolve, join } = require("path");
 
 const compsPath = join(".", "src", "components");
@@ -6,7 +6,7 @@ const compsFolder = resolve(compsPath);
 
 const dirs = require("fs").readdirSync(compsFolder);
 
-const IGNORED_DIRS = ["utilitary", "HSForms"];
+const IGNORED_DIRS = ["utilitary", "HSForms", "WalletConnectionWrapper"];
 const files = dirs
   .filter((dir) => !IGNORED_DIRS.includes(dir))
   .map((dir) => ({
@@ -22,11 +22,12 @@ const files = dirs
     comp: dir,
   }));
 
-files.forEach(({ filePath, comp }, i) => {
+files.forEach(({ filePath, testFilePath, comp }, i) => {
   const testExists = existsSync(testFilePath);
-  if (!testExists)
+  if (!testExists) {
+    mkdirSync(join(testFilePath, ".."));
     writeFileSync(
-      filePath,
+      testFilePath,
       `import React from "react";
 import { mount } from "cypress/react";
 import * as AllExamples from "../../../../src/components/${comp}/${comp}.stories";
@@ -36,15 +37,17 @@ it("All examples mount at least", () => {
         if (ExampleName === 'default') return;
         const Example = AllExamples[ExampleName];
         mount(<Example {...Example.args}/>)
-        cy.wait(2000);
+        cy.wait(500);
     }
 })`
     );
+  }
   const storyAlreadyExists = existsSync(filePath);
   if (!storyAlreadyExists)
     writeFileSync(
       filePath,
-      `import ${comp} from "./${comp}"
+      `import React from "react";
+import ${comp} from "./${comp}"
 
 export default {
     title: '${comp.replace(/[A-Z]/g, (part) => " " + part).trim()}',

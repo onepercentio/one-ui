@@ -1,25 +1,24 @@
 import React, { ElementRef, ForwardedRef, forwardRef } from "react";
 import Styles from "./Button.module.scss";
 
+type ButtonProps = React.PropsWithChildren<
+  React.ButtonHTMLAttributes<HTMLButtonElement> & {
+    variant?: "transparent" | "filled" | "outline";
+  }
+>;
+
 /**
  * A simple button with the new design
  **/
-function Button(
-  {
-    children,
-    variant = "transparent",
-    className = "",
-    ...otherProps
-  }: React.PropsWithChildren<
-    React.ButtonHTMLAttributes<HTMLButtonElement> & {
-      variant?: "transparent" | "filled" | "outline";
-    }
-  >,
-  ref: ForwardedRef<HTMLButtonElement>
-) {
+export function _Button({
+  children,
+  variant = "transparent",
+  className = "",
+  ...otherProps
+}: ButtonProps) {
   return (
     <button
-      ref={ref}
+      ref={arguments[1]}
       className={`${Styles.button} ${Styles[variant]} ${className}`}
       {...otherProps}
     >
@@ -28,4 +27,4 @@ function Button(
   );
 }
 
-export default forwardRef(Button);
+export default forwardRef<HTMLButtonElement, ButtonProps>(_Button);

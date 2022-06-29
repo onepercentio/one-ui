@@ -17,7 +17,7 @@ it.only("All examples mount at least", () => {
     if (ExampleName === 'default') return;
     const Example = AllExamples[ExampleName];
     mount(<Example {...Example.args}/>)
-    cy.wait(2000);
+    cy.wait(500);
   }
 })
 

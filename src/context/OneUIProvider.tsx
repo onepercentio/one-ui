@@ -90,7 +90,8 @@ function ErrorWrapper(
         }
         try {
           const value = originalObject[key];
-          if (typeof value === "undefined" || typeof value === "object")
+          if (typeof value === "undefined") return undefined;
+          if (typeof value === "object")
             return ErrorWrapper(value, [path, key].filter(Boolean).join("."));
           return value;
         } catch (e) {

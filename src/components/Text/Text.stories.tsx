@@ -3,15 +3,15 @@ import {
   extractAllPossibilitiesFromEnumProp,
   SideBySideContainer,
 } from "../../storybookUtils";
-import C from "./Text";
+import C, {_Text as CompType} from "./Text";
 
 export default {
-  component: C,
+  component: CompType,
   title: "Variantes de texto",
 };
 
 export const TodasVariacoes = () => {
-  const variantes = extractAllPossibilitiesFromEnumProp(C, "type");
+  const variantes = extractAllPossibilitiesFromEnumProp(CompType, "type");
 
   return variantes.map((a) => (
     <SideBySideContainer exampleName={a}>

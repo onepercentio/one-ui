@@ -1,12 +1,8 @@
 import React, {
   ComponentProps,
-  DetailedHTMLProps,
   ForwardedRef,
   forwardRef,
   FunctionComponent,
-  HTMLAttributes,
-  MutableRefObject,
-  ReactElement,
   RefObject,
   useImperativeHandle,
   useMemo,
@@ -87,7 +83,7 @@ export type FormInterface = {
   clear: () => void;
 };
 
-type FirebaseFormProps<M extends FormForm> = {
+export type FirebaseFormProps<M extends FormForm> = {
   ref?: RefObject<FormInterface>;
   submitting: boolean;
   onSubmit: (data: M) => void;

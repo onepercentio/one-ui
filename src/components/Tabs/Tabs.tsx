@@ -12,7 +12,7 @@ export default function Tabs<O extends string>({options, selected, onSelect}: {o
     const guideRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
         guideRef.current!.style['opacity'] = selectedRef.current ? "1" : "0"; 
-        guideRef.current!.style['width'] = selectedRef.current ? selectedRef.current.clientWidth + "px" : "initial";
+        guideRef.current!.style['width'] = selectedRef.current ? selectedRef.current.clientWidth + "px" : "0px";
         guideRef.current!.style['left'] = selectedRef.current ? selectedRef.current.offsetLeft + "px" : "initial";
         guideRef.current!.style['top'] = selectedRef.current ? selectedRef.current.offsetTop + selectedRef.current.clientHeight + "px" : "initial";
     }, [selected]);

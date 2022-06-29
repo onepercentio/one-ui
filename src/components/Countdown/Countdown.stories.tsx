@@ -4,7 +4,7 @@ import {
   extractAllPossibilitiesFromEnumProp,
   SideBySideContainer,
 } from "../../storybookUtils";
-import Text from "../Text";
+import Text, { _Text } from "../Text/Text";
 import Countdown from "./Countdown";
 
 export default {
@@ -22,7 +22,7 @@ InitialImplementation.args = {
 } as Partial<React.ComponentProps<typeof Countdown>>;
 
 export const SynergyTextAndCountdown = (args: any) => {
-  const variants = extractAllPossibilitiesFromEnumProp(Text, "type");
+  const variants = extractAllPossibilitiesFromEnumProp(_Text, "type");
 
   return variants.map((type) => {
     return (

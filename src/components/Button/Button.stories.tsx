@@ -1,14 +1,15 @@
 import React from "react";
-import Comp from ".";
+import Comp, { _Button } from "./Button";
 import Spacing from "../Spacing";
+console.warn(_Button)
 
 export default {
-  component: Comp,
+  component: _Button,
   title: "Botão",
 };
 
 export const TodasVariacoes = () => {
-  const variantes: { value: string }[] = (Comp as any).__docgenInfo.props
+  const variantes: { value: string }[] = (_Button as any).__docgenInfo.props
     .variant.type.value;
 
   return variantes

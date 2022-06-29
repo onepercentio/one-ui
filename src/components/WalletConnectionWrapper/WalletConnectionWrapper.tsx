@@ -3,6 +3,8 @@ import React, {
   ForwardedRef,
   forwardRef,
   PropsWithChildren,
+  ReactElement,
+  ReactNode,
   useEffect,
   useImperativeHandle,
   useMemo,
@@ -53,7 +55,7 @@ type Props = {
   /**
    * This renders the content that is shown inside the wallet content
    */
-  Content: React.FunctionComponent<WalletConnectionProps>;
+  Content: (props: WalletConnectionProps) => ReactElement;
 };
 
 /**
@@ -89,7 +91,7 @@ function Content({
   ProviderUnavailable,
   ChainIdInvalid,
   chain,
-  Content,
+  Content: ProvidedContentWrapper,
   compRef,
   children,
 }: PropsWithChildren<
@@ -161,6 +163,7 @@ function Content({
       }
     }
   }
+  const ContentWrapper = ProvidedContentWrapper as any;
   return (
     <>
       {ProviderUnavailable && !isProviderAvailable && <ProviderUnavailable />}
@@ -168,7 +171,7 @@ function Content({
         <ChainIdInvalid changeChainId={changeChainId} />
       )}
       {
-        <Content
+        <ContentWrapper
           {...connectionAsyncWrapper}
           isChainIdValid={isChainIdValid}
           isProviderAvailable={isProviderAvailable}
@@ -181,7 +184,7 @@ function Content({
           wallet={wallet.account}
         >
           {children}
-        </Content>
+        </ContentWrapper>
       }
     </>
   );

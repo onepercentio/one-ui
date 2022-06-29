@@ -5,7 +5,7 @@ import React, {
   useImperativeHandle,
   useState,
 } from "react";
-import { useOneUIContext } from "../../context/OneUIProvider";
+import { useOneUIConfig, useOneUIContext } from "../../context/OneUIProvider";
 import Input from "../Input";
 import Text from "../Text";
 import Styles from "./PasswordInput.module.scss";
@@ -69,11 +69,9 @@ function PasswordInput(
   ref: ForwardedRef<{ validatePassword: (pass: string) => boolean }>
 ) {
   const [isPasswordVisibile, setIPV] = useState(false);
-  const {
-    passwordHidden,
-    passwordVisible,
-  } = useOneUIContext().component.passwordInput.iconSrc;
-
+  const { passwordHidden, passwordVisible } = useOneUIConfig(
+    "component.passwordInput.iconSrc"
+  );
   function _validatePassword(password: string) {
     switch (props.mode) {
       case "creation":

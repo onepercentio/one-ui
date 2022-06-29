@@ -1,3 +1,4 @@
+import React from "react";
 import LinkToId from "./LinkToId"
 
 export default {

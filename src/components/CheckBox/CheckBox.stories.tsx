@@ -3,7 +3,7 @@ import {
   extractAllPossibilitiesFromEnumProp,
   SideBySideContainer,
 } from "../../storybookUtils";
-import Text from "../Text";
+import Text, { _Text } from "../Text/Text";
 import CheckBox from "./CheckBox";
 
 export default {
@@ -18,7 +18,7 @@ Primary.args = {
 } as Partial<ComponentProps<typeof CheckBox>>;
 
 export const SynergyTextAndCheckbox = (args: any) => {
-  const variants = extractAllPossibilitiesFromEnumProp(Text, "type");
+  const variants = extractAllPossibilitiesFromEnumProp(_Text, "type");
 
   return variants.map((type) => {
     return (

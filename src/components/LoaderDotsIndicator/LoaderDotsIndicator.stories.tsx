@@ -1,3 +1,4 @@
+import React from "react";
 import LoaderDotsIndicator from "./LoaderDotsIndicator"
 
 export default {

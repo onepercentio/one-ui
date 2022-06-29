@@ -7,3 +7,5 @@ storybook-static/
 .yarn/
 .firebase/
 .yarnrc*
+screenshots/
+videos/

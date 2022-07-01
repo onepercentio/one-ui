@@ -1,9 +1,7 @@
 import { useCallback, useState } from "react";
 import { CommonErrorCodes } from "../types";
 
-export default function useAsyncControl<E extends CommonErrorCodes, F extends {
-  [k: string]: (...args: any[]) => Promise<any>
-} | undefined = {}>(functionsToWrap?: F) {
+export default function useAsyncControl<E extends CommonErrorCodes, F = any>(functionsToWrap?: F) {
   const [error, setError] = useState<E>();
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -15,6 +13,7 @@ export default function useAsyncControl<E extends CommonErrorCodes, F extends {
     } catch (e) {
       if (process.env.NODE_ENV === "development") console.error(e);
       setError("UNEXPECTED_ERROR" as E);
+      throw e;
     } finally {
       setLoading(false);
     }
@@ -29,7 +28,7 @@ export default function useAsyncControl<E extends CommonErrorCodes, F extends {
     ...Object.entries(functionsToWrap || {}).reduce((r, [k, func]) => {
       return {
         ...r,
-        [k]: (...args) => _process(() => func(...args))
+        [k]: (...args: any[]) => _process(() => (func as any)(...args))
       }
     }, {} as F) as F
   };

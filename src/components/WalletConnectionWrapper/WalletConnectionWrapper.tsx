@@ -78,7 +78,9 @@ function WalletConnectionWrapper(
  * This component handles a lot of cenarios when dealing with the wallet connection to different providers (ex: Metamask)
  **/
 function _BaseWalletConnectionWrapper(
-  props: PropsWithChildren<Props>,
+  props: Props & {
+    children?: any
+  },
   ref: ForwardedRef<{
     connect: () => Promise<void>;
     disconnect: () => void;

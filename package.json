@@ -1,11 +1,12 @@
 {
   "name": "@onepercentio/one-ui",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "A set of reusable components created through the development of Onepercent projects",
   "files": [
     "dist",
     "WebpackConfigs",
-    "cypress/support"
+    "cypress/support",
+    "src/types.d.ts"
   ],
   "bin": {
     "start-emulator": "scripts/start-emulator.js"

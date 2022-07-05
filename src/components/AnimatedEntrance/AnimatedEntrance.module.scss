@@ -1,3 +1,4 @@
+@use 'sass:math';
 @keyframes expand {
   0% {
     transform: translateX(100%);
@@ -62,7 +63,7 @@ $duration: 1s;
 }
 
 .resetHeight {
-  transition: max-height $duration/2 $duration * 0.2;
+  transition: max-height math.div($duration, 2) $duration * 0.2;
   min-height: initial;
   align-items: flex-start !important;
   > * {

@@ -1,6 +1,7 @@
+@use 'sass:math';
 @import "../../assets/styles/index.scss";
 
-$slice: 1/7;
+$slice: math.div(1, 7);
 
 .container {
   box-sizing: content-box;
@@ -14,6 +15,7 @@ $slice: 1/7;
   background-size: 0 0;
   background-repeat: no-repeat;
   transition: transform 250ms;
+  transition-timing-function: ease-in-out;
   &:active {
     transform: scale(0.9);
   }
@@ -22,7 +24,7 @@ $slice: 1/7;
     box-sizing: content-box;
     width: 0.8em;
     height: #{$slice}em;
-    border-radius: #{$slice / 2}em;
+    border-radius: #{math.div($slice, 2)}em;
     transition: transform $veryFast, width $veryFast, height $veryFast,
       border-width $veryFast, background-color $veryFast,
       border-radius $veryFast;
@@ -103,19 +105,19 @@ $slice: 1/7;
       height: #{$slice * $rate}em;
       border-radius: #{$slice * $rate * 2}em;
       background-color: transparent;
-      border: #{$slice / 1.35}em solid
+      border: #{math.div($slice, 1.35)}em solid
         var(--mutable-hamburger-background, $digitalBlue);
       transform: translateX(-0.15em);
     }
     > :nth-child(2) {
       transform: translateX(0.12em) translateY(-0.05em) rotateZ(45deg);
-      height: #{$slice / 1.35}em;
+      height: #{math.div($slice, 1.35)}em;
       width: 0.55em;
     }
     > :nth-child(3) {
       transform: translateX(0.12em) translateY(-#{($slice * 1.3) + 0.05}em)
         rotateZ(45deg);
-      height: #{$slice / 1.35}em;
+      height: #{math.div($slice, 1.35)}em;
       width: 0.55em;
     }
   }
@@ -140,7 +142,7 @@ $slice: 1/7;
   }
 
   &.loading {
-    $slice: 1/5;
+    $slice: math.div(1, 6);
     @keyframes rotate {
       0% {
         transform: rotate(0deg);

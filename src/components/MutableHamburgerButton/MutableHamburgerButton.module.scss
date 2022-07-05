@@ -18,14 +18,28 @@ $slice: 1/7;
     transform: scale(0.9);
   }
   > * {
+    flex-shrink: 0;
     box-sizing: content-box;
     width: 0.8em;
     height: #{$slice}em;
     border-radius: #{$slice / 2}em;
-    transition: transform $veryFast, width $veryFast;
+    transition: transform $veryFast, width $veryFast, height $veryFast,
+      border-width $veryFast, background-color $veryFast,
+      border-radius $veryFast;
     background: var(--mutable-hamburger-background, $digitalBlue);
     background-size: 1em 1em;
     background-repeat: no-repeat;
+    border: 0em solid #0000;
+    &:nth-child(1) {
+      border-top-color: var(--mutable-hamburger-background, $digitalBlue);
+    }
+    &:nth-child(2) {
+      border-right-color: var(--mutable-hamburger-background, $digitalBlue);
+    }
+    &:nth-child(3) {
+      border-bottom-color: var(--mutable-hamburger-background, $digitalBlue);
+      border-left-color: var(--mutable-hamburger-background, $digitalBlue);
+    }
   }
   & > * {
     background-position-x: -0.1em;
@@ -103,6 +117,58 @@ $slice: 1/7;
         rotateZ(45deg);
       height: #{$slice / 1.35}em;
       width: 0.55em;
+    }
+  }
+
+  &.checkmark {
+    > :nth-child(1) {
+      transform: translateY(#{$slice * 2}em) translateX(-0.178em)
+        translateY(0.13em) rotate(45deg);
+      height: #{$slice}em;
+      width: 0.45em;
+    }
+    > :nth-child(2) {
+      height: #{$slice}em;
+      width: 0.7em;
+      transform: translateX(0.1em) rotate(-55deg);
+    }
+    > :nth-child(3) {
+      transform: translateY(-#{$slice * 2}em) translateX(0.1em) rotate(-55deg);
+      height: #{$slice}em;
+      width: 0.7em;
+    }
+  }
+
+  &.loading {
+    $slice: 1/5;
+    @keyframes rotate {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+    animation-name: rotate;
+    animation-duration: 1s;
+    animation-delay: $veryFast;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    > * {
+      background-color: #0000;
+      width: #{$slice * 2.5}em;
+      height: #{$slice * 2.5}em;
+      border-radius: #{$slice * 2.5}em;
+      border-width: #{$slice}em;
+    }
+    > :nth-child(1) {
+      transform: translateY(#{$slice * 4.5}em);
+    }
+    > :nth-child(2) {
+      transform: rotateZ(-5deg);
+    }
+    > :nth-child(3) {
+      transform: translateY(-#{$slice * 4.5}em) rotateZ(-95deg);
     }
   }
 }

@@ -10,7 +10,7 @@ export default function MutableHamburgerButton({
   className = "",
   ...props
 }: {
-  state?: "default" | "closed" | "arrow-up" | "arrow-down" | "search";
+  state?: "default" | "closed" | "arrow-up" | "arrow-down" | "search" | "loading" | "checkmark";
   size: number;
 } & React.HTMLProps<HTMLDivElement>) {
   return (

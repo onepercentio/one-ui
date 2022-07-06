@@ -1,0 +1,36 @@
+@import "../../assets/styles/variables.scss";
+
+.root {
+  position: relative;
+  z-index: 1;
+  > :not(div) {
+    mix-blend-mode: color;
+  }
+  > div > * {
+    mix-blend-mode: color;
+  }
+  &::before,
+  &::after {
+    background: var(--bg);
+    width: 100%;
+    position: absolute;
+    content: " ";
+    z-index: -1;
+    transition: height $fast, background-size $fast;
+  }
+  &::before {
+    opacity: 0;
+    top: 0;
+    height: var(--fill-height);
+  }
+  &::after {
+    opacity: 0.6;
+    bottom: 0;
+    height: var(--empty-height);
+    background-size: 100% var(--bg-offset);
+    background-position: bottom;
+  }
+  .ignoreFill {
+    mix-blend-mode: multiply;
+  }
+}

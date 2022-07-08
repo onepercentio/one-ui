@@ -67,10 +67,17 @@ export function AnimatedEntranceItem({
       const key = String(screen.key!);
       if (key === "null" || key.includes("-nullated"))
         uncontRef.current!.sectionRef.current!.style.maxHeight = `0px`;
-      else
+      else {
         uncontRef.current!.sectionRef.current!.style.maxHeight = `${
           uncontRef.current!.sectionRef.current!.scrollHeight
         }px`;
+        uncontRef.current!.sectionRef.current!.addEventListener(
+          "transitionend",
+          () => {
+            uncontRef.current!.sectionRef.current!.style.maxHeight = "";
+          }
+        );
+      }
     }, 100);
     return () => {
       clearTimeout(x);

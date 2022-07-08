@@ -52,21 +52,6 @@ function UncontrolledTransition(
   // const [offset, setOffset] = useState(1);
   const orientation = useRef<"forward" | "backward">("forward");
   function setOrientation(a: typeof orientation.current) {
-    try {
-      throw new Error();
-    } catch (e) {
-      const stacktrace = (e as Error).stack;
-      if (stacktrace?.includes("invokePassiveEffectCreate")) {
-        throw new Error(`It seems you are calling the setBackwards from a useEffect. This will cause unexpected behaviour. Please switch to:
-        
-useLayoutEffect(() => {
-  // do your thing
-  ref.current.setOrientation("backwards")
-})
-
-`);
-      }
-    }
     orientation.current = a;
   }
 

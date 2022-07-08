@@ -8,7 +8,7 @@ export default function useCustomHistory() {
         ...customHistory,
         goBackWithFallback(fallbackRoute: string) {
             if (state?.internalNavigation) customHistory.goBack();
-            else customHistory.replace(fallbackRoute);
+            else customHistory.push(fallbackRoute);
         }
     }
 }

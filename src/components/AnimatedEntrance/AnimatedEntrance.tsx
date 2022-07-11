@@ -65,6 +65,8 @@ export function AnimatedEntranceItem({
   useEffect(() => {
     const x = setTimeout(() => {
       const key = String(screen.key!);
+      console.log(key, uncontRef.current!.sectionRef.current!.scrollHeight);
+      
       if (key === "null" || key.includes("-nullated"))
         uncontRef.current!.sectionRef.current!.style.maxHeight = `0px`;
       else {
@@ -74,7 +76,7 @@ export function AnimatedEntranceItem({
         uncontRef.current!.sectionRef.current!.addEventListener(
           "transitionend",
           () => {
-            uncontRef.current!.sectionRef.current!.style.maxHeight = "";
+            uncontRef.current!.sectionRef.current!.style.maxHeight = "auto";
           }
         );
       }

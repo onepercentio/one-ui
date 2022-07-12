@@ -3,8 +3,10 @@ import React, {
   createRef,
   ForwardedRef,
   forwardRef,
+  Key,
   MutableRefObject,
   PropsWithChildren,
+  ReactElement,
   useEffect,
   useMemo,
   useRef,
@@ -108,6 +110,18 @@ function TransitionClasses(
   }
 }
 
+type ChildrenWrapper = ((props: {
+  children: TransitionProps["children"][number];
+}) => ReactElement) & { associatedKey: Key };
+
+function ChildrenWrapperFactory(
+  func: (p: { children: TransitionProps["children"] }) => ReactElement,
+  key: Key
+): ChildrenWrapper {
+  (func as any).associatedKey = key;
+  return func as unknown as ChildrenWrapper;
+}
+
 /**
  * Handles the transition between multiple children and recycling of elements
  **/
@@ -134,19 +148,32 @@ function Transition(
   }>({
     transformOrigin: "initial",
   });
-  const [screensStack, setScreensStack] = useState([
-    <div
-      data-testid="transition-container"
-      key={String(children[step]?.key || step)}
-      style={contentStyle}
-      className={contentClassName}
-    >
-      {children[step]}
-    </div>,
-  ]);
+  const [childrenWrappers, setChildrenWrappers] = useState<
+    (ChildrenWrapper | undefined)[]
+  >(() => {
+    const func = ChildrenWrapperFactory(
+      ({ children }) => (
+        <div
+          data-testid="transition-container"
+          key={String(children[step]?.key || step)}
+          style={contentStyle}
+          className={contentClassName}
+        >
+          {children}
+          {/* {children[step]} */}
+        </div>
+      ),
+      children[step]!.key || step
+    );
+    return [func];
+  });
 
   const prevStep = useRef(step);
-  const prevKey = useRef(children[step]?.key);
+  const prevChild = useRef(children[step]);
+
+  useEffect(() => () => {
+    prevChild.current = children[step];
+  });
 
   useEffect(() => {
     containerRef.current!.style.overflow = "hidden";
@@ -158,8 +185,8 @@ function Transition(
           );
 
     if (
-      prevKey.current !== null &&
-      children[step]?.key === prevKey.current // I'm rendering the same screen
+      prevChild.current !== null &&
+      children[step]?.key === prevChild.current?.key // I'm rendering the same screen
     ) {
       return () => {
         prevStep.current = step;
@@ -175,28 +202,29 @@ function Transition(
 
     if (prevStep.current > step) {
       const stepToRemove = prevStep.current;
-      const prevKeyToRemove = prevKey.current || stepToRemove;
-      setScreensStack((screensBeforeChangingStep) => {
+      const prevKeyToRemove = prevChild.current?.key || stepToRemove;
+      setChildrenWrappers((screensBeforeChangingStep) => {
         const enteringScreenRef = createRef<HTMLDivElement>();
-        const [firstNextScreen, ...restOfScreens] =
-          screensBeforeChangingStep.filter((a) => a.key !== String(key));
+        const [FirstNextScreen, ...restOfScreens] =
+          screensBeforeChangingStep.filter(
+            (a) => a?.associatedKey !== String(key)
+          );
 
-        const clonedFirst = firstNextScreen ? (
-          React.cloneElement(firstNextScreen, {
-            "data-testid": "transition-container",
-            style: {
-              ...contentStyle,
-            },
-            className: `${transitionClasses.backward.elementExiting} ${
-              firstNextScreen?.props.className?.replace(
-                transitionClasses.backward.elementEntering,
-                ""
-              ) || ""
-            }`,
-          })
-        ) : (
-          <React.Fragment />
-        );
+        const clonedFirst = FirstNextScreen
+          ? ChildrenWrapperFactory(() => {
+              return (
+                <div
+                  data-testid="transition-container"
+                  style={contentStyle}
+                  className={`${
+                    transitionClasses.backward.elementExiting
+                  } ${""}`}
+                >
+                  {prevChild.current}
+                </div>
+              );
+            }, FirstNextScreen.associatedKey)
+          : ChildrenWrapperFactory(() => <React.Fragment />, "");
         function animationEndListener(element: AnimationEvent<HTMLDivElement>) {
           const isAnimationFromExpectedState =
             enteringScreenRef.current?.classList.contains(
@@ -205,11 +233,11 @@ function Transition(
           enteringScreenRef.current?.classList.remove(
             transitionClasses.backward.elementEntering
           );
-          setScreensStack((screensAfterTheCurrentStepEntered) => {
+          setChildrenWrappers((screensAfterTheCurrentStepEntered) => {
             if (onDiscardStep && isAnimationFromExpectedState)
               onDiscardStep(prevKeyToRemove);
             return screensAfterTheCurrentStepEntered.filter(
-              (s) => s.key !== String(prevKeyToRemove)
+              (s) => s?.associatedKey !== String(prevKeyToRemove)
             );
           });
           element.currentTarget.removeEventListener(
@@ -217,84 +245,91 @@ function Transition(
             animationEndListener as any
           );
         }
-        return [
-          <div
-            ref={enteringScreenRef}
-            data-testid="transition-container"
-            key={key}
-            className={`${transitionClasses.backward.elementEntering} ${contentClassName}`}
-            style={{
-              ...contentStyle,
-            }}
-            onAnimationEnd={animationEndListener}
-          >
-            {children[step]}
-          </div>,
-          clonedFirst,
-          ...restOfScreens,
-        ];
+        const newWrapper = ChildrenWrapperFactory(({ children }) => {
+          return (
+            <div
+              ref={enteringScreenRef}
+              data-testid="transition-container"
+              key={key}
+              className={`${transitionClasses.backward.elementEntering} ${contentClassName}`}
+              style={{
+                ...contentStyle,
+              }}
+              onAnimationEnd={animationEndListener}
+            >
+              {children}
+            </div>
+          );
+        }, key);
+        return [newWrapper, clonedFirst, ...restOfScreens];
       });
     } else if (prevStep.current < step) {
       const stepToDelete = prevStep.current;
-      const prevKeyToRemove = prevKey.current || stepToDelete;
-      setScreensStack((screensBeforeChangingStep) => {
+      const prevKeyToRemove = prevChild.current?.key || stepToDelete;
+      setChildrenWrappers((screensBeforeChangingStep) => {
         const lastIndex = screensBeforeChangingStep.length - 1;
-        const lastScreen = screensBeforeChangingStep[lastIndex];
+        const lastWrapper = screensBeforeChangingStep[lastIndex];
         const nextScreenRef = createRef<HTMLDivElement>();
-        const clonedLast = lastScreen ? (
-          React.cloneElement(lastScreen, {
-            "data-testid": "transition-container",
-            style: {
-              ...contentStyle,
-            },
-            className: `${contentClassName} ${transitionClasses.forward.elementExiting}`,
-            onAnimationEnd: (e: any) => {
-              if (e.target !== e.currentTarget) return;
-              if (transitionClasses.forward.elementEntering)
-                nextScreenRef.current?.classList.remove(
-                  transitionClasses.forward.elementEntering
-                );
-              if (onDiscardStep) onDiscardStep(prevKeyToRemove);
-              setScreensStack((screensAfterTheCurrentStepEntered) => {
-                const nextState = screensAfterTheCurrentStepEntered.filter(
-                  (s) => {
-                    return s.key !== String(prevKeyToRemove);
-                  }
-                );
-                return nextState;
-              });
-            },
-          })
-        ) : (
-          <React.Fragment />
+        const clonedLast = lastWrapper
+          ? ChildrenWrapperFactory(() => {
+              return (
+                <div
+                  data-testid="transition-container"
+                  style={contentStyle}
+                  className={`${contentClassName} ${transitionClasses.forward.elementExiting}`}
+                  onAnimationEnd={(e) => {
+                    if (e.target !== e.currentTarget) return;
+                    if (transitionClasses.forward.elementEntering)
+                      nextScreenRef.current?.classList.remove(
+                        transitionClasses.forward.elementEntering
+                      );
+                    if (onDiscardStep) onDiscardStep(prevKeyToRemove);
+                    setChildrenWrappers((screensAfterTheCurrentStepEntered) => {
+                      const nextState =
+                        screensAfterTheCurrentStepEntered.filter((s) => {
+                          return s?.associatedKey !== String(prevKeyToRemove);
+                        });
+                      return nextState;
+                    });
+                  }}
+                >
+                  {prevChild.current}
+                </div>
+              );
+            }, lastWrapper.associatedKey)
+          : ChildrenWrapperFactory(() => <React.Fragment />, "fallback");
+        const newWrapper = ChildrenWrapperFactory(
+          ({ children }) => (
+            <div
+              ref={nextScreenRef}
+              data-testid="transition-container"
+              key={key}
+              style={{
+                ...contentStyle,
+              }}
+              className={`${contentClassName} ${transitionClasses.forward.elementEntering}`}
+            >
+              {children}
+            </div>
+          ),
+          key
         );
         return [
           ...screensBeforeChangingStep.slice(0, lastIndex),
           clonedLast,
-          <div
-            ref={nextScreenRef}
-            data-testid="transition-container"
-            key={key}
-            style={{
-              ...contentStyle,
-            }}
-            className={`${contentClassName} ${transitionClasses.forward.elementEntering}`}
-          >
-            {children[step]}
-          </div>,
+          newWrapper,
         ];
       });
     }
     return () => {
       prevStep.current = step;
-      prevKey.current = children[step]?.key;
     };
   }, [step]);
 
   useEffect(() => {
-    if (screensStack.length === 1 && lockTransitionWidth)
+    if (childrenWrappers.length === 1 && lockTransitionWidth)
       containerRef.current!.style.width = "";
-  }, [screensStack.length !== 1]);
+  }, [childrenWrappers.length !== 1]);
 
   useEffect(() => {
     if (
@@ -324,10 +359,10 @@ function Transition(
       Object.assign(containerRef.current!.style, preTransitionDetails.current);
     }
 
-    if (screensStack.length === 1) {
+    if (childrenWrappers.length === 1) {
       containerRef.current!.style.overflow = "";
     }
-  }, [screensStack.length]);
+  }, [childrenWrappers.length]);
 
   return (
     <>
@@ -354,7 +389,14 @@ function Transition(
         ref={containerRef}
         className={`${Styles.section} ${className}`}
       >
-        {screensStack}
+        {(childrenWrappers as ChildrenWrapper[]).map((Wrapper) => {
+          const childToRender = children.find(
+            (a) => a?.key === Wrapper?.associatedKey
+          );
+          return (
+            <Wrapper key={Wrapper?.associatedKey}>{childToRender}</Wrapper>
+          );
+        })}
       </section>
     </>
   );

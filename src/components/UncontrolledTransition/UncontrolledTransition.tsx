@@ -7,6 +7,7 @@ import React, {
   RefObject,
   useEffect,
   useImperativeHandle,
+  useLayoutEffect,
   useRef,
   useState,
 } from "react";
@@ -49,7 +50,6 @@ function UncontrolledTransition(
     childStack: [children],
     offset: 1,
   });
-  // const [offset, setOffset] = useState(1);
   const orientation = useRef<"forward" | "backward">("forward");
   function setOrientation(a: typeof orientation.current) {
     orientation.current = a;
@@ -90,6 +90,10 @@ function UncontrolledTransition(
       }));
     }
   }, [childStack.length]);
+
+  childStack.forEach((a, i, arr) => {
+    if (a.key === children.key) arr[i] = children;
+  });
 
   return (
     <>

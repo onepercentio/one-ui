@@ -21,26 +21,24 @@ import "./commands";
 
 const origLog = Cypress.log;
 Cypress.log = function (opts, ...other) {
-  const isFirebaseEmulatorInitialization =
-    opts.message && opts.message.includes && opts.message.includes("firebase emulators");
-  const isExecError =
-    opts.error && opts.error.docsUrl && opts.error.docsUrl.includes("/exec");
-  const isKillCommand = opts.message && opts.message.includes && opts.message.includes("lsof -t -i");
-  const isFetch8080 = opts.url === "http://localhost:4000/";
-  const isXHRWithFirebaseEmulator =
-    opts.displayName === "xhr" &&
-    (!opts.url ||
-      [8090, 9199].some((port) =>
-        opts.url.startsWith(`http://localhost:${port}`)
-      ));
   if (
-    isXHRWithFirebaseEmulator ||
-    isFetch8080 ||
-    isFirebaseEmulatorInitialization ||
-    isExecError ||
-    isKillCommand
+    ["xhr", "image"].includes(opts.displayName) ||
+    ["Coverage", "readfile"].includes(opts.name) ||
+    ["@cypress/code-coverage"].some((a) => opts.message ? opts.message[0] && opts.message[0].includes(a) : false)
   ) {
-    return;
+    delete opts.message;
+    delete opts.displayName;
+    delete opts.type;
+    const p = new Proxy(
+      {},
+      {
+        get: () => {
+          return () => p;
+        },
+      }
+    );
+
+    return p;
   }
 
   return origLog(opts, ...other);

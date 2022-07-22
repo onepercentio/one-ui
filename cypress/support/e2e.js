@@ -24,7 +24,11 @@ Cypress.log = function (opts, ...other) {
   if (
     ["xhr", "image"].includes(opts.displayName) ||
     ["Coverage", "readfile"].includes(opts.name) ||
-    ["@cypress/code-coverage"].some((a) => opts.message ? opts.message[0] && opts.message[0].includes(a) : false)
+    ["@cypress/code-coverage"].some((a) =>
+      opts.message
+        ? opts.message[0] && String(opts.message[0]).includes(a)
+        : false
+    )
   ) {
     delete opts.message;
     delete opts.displayName;

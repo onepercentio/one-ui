@@ -411,7 +411,7 @@ function Transition(
           return (
             <Wrapper key={Wrapper?.associatedKey}>
               <>
-                {typeof Wrapper?.associatedKey} {childToRender}
+                {childToRender}
               </>
             </Wrapper>
           );

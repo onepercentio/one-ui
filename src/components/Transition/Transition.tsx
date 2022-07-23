@@ -273,11 +273,6 @@ function Transition(
     } else if (prevStep.current < step) {
       const stepToDelete = prevStep.current;
       const prevKeyToRemove = String(prevChild.current?.key || stepToDelete);
-      alert(
-        "Preparing to remove " +
-          prevKeyToRemove +
-          ` ${prevStep.current} / ${step}`
-      );
       setChildrenWrappers((screensBeforeChangingStep) => {
         const lastIndex = screensBeforeChangingStep.length - 1;
         const lastWrapper = screensBeforeChangingStep[lastIndex];
@@ -301,8 +296,6 @@ function Transition(
                         screensAfterTheCurrentStepEntered.filter((s) => {
                           const shouldMantain =
                             s?.associatedKey !== String(prevKeyToRemove);
-                          if (!shouldMantain)
-                            alert(`Discarding ${prevKeyToRemove}`);
                           return shouldMantain;
                         });
                       return nextState;

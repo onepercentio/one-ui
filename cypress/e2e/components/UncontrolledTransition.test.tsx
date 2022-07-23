@@ -30,7 +30,8 @@ it("Should change between screens", () => {
               <h1 key="first">First render</h1>
             </Comp>
           );
-        });
+        })
+        .wait(animationDuration);
     });
 });
 it("Should be able to update current content", () => {
@@ -86,21 +87,38 @@ it("Should be able to update current content", () => {
           <h1 key="first">Back to first screen</h1>
         </Comp>
       );
-    });
+    })
+    .wait(animationDuration);
 });
 
-it.only("Faster than animation", () => {
+it("Faster than animation", () => {
+  const animationDuration = 3000;
+
+  const overrideStyle: CSSProperties = {
+    animationDuration: animationDuration ? `${animationDuration}ms` : undefined,
+  };
+
   let mountReturn!: MountReturn;
   let UncontrolledTransition = createRef<ElementRef<typeof Comp>>();
   function r(key: string, content: string, backward?: boolean) {
     if (backward) UncontrolledTransition.current!.setOrientation("backward");
     mountReturn
       .rerender(
-        <Comp contentStyle={overrideStyle} ref={UncontrolledTransition}>
-          <h1 key={key}>{content}</h1>
-        </Comp>
+        <div
+          style={{
+            marginLeft: "50%",
+            transform: "translateX(-50%)",
+            backgroundColor: "red",
+            maxWidth: "10vw",
+            overflow: "visible",
+          }}
+        >
+          <Comp contentStyle={overrideStyle} ref={UncontrolledTransition}>
+            <h1 key={key}>{content}</h1>
+          </Comp>
+        </div>
       )
-      .wait(animationDuration * 0.10);
+      .wait(animationDuration * 0.25);
   }
   mount(<Fragment />)
     .then((r) => (mountReturn = r))

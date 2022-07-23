@@ -84,10 +84,12 @@ function UncontrolledTransition(
 
   useEffect(() => {
     if (orientation.current === "backward") {
-      setChildStack((prev) => ({
-        ...prev,
-        offset: 2,
-      }));
+      setChildStack((prev) => {
+        return {
+          ...prev,
+          offset: prev.childStack.length,
+        };
+      });
     }
   }, [childStack.length]);
 
@@ -111,7 +113,7 @@ function UncontrolledTransition(
                 childStack: prev.childStack.filter(
                   (a) => a.key !== discardedKey
                 ),
-                offset: 1,
+                offset: prev.offset === 1 ? 1 : prev.offset - 1,
               };
             });
           }}

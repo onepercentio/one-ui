@@ -216,9 +216,7 @@ function Transition(
                 <div
                   data-testid="transition-container"
                   style={contentStyle}
-                  className={`${
-                    transitionClasses.backward.elementExiting
-                  }`}
+                  className={`${transitionClasses.backward.elementExiting}`}
                 >
                   {children}
                 </div>
@@ -371,7 +369,6 @@ function Transition(
       containerRef.current!.style.overflow = "";
     }
   }, [childrenWrappers.length]);
-
   return (
     <>
       <section
@@ -399,13 +396,11 @@ function Transition(
       >
         {(childrenWrappers as ChildrenWrapper[]).map((Wrapper) => {
           const childToRender = children.find(
-            (a) => a?.key === Wrapper?.associatedKey
+            (a, i) => (a?.key || i) === Wrapper?.associatedKey
           );
           return (
             <Wrapper key={Wrapper?.associatedKey}>
-              <>
-                {childToRender}
-              </>
+              <>{childToRender}</>
             </Wrapper>
           );
         })}

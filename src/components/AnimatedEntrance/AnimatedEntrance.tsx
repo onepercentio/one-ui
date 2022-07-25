@@ -52,19 +52,19 @@ export function AnimatedEntranceItem({
   entranceType: EntranceType;
 }) {
   const uncontRef = useRef<ElementRef<typeof UncontrolledTransition>>(null);
-  const [screen, setScreen] = useState(
+  const [screen, setScreen] = useState<ReactElement | true>(
     noEntranceAnimation ? children : <Fragment key={"null"} />
   );
   useEffect(() => {
     if (String(children.key).includes("-nullated")) {
       uncontRef.current!.setOrientation("backward");
     }
-    setScreen(children);
+    setScreen(true);
   }, [children.key]);
 
   useEffect(() => {
     const x = setTimeout(() => {
-      const key = String(screen.key!);
+      const key = String(screen === true ? children.key : screen.key!);
       if (key === "null" || key.includes("-nullated"))
         uncontRef.current!.sectionRef.current!.style.maxHeight = `0px`;
       else {
@@ -101,7 +101,7 @@ export function AnimatedEntranceItem({
       }}
       config={CONFIGS_BY_ENTRANCE_TYPE[entranceType]}
     >
-      {screen}
+      {screen === true ? children : screen}
     </UncontrolledTransition>
   );
 }
@@ -168,7 +168,7 @@ export default function AnimatedEntrance({
             ))
           }
         >
-          {child}
+          {children.find((c) => c.key === child.key) || child}
         </AnimatedEntranceItem>
       ))}
     </>

@@ -111,13 +111,15 @@ function TransitionClasses(
 
 type ChildrenWrapper = ((props: {
   children: TransitionProps["children"][number];
-}) => ReactElement) & { associatedKey: Key };
+}) => ReactElement) & { associatedKey: Key; toRemoveKeys?: Key[] };
 
 function ChildrenWrapperFactory(
   func: (p: { children: TransitionProps["children"] }) => ReactElement,
-  key: Key
+  key: Key,
+  toRemoveKeys?: Key[]
 ): ChildrenWrapper {
   (func as any).associatedKey = key;
+  (func as any).toRemoveKeys = toRemoveKeys;
   return func as unknown as ChildrenWrapper;
 }
 
@@ -234,37 +236,43 @@ function Transition(
           setChildrenWrappers((screensAfterTheCurrentStepEntered) => {
             if (onDiscardStep) {
               if (isAnimationFromExpectedState) onDiscardStep(prevKeyToRemove);
-              if (FirstNextScreen) onDiscardStep(FirstNextScreen.associatedKey);
+              if (FirstNextScreen && FirstNextScreen.toRemoveKeys)
+                FirstNextScreen.toRemoveKeys.forEach(onDiscardStep);
             }
-            return screensAfterTheCurrentStepEntered.filter(
-              (s) =>
+            return screensAfterTheCurrentStepEntered.filter((s) => {
+              const shouldKeep =
                 s?.associatedKey !== String(prevKeyToRemove) &&
-                (FirstNextScreen
-                  ? s?.associatedKey !== FirstNextScreen.associatedKey
-                  : true)
-            );
+                !FirstNextScreen?.toRemoveKeys?.some(
+                  (k) => String(k) === String(s?.associatedKey)
+                );
+              return shouldKeep;
+            });
           });
           element.currentTarget.removeEventListener(
             "animationend",
             animationEndListener as any
           );
         }
-        const newWrapper = ChildrenWrapperFactory(({ children }) => {
-          return (
-            <div
-              ref={enteringScreenRef}
-              data-testid="transition-container"
-              key={key}
-              className={`${transitionClasses.backward.elementEntering} ${contentClassName}`}
-              style={{
-                ...contentStyle,
-              }}
-              onAnimationEnd={animationEndListener}
-            >
-              {children}
-            </div>
-          );
-        }, key);
+        const newWrapper = ChildrenWrapperFactory(
+          ({ children }) => {
+            return (
+              <div
+                ref={enteringScreenRef}
+                data-testid="transition-container"
+                key={key}
+                className={`${transitionClasses.backward.elementEntering} ${contentClassName}`}
+                style={{
+                  ...contentStyle,
+                }}
+                onAnimationEnd={animationEndListener}
+              >
+                {children}
+              </div>
+            );
+          },
+          key,
+          [prevKeyToRemove, ...(FirstNextScreen?.toRemoveKeys || [])]
+        );
         if (FirstNextScreen) return [newWrapper, clonedFirst, ...restOfScreens];
         else return [newWrapper];
       });

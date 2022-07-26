@@ -1,5 +1,11 @@
 import { mount, MountReturn } from "cypress/react";
-import React, { createRef, CSSProperties, ElementRef, Fragment } from "react";
+import React, {
+  createRef,
+  CSSProperties,
+  ElementRef,
+  Fragment,
+  ReactElement,
+} from "react";
 import Comp from "../../../src/components/UncontrolledTransition";
 
 const animationDuration = 2000;
@@ -134,4 +140,22 @@ it("Faster than animation", () => {
     .then(() => r("Fifth", "Screen 5 with update"))
     .then(() => r("First", "Screen 1 back to initial", true))
     .wait(animationDuration);
+});
+
+it("Should change correctly", () => {
+  let UncontrolledTransition = createRef<ElementRef<typeof Comp>>();
+  const c = cy.mountChain((children: ReactElement) => (
+    <Comp ref={UncontrolledTransition}>{children}</Comp>
+  ));
+  c.remount(<h1 key="first_render">First Render</h1>).wait(25);
+  cy.then(() => UncontrolledTransition.current.setOrientation("backward"));
+  c.remount(<h1 key="second_render">Second Render</h1>).wait(25);
+  cy.then(() => UncontrolledTransition.current.setOrientation("backward"));
+  c.remount(<h1 key="Third_render">Third Render</h1>).wait(25);
+  cy.then(() => UncontrolledTransition.current.setOrientation("backward"));
+  c.remount(<h1 key="Fourfth_render">Fourfth Render</h1>).wait(25);
+  cy.then(() => UncontrolledTransition.current.setOrientation("backward"));
+  c.remount(<h1 key="Fifth_render">Fifth Render</h1>).wait(25);
+  cy.then(() => UncontrolledTransition.current.setOrientation("backward"));
+  c.remount(<Fragment key={"first_render-nullated"} />).wait(100);
 });

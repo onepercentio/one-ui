@@ -4,6 +4,7 @@ import React, {
   Key,
   ReactElement,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -52,19 +53,22 @@ export function AnimatedEntranceItem({
   entranceType: EntranceType;
 }) {
   const uncontRef = useRef<ElementRef<typeof UncontrolledTransition>>(null);
-  const [screen, setScreen] = useState<ReactElement | true>(
+  const [screen, setScreen] = useState<ReactElement | string>(
     noEntranceAnimation ? children : <Fragment key={"null"} />
   );
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (String(children.key).includes("-nullated")) {
       uncontRef.current!.setOrientation("backward");
     }
-    setScreen(true);
+  }, [children.key]);
+
+  useEffect(() => {
+    setScreen(String(children.key));
   }, [children.key]);
 
   useEffect(() => {
     const x = setTimeout(() => {
-      const key = String(screen === true ? children.key : screen.key!);
+      const key = String(typeof screen === "string" ? screen : screen.key!);
       if (key === "null" || key.includes("-nullated"))
         uncontRef.current!.sectionRef.current!.style.maxHeight = `0px`;
       else {
@@ -101,7 +105,7 @@ export function AnimatedEntranceItem({
       }}
       config={CONFIGS_BY_ENTRANCE_TYPE[entranceType]}
     >
-      {screen === true ? children : screen}
+      {typeof screen === "string" ? children : screen}
     </UncontrolledTransition>
   );
 }

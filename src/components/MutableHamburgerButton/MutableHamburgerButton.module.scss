@@ -20,6 +20,7 @@ $slice: math.div(1, 7);
     transform: scale(0.9);
   }
   > * {
+    position: relative;
     flex-shrink: 0;
     box-sizing: border-box;
     width: 0.8em;
@@ -27,11 +28,12 @@ $slice: math.div(1, 7);
     border-radius: #{math.div($slice, 2)}em;
     transition: transform $veryFast, width $veryFast, height $veryFast,
       border-width $veryFast, background-color $veryFast,
-      border-radius $veryFast;
+      border-radius $veryFast, top $veryFast;
     background: var(--mutable-hamburger-background, $digitalBlue);
     background-size: 1em 1em;
     background-repeat: no-repeat;
     border: 0em solid #0000;
+    top: 0px;
     &:nth-child(1) {
       border-top-color: var(--mutable-hamburger-background, $digitalBlue);
     }
@@ -164,13 +166,14 @@ $slice: math.div(1, 7);
       border-width: #{$slice}em;
     }
     > :nth-child(1) {
-      transform: translateY(#{$slice * 4.5}em);
+      top: (#{$slice * 4.5}em);
     }
     > :nth-child(2) {
       transform: rotateZ(-5deg);
     }
     > :nth-child(3) {
-      transform: translateY(-#{$slice * 4.5}em) rotateZ(-95deg);
+      transform: rotateZ(-95deg);
+      top: (-#{$slice * 4.5}em);
     }
   }
 }

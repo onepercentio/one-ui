@@ -7,7 +7,7 @@ export default {
 };
 
 export const InitialImplementation = (args: any) => (
-  <div style={{backgroundColor: "#00f5", display: "inline-block"}}>
+  <div style={{transformOrigin: '0px 0px',transform: "scale(10)", backgroundColor: "#00f5", display: "inline-block"}}>
     <MutableHamburgerButton {...args} />
   </div>
 );

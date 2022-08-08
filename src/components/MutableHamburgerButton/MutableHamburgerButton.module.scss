@@ -21,7 +21,7 @@ $slice: math.div(1, 7);
   }
   > * {
     flex-shrink: 0;
-    box-sizing: content-box;
+    box-sizing: border-box;
     width: 0.8em;
     height: #{$slice}em;
     border-radius: #{math.div($slice, 2)}em;
@@ -101,8 +101,8 @@ $slice: math.div(1, 7);
   &.search {
     > :nth-child(1) {
       $rate: 1.8;
-      width: #{$slice * $rate}em;
-      height: #{$slice * $rate}em;
+      width: #{$slice * $rate + math.div($slice, 1.35)}em;
+      height: #{$slice * $rate + math.div($slice, 1.35)}em;
       border-radius: #{$slice * $rate * 2}em;
       background-color: transparent;
       border: #{math.div($slice, 1.35)}em solid
@@ -115,7 +115,7 @@ $slice: math.div(1, 7);
       width: 0.55em;
     }
     > :nth-child(3) {
-      transform: translateX(0.12em) translateY(-#{($slice * 1.3) + 0.05}em)
+      transform: translateX(0.12em) translateY(-#{($slice * 1.3) + 0.085}em)
         rotateZ(45deg);
       height: #{math.div($slice, 1.35)}em;
       width: 0.55em;
@@ -158,9 +158,9 @@ $slice: math.div(1, 7);
     animation-timing-function: linear;
     > * {
       background-color: #0000;
-      width: #{$slice * 2.5}em;
-      height: #{$slice * 2.5}em;
-      border-radius: #{$slice * 2.5}em;
+      width: #{$slice * 4.5}em;
+      height: #{$slice * 4.5}em;
+      border-radius: #{$slice * 4.5}em;
       border-width: #{$slice}em;
     }
     > :nth-child(1) {

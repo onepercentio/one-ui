@@ -1,4 +1,5 @@
 import React, { ElementRef, ForwardedRef, forwardRef } from "react";
+import { useOneUIConfig } from "../../context/OneUIProvider";
 import Styles from "./Button.module.scss";
 
 type ButtonProps = React.PropsWithChildren<
@@ -16,10 +17,11 @@ export function _Button({
   className = "",
   ...otherProps
 }: ButtonProps) {
+  const classNameType = useOneUIConfig("component.button.className", {});
   return (
     <button
       ref={arguments[1]}
-      className={`${Styles.button} ${Styles[variant]} ${className}`}
+      className={`${Styles.button} ${Styles[variant]} ${className} ${classNameType[variant] || ""}`}
       {...otherProps}
     >
       {children}

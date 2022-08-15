@@ -111,15 +111,21 @@ function TransitionClasses(
 
 type ChildrenWrapper = ((props: {
   children: TransitionProps["children"][number];
-}) => ReactElement) & { associatedKey: Key; toRemoveKeys?: Key[] };
+}) => ReactElement) & {
+  associatedKey: Key;
+  toRemoveKeys?: Key[];
+  externalProps: { [k: string]: any };
+};
 
 function ChildrenWrapperFactory(
   func: (p: { children: TransitionProps["children"] }) => ReactElement,
   key: Key,
+  externalPropsContainer: { [k: string]: any },
   toRemoveKeys?: Key[]
 ): ChildrenWrapper {
   (func as any).associatedKey = key;
   (func as any).toRemoveKeys = toRemoveKeys;
+  (func as any).externalProps = externalPropsContainer;
   return func as unknown as ChildrenWrapper;
 }
 
@@ -152,18 +158,17 @@ function Transition(
   const [childrenWrappers, setChildrenWrappers] = useState<
     (ChildrenWrapper | undefined)[]
   >(() => {
+    const externalProps = {
+      "data-testid": "transition-container",
+      key: String(children[step]?.key || step),
+      style: contentStyle,
+      className: contentClassName,
+    };
     const func = ChildrenWrapperFactory(
-      ({ children }) => (
-        <div
-          data-testid="transition-container"
-          key={String(children[step]?.key || step)}
-          style={contentStyle}
-          className={contentClassName}
-        >
-          {children}
-        </div>
-      ),
-      children[step]!.key || step
+      ({ children }) => <div {...externalProps}>{children}</div>,
+      children[step]!.key || step,
+      externalProps,
+      []
     );
     return [func];
   });
@@ -211,21 +216,16 @@ function Transition(
             (a) => a?.associatedKey !== String(key)
           );
 
-        /** Cloned so I can change the animation to exiting */
-        const clonedFirst = FirstNextScreen
-          ? ChildrenWrapperFactory(({ children }) => {
-              return (
-                <div
-                  data-testid="transition-container"
-                  style={contentStyle}
-                  className={`${transitionClasses.backward.elementExiting}`}
-                >
-                  {children}
-                </div>
-              );
-            }, FirstNextScreen.associatedKey)
-          : ChildrenWrapperFactory(() => <React.Fragment />, "");
-        function animationEndListener(element: AnimationEvent<HTMLDivElement>) {
+        if (FirstNextScreen) {
+          Object.assign(FirstNextScreen.externalProps, {
+            "data-testid": "transition-container",
+            style: contentStyle,
+            className: `${transitionClasses.backward.elementExiting}`,
+          });
+        }
+        function animationEndListener(event: AnimationEvent<HTMLDivElement>) {
+          if (event.target !== event.currentTarget) return;
+
           const isAnimationFromExpectedState =
             enteringScreenRef.current?.classList.contains(
               transitionClasses.backward.elementEntering
@@ -248,32 +248,36 @@ function Transition(
               return shouldKeep;
             });
           });
-          element.currentTarget.removeEventListener(
+          event.currentTarget.removeEventListener(
             "animationend",
             animationEndListener as any
           );
         }
+        const propsContainer = {
+          ref: enteringScreenRef,
+          "data-testid": "transition-container",
+          key,
+          className: `${transitionClasses.backward.elementEntering} ${contentClassName}`,
+          style: {
+            ...contentStyle,
+          },
+          onAnimationEnd: animationEndListener,
+        };
         const newWrapper = ChildrenWrapperFactory(
           ({ children }) => {
-            return (
-              <div
-                ref={enteringScreenRef}
-                data-testid="transition-container"
-                key={key}
-                className={`${transitionClasses.backward.elementEntering} ${contentClassName}`}
-                style={{
-                  ...contentStyle,
-                }}
-                onAnimationEnd={animationEndListener}
-              >
-                {children}
-              </div>
-            );
+            return <div {...propsContainer}>{children}</div>;
           },
           key,
+          propsContainer,
           [prevKeyToRemove, ...(FirstNextScreen?.toRemoveKeys || [])]
         );
-        if (FirstNextScreen) return [newWrapper, clonedFirst, ...restOfScreens];
+        if (FirstNextScreen)
+          return [
+            newWrapper,
+            FirstNextScreen ||
+              ChildrenWrapperFactory(() => <React.Fragment />, "", {}),
+            ...restOfScreens,
+          ];
         else return [newWrapper];
       });
     } else if (prevStep.current < step) {
@@ -283,54 +287,51 @@ function Transition(
         const lastIndex = screensBeforeChangingStep.length - 1;
         const lastWrapper = screensBeforeChangingStep[lastIndex];
         const nextScreenRef = createRef<HTMLDivElement>();
-        const clonedLast = lastWrapper
-          ? ChildrenWrapperFactory(({ children }) => {
-              return (
-                <div
-                  data-testid="transition-container"
-                  style={contentStyle}
-                  className={`${contentClassName} ${transitionClasses.forward.elementExiting}`}
-                  onAnimationEnd={(e) => {
-                    if (e.target !== e.currentTarget) return;
-                    if (transitionClasses.forward.elementEntering)
-                      nextScreenRef.current?.classList.remove(
-                        transitionClasses.forward.elementEntering
-                      );
-                    if (onDiscardStep) onDiscardStep(prevKeyToRemove);
-                    setChildrenWrappers((screensAfterTheCurrentStepEntered) => {
-                      const nextState =
-                        screensAfterTheCurrentStepEntered.filter((s) => {
-                          const shouldMantain =
-                            s?.associatedKey !== String(prevKeyToRemove);
-                          return shouldMantain;
-                        });
-                      return nextState;
-                    });
-                  }}
-                >
-                  {children}
-                </div>
-              );
-            }, lastWrapper.associatedKey)
-          : ChildrenWrapperFactory(() => <React.Fragment />, "fallback");
-        const newWrapper = ChildrenWrapperFactory(({ children }) => {
-          return (
-            <div
-              ref={nextScreenRef}
-              data-testid="transition-container"
-              key={key}
-              style={{
-                ...contentStyle,
-              }}
-              className={`${contentClassName} ${transitionClasses.forward.elementEntering}`}
-            >
-              {children}
-            </div>
-          );
-        }, key);
+        if (lastWrapper) {
+          Object.assign(lastWrapper.externalProps, {
+            "data-testid": "transition-container",
+            style: contentStyle,
+            className: `${contentClassName} ${transitionClasses.forward.elementExiting}`,
+            onAnimationEnd: (e: AnimationEvent) => {
+              if (e.target !== e.currentTarget) return;
+              if (transitionClasses.forward.elementEntering)
+                nextScreenRef.current?.classList.remove(
+                  transitionClasses.forward.elementEntering
+                );
+              if (onDiscardStep) onDiscardStep(prevKeyToRemove);
+              setChildrenWrappers((screensAfterTheCurrentStepEntered) => {
+                const nextState = screensAfterTheCurrentStepEntered.filter(
+                  (s) => {
+                    const shouldMantain =
+                      s?.associatedKey !== String(prevKeyToRemove);
+                    return shouldMantain;
+                  }
+                );
+                return nextState;
+              });
+            },
+          });
+        }
+        const propsContainer = {
+          ref: nextScreenRef,
+          "data-testid": "transition-container",
+          key,
+          style: {
+            ...contentStyle,
+          },
+          className: `${contentClassName} ${transitionClasses.forward.elementEntering}`,
+        };
+        const newWrapper = ChildrenWrapperFactory(
+          ({ children }) => {
+            return <div {...propsContainer}>{children}</div>;
+          },
+          key,
+          propsContainer
+        );
         return [
           ...screensBeforeChangingStep.slice(0, lastIndex),
-          clonedLast,
+          lastWrapper ||
+            ChildrenWrapperFactory(() => <React.Fragment />, "fallback", {}),
           newWrapper,
         ];
       });

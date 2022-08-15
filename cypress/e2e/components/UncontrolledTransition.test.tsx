@@ -5,8 +5,12 @@ import React, {
   ElementRef,
   Fragment,
   ReactElement,
+  useEffect,
+  useState,
 } from "react";
+import { TransitionAnimationTypes } from "../../../src/components/Transition";
 import Comp from "../../../src/components/UncontrolledTransition";
+import TestAnimation from "../../component/TestAnimation";
 
 const animationDuration = 2000;
 
@@ -158,4 +162,83 @@ it("Should change correctly", () => {
   c.remount(<h1 key="Fifth_render">Fifth Render</h1>).wait(25);
   cy.then(() => UncontrolledTransition.current.setOrientation("backward"));
   c.remount(<Fragment key={"first_render-nullated"} />).wait(100);
+});
+describe("BUGFIX", () => {
+  it("Should not skip an animation when going back", () => {
+    const ref = createRef<ElementRef<typeof Comp>>();
+    function T() {
+      const [s, ss] = useState(false);
+
+      useEffect(() => {
+        setInterval(() => {
+          ss(true);
+        }, 1000);
+      }, []);
+
+      return (
+        <div
+          style={
+            {
+              "--animation-speed-transition": "3s",
+              backgroundColor: "blue",
+            } as any
+          }
+        >
+          <Comp>{s ? <h1 key="1">End</h1> : <h1 key="2">Start</h1>}</Comp>
+        </div>
+      );
+    }
+    const chain = cy.mountChain((children: ReactElement) => {
+      return (
+        <div style={{ "--animation-speed-transition": "5s" } as any}>
+          <Comp ref={ref}>{children}</Comp>
+        </div>
+      );
+    });
+    chain.remount(<h1 key="h1">Something</h1>).wait(1000);
+    cy.then(() => {
+      ref.current!.setOrientation("backward");
+    });
+    chain.remount(
+      <h2 key="h2">
+        Another thing
+        <br />
+        <TestAnimation />
+        <T />
+      </h2>
+    );
+  });
+  it("Should end correctly when it's too fast", () => {
+    const chain = cy.mountChain((children: ReactElement) => {
+      return <Comp>{children}</Comp>;
+    });
+    chain.remount(<React.Fragment key={"first1"}>First</React.Fragment>);
+    chain.remount(<React.Fragment key={"Second2"}>Second</React.Fragment>);
+    chain.remount(<React.Fragment key={"Third3"}>Third</React.Fragment>);
+    chain.remount(<React.Fragment key={"Second4"}>Second</React.Fragment>);
+    chain.remount(<React.Fragment key={"first5"}>First</React.Fragment>);
+    cy.get("section").should("have.text", "First");
+  });
+  it("Should clean all classes when finishing animation", () => {
+    const chain = cy.mountChain((title: string, screen: number) => {
+      return (
+        <>
+          <h1>
+            {title}: {screen}
+          </h1>
+          <Comp transitionType={TransitionAnimationTypes.POP_FROM_CLICK_ORIGIN}>
+            {screen === 0 ? (
+              <React.Fragment key={"first1"}>First</React.Fragment>
+            ) : (
+              <React.Fragment key={"second1"}>Second {title}</React.Fragment>
+            )}
+          </Comp>
+        </>
+      );
+    });
+    chain.remount("Primeiro render", 0).wait(1000);
+    chain.remount("Segundo render", 1).wait(1000);
+    chain.remount("Terceiro render", 1).wait(1000);
+    chain.remount("Quarto render", 1).wait(1000);
+  });
 });

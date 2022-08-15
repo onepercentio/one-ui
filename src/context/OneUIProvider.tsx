@@ -20,6 +20,15 @@ export type ContextSpecs = {
         >["type"]]?: string;
       };
     };
+    button?: {
+      className?: {
+        [k in NonNullable<
+          React.ComponentProps<
+            typeof import("../components/Button")["default"]
+          >["variant"]
+        >]?: string;
+      };
+    };
     input: {
       className: string;
       border: boolean;

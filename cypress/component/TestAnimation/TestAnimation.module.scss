@@ -1,0 +1,32 @@
+.root {
+    animation-name: spin;
+    animation-duration: 4s;
+    animation-fill-mode: forwards;
+    display: inline-block;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotateZ(0deg);
+  }
+
+  20% {
+    transform: rotateZ(360deg);
+  }
+
+  40% {
+    transform: rotateZ(360deg * 2);
+  }
+
+  60% {
+    transform: rotateZ(360deg * 3);
+  }
+
+  80% {
+    transform: rotateZ(360deg * 4);
+  }
+
+  100% {
+    transform: rotateZ(360deg * 5);
+  }
+}

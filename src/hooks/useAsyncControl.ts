@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { CommonErrorCodes } from "../types";
 
-export default function useAsyncControl<E, F = any>(functionsToWrap?: F) {
+export default function useAsyncControl<E = any, F = any>(functionsToWrap?: F) {
   const [error, setError] = useState<E | Error>();
   const [loading, setLoading] = useState<boolean>(false);
 

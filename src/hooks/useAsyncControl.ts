@@ -1,8 +1,8 @@
 import { useCallback, useState } from "react";
 import { CommonErrorCodes } from "../types";
 
-export default function useAsyncControl<E extends CommonErrorCodes, F = any>(functionsToWrap?: F) {
-  const [error, setError] = useState<E>();
+export default function useAsyncControl<E, F = any>(functionsToWrap?: F) {
+  const [error, setError] = useState<E | Error>();
   const [loading, setLoading] = useState<boolean>(false);
 
   const _process = useCallback(async (asyncFn: () => Promise<any>) => {
@@ -12,7 +12,7 @@ export default function useAsyncControl<E extends CommonErrorCodes, F = any>(fun
       return await asyncFn();
     } catch (e) {
       if (process.env.NODE_ENV === "development") console.error(e);
-      setError("UNEXPECTED_ERROR" as E);
+      setError(e as E);
       throw e;
     } finally {
       setLoading(false);

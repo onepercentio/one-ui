@@ -81,7 +81,7 @@ function InfinityScroll(
   }
 
   useLayoutEffect(() => {
-    if (isCountTheSameOrLowerThanPage) return;
+    if (isCountTheSameOrLowerThanPage || (window as any).PRERENDER) return;
     const viewportWidth = parentDiv.current!.clientWidth;
     const centerScroll = parentDiv.current!.scrollWidth / 2;
     parentDiv.current!.scrollTo({

@@ -1,19 +1,22 @@
 @import "../../assets/styles/index.scss";
 
 .container {
+  &.noImg {
     background-color: $avatarBackgroundColor;
-    display: inline-block;
-    width: 1em;
-    height: 1em;
-    border-radius: 0.5em;
+  }
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border-radius: 0.5em;
 
-    > span {
-        font-size: 0.4em;
-        width: inherit;
-        height: inherit;
-        text-align: center;
-        line-height: 2.5em;
-        display: block;
-        color: $digitalBlue;
-    }
+  > span,
+  > img {
+    font-size: 0.4em;
+    width: inherit;
+    height: inherit;
+    text-align: center;
+    line-height: 2.5em;
+    display: block;
+    color: $digitalBlue;
+  }
 }

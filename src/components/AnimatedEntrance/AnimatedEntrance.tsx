@@ -4,6 +4,7 @@ import React, {
   Key,
   ReactElement,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -52,25 +53,35 @@ export function AnimatedEntranceItem({
   entranceType: EntranceType;
 }) {
   const uncontRef = useRef<ElementRef<typeof UncontrolledTransition>>(null);
-  const [screen, setScreen] = useState(
+  const [screen, setScreen] = useState<ReactElement | string>(
     noEntranceAnimation ? children : <Fragment key={"null"} />
   );
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (String(children.key).includes("-nullated")) {
       uncontRef.current!.setOrientation("backward");
     }
-    setScreen(children);
+  }, [children.key]);
+
+  useEffect(() => {
+    setScreen(String(children.key));
   }, [children.key]);
 
   useEffect(() => {
     const x = setTimeout(() => {
-      const key = String(screen.key!);
+      const key = String(typeof screen === "string" ? screen : screen.key!);
       if (key === "null" || key.includes("-nullated"))
         uncontRef.current!.sectionRef.current!.style.maxHeight = `0px`;
-      else
+      else {
         uncontRef.current!.sectionRef.current!.style.maxHeight = `${
           uncontRef.current!.sectionRef.current!.scrollHeight
         }px`;
+        uncontRef.current!.sectionRef.current!.addEventListener(
+          "transitionend",
+          () => {
+            uncontRef.current!.sectionRef.current!.style.maxHeight = "auto";
+          }
+        );
+      }
     }, 100);
     return () => {
       clearTimeout(x);
@@ -94,7 +105,7 @@ export function AnimatedEntranceItem({
       }}
       config={CONFIGS_BY_ENTRANCE_TYPE[entranceType]}
     >
-      {screen}
+      {typeof screen === "string" ? children : screen}
     </UncontrolledTransition>
   );
 }
@@ -161,7 +172,7 @@ export default function AnimatedEntrance({
             ))
           }
         >
-          {child}
+          {children.find((c) => c.key === child.key) || child}
         </AnimatedEntranceItem>
       ))}
     </>

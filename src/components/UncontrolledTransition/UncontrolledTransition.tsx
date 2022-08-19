@@ -7,6 +7,7 @@ import React, {
   RefObject,
   useEffect,
   useImperativeHandle,
+  useLayoutEffect,
   useRef,
   useState,
 } from "react";
@@ -49,24 +50,8 @@ function UncontrolledTransition(
     childStack: [children],
     offset: 1,
   });
-  // const [offset, setOffset] = useState(1);
   const orientation = useRef<"forward" | "backward">("forward");
   function setOrientation(a: typeof orientation.current) {
-    try {
-      throw new Error();
-    } catch (e) {
-      const stacktrace = (e as Error).stack;
-      if (stacktrace?.includes("invokePassiveEffectCreate")) {
-        throw new Error(`It seems you are calling the setBackwards from a useEffect. This will cause unexpected behaviour. Please switch to:
-        
-useLayoutEffect(() => {
-  // do your thing
-  ref.current.setOrientation("backwards")
-})
-
-`);
-      }
-    }
     orientation.current = a;
   }
 
@@ -99,12 +84,18 @@ useLayoutEffect(() => {
 
   useEffect(() => {
     if (orientation.current === "backward") {
-      setChildStack((prev) => ({
-        ...prev,
-        offset: 2,
-      }));
+      setChildStack((prev) => {
+        return {
+          ...prev,
+          offset: prev.childStack.length,
+        };
+      });
     }
   }, [childStack.length]);
+
+  childStack.forEach((a, i, arr) => {
+    if (a.key === children.key) arr[i] = children;
+  });
 
   return (
     <>
@@ -122,7 +113,7 @@ useLayoutEffect(() => {
                 childStack: prev.childStack.filter(
                   (a) => a.key !== discardedKey
                 ),
-                offset: 1,
+                offset: prev.offset === 1 ? 1 : prev.offset - 1,
               };
             });
           }}

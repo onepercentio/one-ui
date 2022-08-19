@@ -5,14 +5,15 @@ import { useEffect, useState } from "react";
  */
 type PoolingAction = () => Promise<boolean>;
 
-export default function usePooling(intervalMs = 1000, maxPoolingTime = 60000) {
+export default function usePooling(intervalMs = 1000, maxPoolingTime: number | null = 60000) {
   const [intervalId, setIntervalId] = useState<NodeJS.Timer>();
   const [failed, setFailed] = useState<boolean>(false);
 
+  const cancelPooling = () => {
+    if (intervalId) clearInterval(intervalId);
+  }
   useEffect(
-    () => () => {
-      if (intervalId) clearInterval(intervalId);
-    },
+    () => cancelPooling,
     [intervalId]
   );
 
@@ -25,8 +26,8 @@ export default function usePooling(intervalMs = 1000, maxPoolingTime = 60000) {
      * @param cb {@link PoolingAction} - Executes and returns if has finished (true) or not (false)
      */
     startPolling: (cb: PoolingAction) => {
-      const maxPoolings = Math.ceil(maxPoolingTime / intervalMs);
       let poolingCount = 0;
+      const maxPoolings = (maxPoolingTime !== null) ? Math.ceil(maxPoolingTime / intervalMs) : undefined;
       const intervalId = setInterval(async () => {
         poolingCount++;
         const finished = await cb();
@@ -38,6 +39,8 @@ export default function usePooling(intervalMs = 1000, maxPoolingTime = 60000) {
       }, intervalMs);
       setIntervalId(intervalId);
       setFailed(false);
+      return () => clearInterval(intervalId)
     },
+    stop: cancelPooling,
   };
 }

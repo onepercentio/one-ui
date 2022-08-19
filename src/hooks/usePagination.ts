@@ -14,11 +14,11 @@ export default function usePagination<I extends any, A extends any[]>(
 ): Paginable<I, A> {
   const paginationDataRef = useRef<{
     [d: string]:
-      | {
-          finished: boolean;
-          totalItems: number;
-        }
-      | undefined;
+    | {
+      finished: boolean;
+      totalItems: number;
+    }
+    | undefined;
   }>({});
   const { current: paginationData } = paginationDataRef;
 
@@ -59,13 +59,13 @@ export default function usePagination<I extends any, A extends any[]>(
   };
 }
 
-export type Paginable<I extends any, A extends any[] = []> = {
+export type Paginable<I extends any, A extends any[] = [], E extends any = any> = {
   updateItems: (cb: (prevItems?: I) => UpdateEvent<I>["items"]) => void;
   getNextPage: (...args: A) => void;
   getPage: (page: number, ...args: A) => void;
   totalItems: (...args: A) => number | undefined;
   loading: boolean;
-  error: CommonErrorCodes | undefined;
+  error: E | Error | undefined;
   items: I | undefined;
   setError: ReturnType<typeof useAsyncControl>["setError"];
 };

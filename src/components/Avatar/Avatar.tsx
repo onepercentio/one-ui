@@ -20,7 +20,11 @@ export default function Avatar({
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
   }, [name]);
   return (
-    <div className={Styles.container} style={{ fontSize: size }} title={name}>
+    <div
+      className={`${Styles.container} ${imgSrc ? "" : Styles.noImg}`}
+      style={{ fontSize: size }}
+      title={name}
+    >
       {imgSrc ? <img src={imgSrc} alt={name} /> : <span>{initials}</span>}
     </div>
   );

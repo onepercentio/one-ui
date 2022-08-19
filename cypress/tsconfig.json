@@ -1,6 +1,6 @@
 {
-    "extends": "../tsconfig.json",
-    "compilerOptions": {
-        "types": ["cypress", "@muritavo/cypress-toolkit"]
-    },
+  "compilerOptions": {
+    "jsx": "react",
+    "types": ["cypress", "@muritavo/cypress-toolkit"]
+  }
 }

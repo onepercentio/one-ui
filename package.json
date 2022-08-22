@@ -96,7 +96,7 @@
     "dev": "tsc --watch",
     "test:watch": "jest --watchAll --coverage",
     "deploy:storybook": "yarn build-storybook && firebase deploy --only hosting",
-    "test:e2e:watch": "cypress open --component --port 6005 --browser firefox",
+    "test:e2e:watch": "cypress open --component --port 6005 --browser chrome",
     "test:e2e": "cypress run --component --port 6015 --browser chrome",
     "prepublish": "yarn build"
   },

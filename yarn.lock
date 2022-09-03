@@ -3059,10 +3059,10 @@
     call-me-maybe "^1.0.1"
     glob-to-regexp "^0.3.0"
 
-"@muritavo/cypress-toolkit@^0.7.0":
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/@muritavo/cypress-toolkit/-/cypress-toolkit-0.7.0.tgz#4dc4cc23e83ba6711cdf01b556bc4a2f57decc2b"
-  integrity sha512-mUyHLboxTWz5S6z3Jbcy6Y+n8E2dKWpvc76Q5zi91O1I9Rl3JnKINEJvuTjUHm3MDxXutdWcI+DbLZk+u5O4YQ==
+"@muritavo/cypress-toolkit@^0.7.1":
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/@muritavo/cypress-toolkit/-/cypress-toolkit-0.7.1.tgz#fd90b4c778910834dfd0ea98e1903b9585fe1ae9"
+  integrity sha512-YUAEsjMy4QYz0sC1hl8v7W/k5HmCLhlApMDQ7RAfnWHmJYZCQm9ii66CiBIGxHLBgqL9SyLMGUm518gRhYoRYQ==
   dependencies:
     "@cypress/code-coverage" "^3.10.0"
     "@cypress/react" "^6.0.0"

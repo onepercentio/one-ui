@@ -9,3 +9,4 @@ storybook-static/
 .yarnrc*
 screenshots/
 videos/
+examples/

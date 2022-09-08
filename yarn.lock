@@ -9508,9 +9508,9 @@ cypress-real-events@^1.7.0:
   resolved "https://registry.yarnpkg.com/cypress-real-events/-/cypress-real-events-1.7.0.tgz#ad6a78de33af3af0e6437f5c713e30691c44472c"
   integrity sha512-iyXp07j0V9sG3YClVDcvHN2DAQDgr+EjTID82uWDw6OZBlU3pXEBqTMNYqroz3bxlb0k+F74U81aZwzMNaKyew==
 
-"cypress-visual-regression@git+https://github.com/muritavo/cypress-visual-regression.git":
+"cypress-visual-regression@https://github.com/muritavo/cypress-visual-regression":
   version "1.7.0"
-  resolved "git+https://github.com/muritavo/cypress-visual-regression.git#f7f4cff2b954ab85812c92419854230e7f26e652"
+  resolved "https://github.com/muritavo/cypress-visual-regression#f7f4cff2b954ab85812c92419854230e7f26e652"
   dependencies:
     pixelmatch "^5.2.1"
     pngjs "^6.0.0"

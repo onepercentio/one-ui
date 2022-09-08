@@ -55,12 +55,13 @@ export default function AdaptiveDialog({
           >
             <ScrollAndFocusLock open={open}>
               {onClose && (
-                <MutableHamburgerButton
-                  className={Styles.closeBtn}
-                  onClick={onClose}
-                  state="closed"
-                  size={24}
-                />
+                <button className={Styles.closeBtn}>
+                  <MutableHamburgerButton
+                    onClick={onClose}
+                    state="closed"
+                    size={24}
+                  />
+                </button>
               )}
               <div
                 className={Styles.indicator}

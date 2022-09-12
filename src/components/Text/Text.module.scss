@@ -53,7 +53,7 @@
   font-size: 20px;
   font-weight: 800;
   line-height: 22px;
-  color: $gray;
+  color: var(--text-default-color, $gray);
 }
 .link {
   font-family: $mainFontFamily;

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useAsyncControl from "./useAsyncControl";
 import throttle from "lodash/throttle";
 
@@ -25,24 +25,24 @@ export default function usePagination<I extends any, A extends any[]>(
   const currentPageRef = useRef<{ [d: string]: number }>({});
   const { current: currentPage } = currentPageRef;
 
-  const [items, setItems] = useState<I>();
+  const [items, setItems] = useState<[string, I]>();
   const { process, ...control } = useAsyncControl();
 
   function updateItems(cb: (prevItems?: I) => UpdateEvent<I>["items"]) {
-    setItems(cb);
+    setItems(prev => [prev![0], cb()]);
   }
 
   const _requestPage = useCallback(function (page: number, ...args: A) {
     const id = paginationId(...args);
     if (paginationData[id]?.finished || control.loading) return;
     process(async () => {
-      const result = await request(page, items, ...args);
+      const result = await request(page, items?.[0] === id ? items?.[1] : undefined, ...args);
       currentPage[id] = page;
       paginationData[id] = {
         finished: result.finished,
         totalItems: result.totalItems,
       };
-      setItems(result.items);
+      setItems([id, result.items]);
     });
   }, [items, request, control.loading])
 
@@ -55,7 +55,7 @@ export default function usePagination<I extends any, A extends any[]>(
     totalItems: (...args) => paginationData[paginationId(...args)]?.totalItems,
     loading: control.loading,
     error: control.error,
-    items,
+    items: items?.[1],
     setError: control.setError
   };
 }
@@ -79,9 +79,10 @@ export function useContainerPagination(cb: () => void) {
 
   useEffect(() => {
     const el = scrollableRef.current!
+    const scrollElement = (el as unknown as typeof window.document).scrollingElement || el;
     const calculateIfReachedLimit = throttle(() => {
-      const offsetLimit = el.scrollHeight - el.clientHeight * 0.6;
-      const offset = el.clientHeight + el.scrollTop;
+      const offsetLimit = scrollElement.scrollHeight - scrollElement.clientHeight * 0.6;
+      const offset = scrollElement.clientHeight + scrollElement.scrollTop;
       if (offset >= offsetLimit) {
         cb();
       }
@@ -111,8 +112,9 @@ export function useLocalPagination<L>(items: L[], pageSize: number) {
       totalItems: items.length,
       items: newArray
     });
-  }, [pageSize])
-  const pagination = usePagination<L[], []>(cb);
+  }, [pageSize, items])
+  const instanceID = useMemo(() => Date.now(), [items]);
+  const pagination = usePagination<L[], []>(cb, () => `${instanceID}`);
 
   return pagination
 }

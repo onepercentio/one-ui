@@ -1,6 +1,6 @@
 {
   "name": "@onepercentio/one-ui",
-  "version": "0.7.6",
+  "version": "0.8.0",
   "description": "A set of reusable components created through the development of Onepercent projects",
   "files": [
     "dist",

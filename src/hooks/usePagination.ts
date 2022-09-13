@@ -76,12 +76,14 @@ export type Paginable<I extends any, A extends any[] = [], E extends any = any> 
  */
 export function useContainerPagination(cb: () => void) {
   const scrollableRef = useRef<HTMLDivElement>(null);
+  const customOptionsRef = useRef<() => ({ offsetBottom: number })>();
 
   useEffect(() => {
     const el = scrollableRef.current!
     const scrollElement = (el as unknown as typeof window.document).scrollingElement || el;
     const calculateIfReachedLimit = throttle(() => {
-      const offsetLimit = scrollElement.scrollHeight - scrollElement.clientHeight * 0.6;
+      const customOptions = customOptionsRef.current?.() || { offsetBottom: 0 }
+      const offsetLimit = scrollElement.scrollHeight - customOptions.offsetBottom - scrollElement.clientHeight * 0.6;
       const offset = scrollElement.clientHeight + scrollElement.scrollTop;
       if (offset >= offsetLimit) {
         cb();
@@ -96,7 +98,8 @@ export function useContainerPagination(cb: () => void) {
   }, [cb])
 
   return {
-    scrollableRef
+    scrollableRef,
+    customOptionsRef
   }
 }
 

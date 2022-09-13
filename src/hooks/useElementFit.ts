@@ -7,7 +7,7 @@ import { Ref, RefObject, useEffect, useMemo, useRef, useState } from "react";
  */
 export default function useElementFit(baseWidth: number, baseHeight?: number): {
     /** The amount of items that are able to fit in the available width */
-    itemsToShow: number,
+    itemsToShow?: number,
 
     /** The ref to be sent to the element that will receive the items */
     ref: Ref<HTMLDivElement>
@@ -26,7 +26,7 @@ export default function useElementFit(baseWidth: number, baseHeight?: number): {
 
         return maxItemsVertically * fittingRows();
     }
-    const [itemsToShow, setItemsToShow] = useState((window as any).PRERENDER ? 4 : 1);
+    const [itemsToShow, setItemsToShow] = useState((window as any).PRERENDER ? 4 : undefined);
     useEffect(() => {
         setItemsToShow(calculateDimension());
         function onResize() {

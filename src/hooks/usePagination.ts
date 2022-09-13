@@ -1,6 +1,6 @@
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import useAsyncControl from "./useAsyncControl";
-import { CommonErrorCodes } from "../types";
+import throttle from "lodash/throttle";
 
 type UpdateEvent<I extends any> = {
   finished: boolean;
@@ -32,7 +32,7 @@ export default function usePagination<I extends any, A extends any[]>(
     setItems(cb);
   }
 
-  function _requestPage(page: number, ...args: A) {
+  const _requestPage = useCallback(function (page: number, ...args: A) {
     const id = paginationId(...args);
     if (paginationData[id]?.finished || control.loading) return;
     process(async () => {
@@ -44,7 +44,8 @@ export default function usePagination<I extends any, A extends any[]>(
       };
       setItems(result.items);
     });
-  }
+  }, [items, request, control.loading])
+
 
   return {
     updateItems,
@@ -69,3 +70,49 @@ export type Paginable<I extends any, A extends any[] = [], E extends any = any> 
   items: I | undefined;
   setError: ReturnType<typeof useAsyncControl>["setError"];
 };
+
+/**
+ * This returns a ref to be bound to an elements so it can be able to detect when a pagination whould occur
+ */
+export function useContainerPagination(cb: () => void) {
+  const scrollableRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = scrollableRef.current!
+    const calculateIfReachedLimit = throttle(() => {
+      const offsetLimit = el.scrollHeight - el.clientHeight * 0.6;
+      const offset = el.clientHeight + el.scrollTop;
+      if (offset >= offsetLimit) {
+        cb();
+      }
+    }, 250, {
+      leading: false,
+      trailing: true
+    })
+
+    el.addEventListener("scroll", calculateIfReachedLimit)
+    return () => el.removeEventListener('scroll', calculateIfReachedLimit);
+  }, [cb])
+
+  return {
+    scrollableRef
+  }
+}
+
+/**
+ * This function receives an amount of local instances and paginates it
+ */
+export function useLocalPagination<L>(items: L[], pageSize: number) {
+  const cb = useCallback((page: number, currItems: L[] = []) => {
+    const from = pageSize * page;
+    const newArray = [...currItems, ...items.slice(from, from + pageSize)]
+    return Promise.resolve({
+      finished: newArray.length === items.length,
+      totalItems: items.length,
+      items: newArray
+    });
+  }, [pageSize])
+  const pagination = usePagination<L[], []>(cb);
+
+  return pagination
+}

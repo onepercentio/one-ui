@@ -1,9 +1,11 @@
 import React, {
+  createRef,
   ForwardedRef,
   forwardRef,
   MutableRefObject,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -49,7 +51,12 @@ function InfinityScroll(
     page: initialPage,
     offset: 0,
   });
-  const parentDiv = ref as MutableRefObject<HTMLDivElement>;
+  const parentDiv = useMemo(
+    () => {
+      return (ref as MutableRefObject<HTMLDivElement | null>) || createRef()
+    },
+    [ref]
+  );
   const prevDiv = useRef<HTMLDivElement>(null);
   const currDiv = useRef<HTMLDivElement>(null);
   const nextDiv = useRef<HTMLDivElement>(null);
@@ -92,7 +99,7 @@ function InfinityScroll(
 
   return (
     <div
-      ref={ref}
+      ref={parentDiv}
       className={`${Styles.container} ${className}`}
       data-testid="infinity-parent"
       onScroll={

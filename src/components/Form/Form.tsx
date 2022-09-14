@@ -51,10 +51,12 @@ function AdvancedAction({
   submitting,
   isValid,
   onClick,
+  btnProps,
 }: Pick<FirebaseFormProps<{}>, "submited" | "submitting"> & {
   config: Exclude<FirebaseFormProps<{}>["submitBtn"], string>;
   isValid: boolean;
   onClick: () => void;
+  btnProps: ComponentProps<typeof Button>;
 }) {
   const [key, Element, className] =
     submited === false
@@ -73,6 +75,7 @@ function AdvancedAction({
       className={className}
       disabled={!isValid}
       onClick={onClick}
+      {...btnProps}
     >
       <Element key={key + salt} />
     </AdaptiveButton>
@@ -97,9 +100,17 @@ export type FirebaseFormProps<M extends FormForm> = {
         error: [FunctionComponent] | [FunctionComponent, ClassName];
         success: [FunctionComponent] | [FunctionComponent, ClassName];
       };
+  btnProps?: ComponentProps<typeof Button>;
 };
 function FirebaseForm<M extends BaseForm>(
-  { submitting, onSubmit, submited, config, submitBtn }: FirebaseFormProps<M>,
+  {
+    submitting,
+    onSubmit,
+    submited,
+    config,
+    submitBtn,
+    btnProps = {},
+  }: FirebaseFormProps<M>,
   ref: ForwardedRef<FormInterface>
 ) {
   const [form, setform] = useState<Partial<M>>({});
@@ -210,6 +221,7 @@ function FirebaseForm<M extends BaseForm>(
           variant="filled"
           disabled={submitting || !isValid || submited !== undefined}
           onClick={() => sendContact(form as any)}
+          {...btnProps}
         >
           {submitBtn}&nbsp;
           {submitting && <Loader />}
@@ -221,6 +233,7 @@ function FirebaseForm<M extends BaseForm>(
           onClick={() => sendContact(form as any)}
           submitting={submitting}
           submited={submited}
+          btnProps={btnProps}
         />
       )}
     </>

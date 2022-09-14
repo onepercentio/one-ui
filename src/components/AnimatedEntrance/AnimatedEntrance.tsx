@@ -77,8 +77,9 @@ export function AnimatedEntranceItem({
         }px`;
         uncontRef.current!.sectionRef.current!.addEventListener(
           "transitionend",
-          () => {
-            uncontRef.current!.sectionRef.current!.style.maxHeight = "auto";
+          ({ target, currentTarget }) => {
+            if (target !== currentTarget) return;
+            uncontRef.current!.sectionRef.current!.style.maxHeight = "initial";
           }
         );
       }

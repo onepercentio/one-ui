@@ -27,7 +27,7 @@
     font-size: 22px;
     line-height: 33px;
     font-family: $mainFontFamily;
-    color: $spaceBlue;
+    color: var(--input-text-color, $spaceBlue);
     margin-bottom: 18px;
     outline: none;
     &:placeholder-shown ~ .border {

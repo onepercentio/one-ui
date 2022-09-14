@@ -23,19 +23,16 @@ export default function CheckBox({
     HTMLSpanElement
   >) {
   return (
-    <span
+    <label
       className={`${Styles.container} ${className}`}
       style={{ fontSize: size }}
+      onClick={(e) => {
+        onToggle(!checked);
+        e.preventDefault();
+      }}
     >
-      <span
-        {...props}
-        onClick={(e) => {
-          onToggle(!checked);
-          e.preventDefault();
-        }}
-        className={checked ? Styles.checked : ""}
-      />
+      <span {...props} className={checked ? Styles.checked : ""} />
       {label}
-    </span>
+    </label>
   );
 }

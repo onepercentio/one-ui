@@ -1,6 +1,6 @@
 {
   "name": "@onepercentio/one-ui",
-  "version": "0.7.1",
+  "version": "0.8.1",
   "description": "A set of reusable components created through the development of Onepercent projects",
   "files": [
     "dist",
@@ -19,7 +19,7 @@
     "@babel/core": "^7.16.0",
     "@cypress/react": "^5.12.5",
     "@firebase/rules-unit-testing": "^2.0.2",
-    "@muritavo/cypress-toolkit": "^0.1.0",
+    "@muritavo/cypress-toolkit": "^0.7.1",
     "@muritavo/webpack-microfrontend-scripts": "^0.0.22",
     "@storybook/addon-actions": "^6.4.18",
     "@storybook/addon-essentials": "^6.4.18",
@@ -48,6 +48,7 @@
     "https-browserify": "^1.0.0",
     "inquirer": "^8.2.4",
     "jest": "^27.3.1",
+    "jquery": "^3.6.0",
     "node-fetch": "^2",
     "os-browserify": "^0.3.0",
     "react": "^18.0.0",

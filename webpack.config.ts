@@ -32,5 +32,4 @@ baseConfig.plugins.push(new ReactDocgenTypescriptPlugin({
     // NOTE: this default cannot be changed
     savePropValueAsString: true
 }));
-console.warn(baseConfig.resolve?.fallback)
 export default baseConfig;

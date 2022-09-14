@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { CommonErrorCodes } from "../types";
 
-export default function useAsyncControl<E = any, F = any>(functionsToWrap?: F) {
+export default function useAsyncControl<E = any, F = {}>(functionsToWrap?: F) {
   const [error, setError] = useState<E | Error>();
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -28,7 +28,7 @@ export default function useAsyncControl<E = any, F = any>(functionsToWrap?: F) {
     ...Object.entries(functionsToWrap || {}).reduce((r, [k, func]) => {
       return {
         ...r,
-        [k]: (...args: any[]) => _process(() => (func as any)(...args))
+        [k]: typeof func === "function" ? (...args: any[]) => _process(() => (func as any)(...args)) : func
       }
     }, {} as F) as F
   };

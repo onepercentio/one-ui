@@ -34,7 +34,7 @@ export default function usePagination<I extends any, A extends any[]>(
 
   const _requestPage = useCallback(function (page: number, ...args: A) {
     const id = paginationId(...args);
-    if (paginationData[id]?.finished || control.loading) return;
+    if (paginationData[id]?.finished) return;
     process(async () => {
       const result = await request(page, items?.[0] === id ? items?.[1] : undefined, ...args);
       currentPage[id] = page;
@@ -44,7 +44,7 @@ export default function usePagination<I extends any, A extends any[]>(
       };
       setItems([id, result.items]);
     });
-  }, [items, request, control.loading])
+  }, [items, request])
 
 
   return {

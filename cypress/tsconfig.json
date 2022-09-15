@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
-    "jsx": "react",
-    "types": ["cypress", "@muritavo/cypress-toolkit"]
+    "jsx": "react-jsx",
+    "strict": true,
+    "esModuleInterop": true,
+    "types": ["cypress", "@muritavo/cypress-toolkit", "react-scripts"]
   }
 }

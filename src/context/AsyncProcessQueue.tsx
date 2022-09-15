@@ -6,22 +6,43 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
 } from "react";
+import {
+  countRegistration,
+  securePromise,
+} from "./AsyncProcessQueue.development";
+
+export enum AsyncQueueErrors {
+  RECOVERY_IS_NOT_BEING_CALLED = `A recovery is not set for this call. If the user reloads the page, this process will not return to the async list`,
+}
 
 type ReactElementWithState = ReactElement & {
   status: "loading" | "succeded" | "failed";
 };
-
-const Context = createContext<{
-  targetElRef: RefObject<HTMLElement>;
+type ContextShape = {
+  targetElRef: RefObject<HTMLDivElement>;
   pendingTransactions: ReturnType<typeof useCounter>;
   UIs: ReactElementWithState[];
   setUIs: (
-    func: (prev: ReactElementWithState[]) => ReactElementWithState[]
+    updater: (previous: ReactElementWithState[]) => ReactElementWithState[]
   ) => void;
-}>(null as any);
+  watchPromise: <T extends keyof OnepercentUtility.AsyncQueue.UIModels>(
+    promise: Promise<any>,
+    retryFunc: () => Promise<any>,
+    uiType: T,
+    ...uiArgs: OnepercentUtility.AsyncQueue.UIModels[T]
+  ) => void;
+  recoveries: {
+    [k in keyof OnepercentUtility.AsyncQueue.RecoveryTypes]: {
+      write: (...args: OnepercentUtility.AsyncQueue.RecoveryTypes[k]) => void;
+      clear: (...args: OnepercentUtility.AsyncQueue.RecoveryTypes[k]) => void;
+    };
+  };
+};
+const Context = createContext<ContextShape>(null as any);
 
 function useCounter() {
   const [count, setCounter] = useState(0);
@@ -38,18 +59,129 @@ function useCounter() {
 /**
  * This propagates the utilitary functions
  */
-export function AsyncProcessQueueProvider({ children }: PropsWithChildren<{}>) {
-  const targetRef = useRef<HTMLElement>(null);
+export function AsyncProcessQueueProvider<
+  R extends OnepercentUtility.AsyncQueue.RecoveryTypes = OnepercentUtility.AsyncQueue.RecoveryTypes,
+  T extends keyof OnepercentUtility.AsyncQueue.UIModels = keyof OnepercentUtility.AsyncQueue.UIModels
+>({
+  children,
+  recoveries,
+  uiFactory,
+}: PropsWithChildren<{
+  recoveries: {
+    [k in keyof R]: {
+      write: (...args: R[k]) => void;
+      clear: (...args: R[k]) => void;
+      recover: () => [
+        promiseToWaitFor: Promise<any>,
+        promiseRetryFunction: () => Promise<any>,
+        uiType: T,
+        ...uiArgs: OnepercentUtility.AsyncQueue.UIModels[T]
+      ][];
+    };
+  };
+  uiFactory: (
+    type: keyof OnepercentUtility.AsyncQueue.UIModels
+  ) => UIStateFactory;
+}>) {
+  const targetRef = useRef<HTMLDivElement>(null);
   const pendingCounter = useCounter();
   const [UIs, setUIs] = useState<ReactElementWithState[]>([]);
+  if (process.env.NODE_ENV === "development")
+    useLayoutEffect(() => {
+      if (!targetRef.current)
+        throw new Error(
+          `The target for the async elements to transition to is not defined, please review your UI hierarchy`
+        );
+    }, []);
+
+  const _recoveries =
+    process.env.NODE_ENV === "development"
+      ? Object.entries(recoveries).reduce(
+          (r, [k, v]) => ({
+            ...r,
+            [k]: {
+              ...v,
+              write: (...args: any[]) => {
+                countRegistration();
+                return v.write(...args);
+              },
+            },
+          }),
+          {}
+        )
+      : recoveries;
+
+  const watchPromise = useCallback<ContextShape["watchPromise"]>(
+    (promise, retry, uiType, ...uiParams) => {
+      const Factory = uiFactory(uiType);
+      const LoadingUIInstance = {
+        ...Factory("loading"),
+        status: "loading",
+      } as ReactElementWithState;
+
+      if (process.env.NODE_ENV === "development" && !LoadingUIInstance.key)
+        throw new Error(
+          `The UI generate for the async process should have a key`
+        );
+
+      setUIs((prev) => [
+        ...prev.filter((a) => a.key !== LoadingUIInstance.key),
+        LoadingUIInstance,
+      ]);
+      promise.then((result) => {
+        // Write success UI
+        setUIs((prev) =>
+          prev.map((a) =>
+            a === LoadingUIInstance
+              ? { ...Factory("succeded"), status: "succeded" }
+              : a
+          )
+        );
+
+        return result;
+      });
+      promise.catch((error) => {
+        const UIInstance = Factory(
+          "failed",
+          error,
+          () => setUIs((prev) => prev.filter((ui) => ui !== UIInstance)),
+          () => watchPromise(retry(), retry, uiType, ...uiParams)
+        ) as ReactElementWithState;
+        // Write success UI
+        setUIs((prev) =>
+          prev.map((a) =>
+            a === LoadingUIInstance ? { ...UIInstance, status: "failed" } : a
+          )
+        );
+
+        throw error;
+      });
+      return promise;
+    },
+    []
+  );
+
+  useEffect(() => {
+    for (let recovery in recoveries) {
+      const recoveredProcesses = recoveries[recovery].recover();
+      for (let [promise, ...recoveredProcess] of recoveredProcesses) {
+        watchPromise(
+          promise.catch(() => {}),
+          ...recoveredProcess
+        );
+      }
+    }
+  }, []);
 
   return (
     <Context.Provider
       value={{
         targetElRef: targetRef,
         pendingTransactions: pendingCounter,
+        watchPromise,
         setUIs,
         UIs,
+        recoveries: _recoveries,
       }}
     >
       {children}
@@ -80,6 +212,22 @@ function calculateCenter(el: HTMLElement) {
   };
 }
 
+/** This exposes the recovery registration functions available for abtract types of calls */
+export function useRecoveries<
+  R extends OnepercentUtility.AsyncQueue.RecoveryTypes = OnepercentUtility.AsyncQueue.RecoveryTypes
+>(): {
+  [K in keyof R]: {
+    write(...args: R[K]): void;
+    clear(...args: R[K]): void;
+  };
+} {
+  return useAsyncProcessQueueContext().recoveries as any;
+}
+
+type Params<
+  U extends keyof OnepercentUtility.AsyncQueue.UIModels = keyof OnepercentUtility.AsyncQueue.UIModels
+> = [U, ...OnepercentUtility.AsyncQueue.UIModels[U]];
+
 /**
  * This function wraps other async functions and decides when the ongoing promise should be put on the queue or not
  */
@@ -89,9 +237,9 @@ export function useAsyncProcessQueue<
   }
 >(
   functionsToQueue: T,
-  UIFactory: (functionName: keyof T) => UIStateFactory
+  UIParamsFactory: <F extends keyof T>(functionName: F) => Params
 ): T & {
-  elToTransitionToQueue: RefObject<HTMLElement>;
+  elToTransitionToQueue: RefObject<HTMLDivElement>;
   /**
    * Function that wraps the current running actions and animates to the target queue element
    */
@@ -99,8 +247,8 @@ export function useAsyncProcessQueue<
 } {
   const loadingRef = useRef<Function | null>(null);
   const wrapped = useRef(false);
-  const elToTransitionToQueue = useRef<HTMLElement>(null);
-  const { targetElRef: targetEl, setUIs } = useContext(Context);
+  const elToTransitionToQueue = useRef<HTMLDivElement>(null);
+  const { targetElRef: targetEl, watchPromise } = useContext(Context);
   const initialCenter =
     useRef<{
       center: ReturnType<typeof calculateCenter>;
@@ -173,69 +321,22 @@ export function useAsyncProcessQueue<
   }, []);
   return Object.entries(functionsToQueue).reduce(
     (r, [k, v]) => {
-      const process = (...args: any[]) => {
-        const promise = v(...args);
-        loadingRef.current = function () {
-          // Write the loading UI
-          const LoadingUIInstance = {
-            ...UIFactory(k)("loading"),
-            status: "loading",
-          } as ReactElementWithState;
-          setUIs((prev) => [
-            ...prev.filter((a) => a.key !== LoadingUIInstance.key),
-            LoadingUIInstance,
-          ]);
-
-          promise.then((result) => {
-            const UIInstance = UIFactory(k)(
-              "succeded"
-            ) as ReactElementWithState;
-
-            // Write success UI
-            setUIs((prev) =>
-              prev.map((a) =>
-                a === LoadingUIInstance
-                  ? { ...UIInstance, status: "succeded" }
-                  : a
-              )
-            );
-
-            return result;
-          });
-          promise.catch((error) => {
-            const UIInstance = UIFactory(k)(
-              "failed",
-              error,
-              () => setUIs((prev) => prev.filter((ui) => ui !== UIInstance)),
-              () => {
-                process(...args);
-                loadingRef.current!();
-              }
-            ) as ReactElementWithState;
-            // Write success UI
-            setUIs((prev) =>
-              prev.map((a) =>
-                a === LoadingUIInstance
-                  ? { ...UIInstance, status: "failed" }
-                  : a
-              )
-            );
-
-            throw error;
-          });
-          return promise;
-        };
-        promise.finally(() => {
-          loadingRef.current = null;
-        });
+      const _process = (...args: any[]) => {
+        let promise = v(...args);
+        loadingRef.current = () =>
+          watchPromise(promise, () => v(...args), ...UIParamsFactory(k));
+        promise.finally(() => (loadingRef.current = null));
+        if (process.env.NODE_ENV === "development")
+          promise = securePromise(promise);
+        return promise;
       };
       return {
         ...r,
-        [k]: process,
+        [k]: _process,
       };
     },
     { elToTransitionToQueue, wrapQueue } as T & {
-      elToTransitionToQueue: RefObject<HTMLElement>;
+      elToTransitionToQueue: RefObject<HTMLDivElement>;
       /**
        * Function that wraps the current running actions and animates to the target queue element
        */

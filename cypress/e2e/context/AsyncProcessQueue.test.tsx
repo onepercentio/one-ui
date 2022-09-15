@@ -2,7 +2,6 @@ import { mount } from "cypress/react";
 import {
   ComponentProps,
   CSSProperties,
-  Fragment,
   PropsWithChildren,
   useEffect,
   useLayoutEffect,
@@ -23,6 +22,7 @@ import {
   useAsyncProcessQueueContext,
   useRecoveries,
 } from "../../../src/context/AsyncProcessQueue";
+import { resetRegistrationCounter } from "../../../src/context/AsyncProcessQueue.development";
 import useAsyncControl from "../../../src/hooks/useAsyncControl";
 import TestStyles from "./AsyncProcessQueue.module.scss";
 
@@ -32,7 +32,11 @@ const MockUIFactory: () => UIStateFactory = () => {
   return (status) => <h1 key={date}>{status}</h1>
 }
 
-it.each.only(
+beforeEach(() => {
+  resetRegistrationCounter()
+})
+
+it.each(
   [
     { width: 1920, height: 1800 },
     // { width: 320, height: 480 },

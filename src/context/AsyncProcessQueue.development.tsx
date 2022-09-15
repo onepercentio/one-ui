@@ -36,3 +36,7 @@ export function securePromise<T>(promise: Promise<T>) {
 export function countRegistration() {
   amountOfRestorationThatShouldBeNeeded++;
 }
+
+export function resetRegistrationCounter() {
+  amountOfRestorationThatShouldBeNeeded = 0;
+}

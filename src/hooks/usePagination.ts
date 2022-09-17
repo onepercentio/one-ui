@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import useAsyncControl from "./useAsyncControl";
 import throttle from "lodash/throttle";
 
@@ -22,35 +22,37 @@ export default function usePagination<I extends any, A extends any[]>(
   }>({});
   const { current: paginationData } = paginationDataRef;
 
-  const currentPageRef = useRef<{ [d: string]: number }>({});
-  const { current: currentPage } = currentPageRef;
-
-  const [items, setItems] = useState<[string, I]>();
+  const [items, setItems] = useState<[paginationId: string, items: I, currentPage: number]>();
   const { process, ...control } = useAsyncControl();
 
   function updateItems(cb: (prevItems?: I) => UpdateEvent<I>["items"]) {
-    setItems(prev => [prev![0], cb()]);
+    setItems(prev => [prev![0], cb(), prev![2]]);
   }
 
   const _requestPage = useCallback(function (page: number, ...args: A) {
     const id = paginationId(...args);
-    if (paginationData[id]?.finished || control.loading) return;
+    if (paginationData[id]?.finished) return;
     process(async () => {
       const result = await request(page, items?.[0] === id ? items?.[1] : undefined, ...args);
-      currentPage[id] = page;
       paginationData[id] = {
         finished: result.finished,
         totalItems: result.totalItems,
       };
-      setItems([id, result.items]);
+      setItems((prev) => {
+        if (page === 0)
+          return [id, result.items, page]
+        else if (!prev || id === prev[0])
+          return [id, result.items, page]
+        return prev;
+      });
     });
-  }, [items, request, control.loading])
+  }, [items, request])
 
 
   return {
     updateItems,
     getNextPage: (...args: A) =>
-      _requestPage((currentPage[paginationId(...args)] || 0) + 1, ...args),
+      _requestPage((items?.[2] || 0) + 1, ...args),
     getPage: _requestPage,
     totalItems: (...args) => paginationData[paginationId(...args)]?.totalItems,
     loading: control.loading,
@@ -107,6 +109,7 @@ export function useContainerPagination(cb: () => void) {
  * This function receives an amount of local instances and paginates it
  */
 export function useLocalPagination<L>(items: L[], pageSize: number) {
+  const instanceID = useMemo(() => Date.now(), [items]);
   const cb = useCallback((page: number, currItems: L[] = []) => {
     const from = pageSize * page;
     const newArray = [...currItems, ...items.slice(from, from + pageSize)]
@@ -116,7 +119,6 @@ export function useLocalPagination<L>(items: L[], pageSize: number) {
       items: newArray
     });
   }, [pageSize, items])
-  const instanceID = useMemo(() => Date.now(), [items]);
   const pagination = usePagination<L[], []>(cb, () => `${instanceID}`);
 
   return pagination

@@ -19,7 +19,7 @@ function Wrapper({ i }: { i: number }) {
         }}
         data-testid={`click`}
       >
-        <MutableHamburgerButton size={256} />
+        <MutableHamburgerButton size={24} />
       </div>
     </>
   );

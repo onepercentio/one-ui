@@ -9,11 +9,8 @@ import * as AllExamples from "../../../../src/components/OrderableList/Orderable
 function focusDrag(whichOne: number) {
   cy.byTestId(`click`)
     .eq(whichOne - 1)
-    .realMouseMove(-10, -10)
-    .realMouseMove(10, 10);
-  cy.get("section")
-    .eq(whichOne - 1)
-    .trigger("dragstart");
+    .trigger("mousedown");
+  cy.byTestId("orderable-list-clone");
 }
 /**
  * Emulates dragging from the anchor to another
@@ -24,7 +21,7 @@ function dragEl(ofWhich: number, to: "start" | "middle" | "end") {
     .eq(ofWhich - 1)
     .then((e) => {
       const el = e.get(0);
-      cy.wrap(el).trigger("dragover", {
+      cy.wrap(el).trigger("mousemove", {
         offsetY:
           to === "middle"
             ? el.clientHeight / 2
@@ -32,7 +29,8 @@ function dragEl(ofWhich: number, to: "start" | "middle" | "end") {
             ? el.clientHeight * 0.95
             : el.clientHeight * 0.05,
       });
-    });
+    })
+    .wait(1500).realMouseUp();
 }
 it("Should be able to show the items", () => {
   cy.mount(<AllExamples.InitialImplementation />);
@@ -49,11 +47,11 @@ it.only("Should animate correctly", () => {
   focusDrag(1);
   dragEl(3, "start").wait(1500);
 
-  focusDrag(3);
-  dragEl(5, "start").wait(1500);
-
   focusDrag(2);
   dragEl(1, "start").wait(1500);
+
+  // focusDrag(2);
+  // dragEl(1, "start").wait(1500);
 });
 it("Should animate the item repositioning when moving it", () => {
   cy.viewport(1920, 2160);

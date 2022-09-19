@@ -11,6 +11,7 @@ import React, {
   useState,
 } from "react";
 import AnimatedEntrance from "../AnimatedEntrance";
+import Styles from "./OrderableList.module.scss";
 
 const OrderableListContext = createContext<{
   bindAnchor: (bindElement: HTMLDivElement) => void;
@@ -40,12 +41,17 @@ export default function OrderableList({
       if (parent.parentElement === null) break;
       parent = parent.parentElement as any;
     } while (parent.parentElement !== rootRef.current);
+    if (process.env.NODE_ENV === "development" && parent === null)
+      throw new Error(
+        "It seems like we could not find a relation between this element and the root list. Are you using portals maybe?"
+      );
     return parent;
   };
 
   const calculateReordering = useMemo(() => {
     return throttle((e: any, els: HTMLDivElement[], currentOrder: string[]) => {
-      if (els.length > currentOrder.length) return;
+      if (els.length > currentOrder.length || !currentWorkingKey.current)
+        return;
       const parent = findParentElement(e.target);
       const indexOfOverKey = els.indexOf(parent);
       const keyOfTheOverElement = currentOrder[indexOfOverKey];
@@ -89,64 +95,99 @@ export default function OrderableList({
           });
         }
       }
-    }, 500);
+    }, 1000 / 60);
   }, []);
 
   useEffect(() => {
+    console.warn("How many?");
     const els = Array.from(rootRef.current!.children) as HTMLDivElement[];
+
     const calculateReorderingCall = (e: any) => {
       const els = Array.from(rootRef.current!.children) as HTMLDivElement[];
       calculateReordering(e, els, cleanOrder);
     };
     for (let el of els)
-      el.addEventListener("dragover", calculateReorderingCall);
+      el.addEventListener("mousemove", calculateReorderingCall);
     return () => {
       for (let el of els)
-        el.removeEventListener("dragover", calculateReorderingCall);
+        el.removeEventListener("mousemove", calculateReorderingCall);
     };
   }, [cleanOrder]);
 
+  const cleanOrderRef = useRef(cleanOrder);
   useEffect(() => {
-    const els = Array.from(rootRef.current!.children) as HTMLDivElement[];
-    const startDrag = (e: DragEvent) => {
-      const els = Array.from(rootRef.current!.children) as HTMLDivElement[];
-      if (els.length > cleanOrder.length) return;
-      currentWorkingKey.current =
-        cleanOrder[els.indexOf(e.currentTarget as HTMLDivElement)];
-    };
-    for (let el of els) el.addEventListener("dragstart", startDrag);
-    return () => {
-      for (let el of els) el.removeEventListener("dragstart", startDrag);
-    };
+    cleanOrderRef.current = cleanOrder;
   }, [cleanOrder]);
+  const onAnchorClick = useCallback(({ target, x: x0, y: y0 }: MouseEvent) => {
+    let offset: [x: number, y: number];
+    const parent = findParentElement(target as HTMLDivElement);
+    const box = parent.getBoundingClientRect();
+    const els = Array.from(rootRef.current!.children) as HTMLDivElement[];
 
-  const onAnchorElOver = useCallback<any>(
-    ({ target }: { target: HTMLDivElement }) => {
-      const parent = findParentElement(target);
-      if (process.env.NODE_ENV === "development" && parent === null)
-        throw new Error(
-          "It seems like we could not find a relation between this element and the root list. Are you using portals maybe?"
-        );
-      if (parent === null) return;
-      const mouseExit = () => {
-        parent.setAttribute("draggable", "false");
-        target.removeEventListener("mouseleave", mouseExit);
-      };
-      parent.setAttribute("draggable", "true");
-      target.addEventListener("mouseleave", mouseExit);
-    },
-    []
-  );
+    const clone = parent.cloneNode(true) as HTMLDivElement;
+    clone.setAttribute("data-testid", "orderable-list-clone");
+    clone.style.width = `${box.width}px`;
+    clone.style.height = `${box.height}px`;
+    clone.style.top = `${box.top}px`;
+    clone.style.left = `${box.left}px`;
+    clone.classList.add(Styles.clone);
+    parent.classList.add(Styles.currentOrdering);
+    parent.classList.remove(Styles.visible);
+
+    const movementControl = ({ x: x1, y: y1 }: MouseEvent) => {
+      if (!offset) offset = [x1 - box.left, y1 - box.top];
+
+      const [offsetX, offsetY] = offset;
+      clone.style.top = `${y1 - offsetY}px`;
+      clone.style.left = `${x1 - offsetX}px`;
+    };
+
+    document.body.appendChild(clone);
+    const deleteClone = () => {
+      window.removeEventListener("mousemove", movementControl);
+      window.removeEventListener("mouseup", deleteClone);
+      parent.style.visibility = "initial";
+      currentWorkingKey.current = undefined;
+      window.document.body.classList.remove(Styles.unselectable);
+      {
+        const els = Array.from(rootRef.current!.children) as HTMLDivElement[];
+        const elInvisible = els.find(
+          (a) =>
+            !a.classList.contains(Styles.visible) && a.style.maxHeight !== "0px"
+        )!;
+        const box = elInvisible.getBoundingClientRect();
+        clone.style.top = `${box.top}px`;
+        clone.style.left = `${box.left}px`;
+        clone.style.transition = `top 500ms linear, left 500ms linear`;
+        clone.addEventListener("transitionend", () => {
+          rootRef.current.classList.remove(Styles.ordering);
+          for (let el of els) el.classList.remove(Styles.visible);
+          clone.remove();
+        });
+      }
+    };
+    for (let el of els) el.classList.add(Styles.visible);
+    parent.style.visibility = "hidden";
+    parent.classList.remove(Styles.visible);
+    rootRef.current.classList.add(Styles.ordering);
+    currentWorkingKey.current = cleanOrderRef.current[els.indexOf(parent)];
+    window.document.body.classList.add(Styles.unselectable);
+    window.addEventListener("mouseup", deleteClone);
+    window.addEventListener("mousemove", movementControl);
+  }, []);
 
   return (
     <OrderableListContext.Provider
       value={{
-        bindAnchor: (el) => el.addEventListener("mouseenter", onAnchorElOver),
-        unbindAnchor: (el) =>
-          el.removeEventListener("mouseenter", onAnchorElOver),
+        bindAnchor: (el) => {
+          el.addEventListener("mousedown", onAnchorClick);
+        },
+        unbindAnchor: (el) => {
+          el.removeEventListener("mousedown", onAnchorClick);
+        },
       }}
     >
-      <div ref={rootRef}>
+      <div ref={rootRef} className={Styles.root}>
         <AnimatedEntrance>
           {[...children]
             .filter((a) => cleanOrder.includes(a.key as string))

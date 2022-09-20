@@ -1,7 +1,7 @@
 import React from 'react';
 import { IntlProvider } from 'react-intl';
 import { extractAllPossibilitiesFromEnumProp, SideBySideContainer } from '../../storybookUtils';
-import Text, { _Text } from '../Text/Text';
+import BaseText, { Text } from '../Text/Text';
 import InstantCounter from "./InstantCounter";
     
 export default {
@@ -14,15 +14,15 @@ export const InitialImplementation = (args: any) => <IntlProvider locale='pt-br'
 </IntlProvider>;
 
 export const SynergyTextAndCountdown = (args: any) => {
-  const variants = extractAllPossibilitiesFromEnumProp(_Text, "type");
+  const variants = extractAllPossibilitiesFromEnumProp(Text, "type");
 
   return variants.map((type) => {
     return (
       <IntlProvider locale="pt-br">
         <SideBySideContainer exampleName={`Checkbox com text type=${type}`}>
-          <Text type={type}>
+          <BaseText type={type}>
             <InstantCounter {...args}/>
-          </Text>
+          </BaseText>
         </SideBySideContainer>
       </IntlProvider>
     );

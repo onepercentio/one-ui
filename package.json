@@ -14,7 +14,7 @@
   "repository": "git@github.com:onepercentio/one-ui.git",
   "author": "Murilo Oliveira de Araujo <muritavo@outlook.com>",
   "license": "MIT",
-  "types": "src/types.d.ts",
+  "types": "index.d.ts",
   "devDependencies": {
     "@babel/core": "^7.16.0",
     "@cypress/react": "^5.12.5",
@@ -92,7 +92,7 @@
     "build-storybook": "build-storybook",
     "prebuild": "cd src",
     "copy-css": "cpy --cwd=\"src\" \"**/*.{scss,svg}\" \"../dist\" --parents",
-    "build": "tsc && npm run copy-css",
+    "build": "tsc && npm run copy-css && yarn dts-generator --project ./ --out index.d.ts --prefix @onepercentio/one-ui/dist --exclude **/*.stories.* --exclude **/index.* --exclude **/*.test.*",
     "postbuild": "cd ..",
     "dev": "tsc --watch",
     "test:watch": "jest --watchAll --coverage",

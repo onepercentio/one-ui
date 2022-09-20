@@ -4,7 +4,7 @@ import {
   extractAllPossibilitiesFromEnumProp,
   SideBySideContainer,
 } from "../../storybookUtils";
-import Text, { _Text } from "../Text/Text";
+import BaseText, { Text } from "../Text/Text";
 import Countdown from "./Countdown";
 
 export default {
@@ -22,19 +22,19 @@ InitialImplementation.args = {
 } as Partial<React.ComponentProps<typeof Countdown>>;
 
 export const SynergyTextAndCountdown = (args: any) => {
-  const variants = extractAllPossibilitiesFromEnumProp(_Text, "type");
+  const variants = extractAllPossibilitiesFromEnumProp(Text, "type");
 
   return variants.map((type) => {
     return (
       <IntlProvider locale="pt-br">
         <SideBySideContainer exampleName={`Checkbox com text type=${type}`}>
-          <Text type={type}>
+          <BaseText type={type}>
             <Countdown
               timeRemaining={
                 1000 * 60 * 60 * 12 - Math.random() * 1000 * 60 * 60 * 3
               }
             />
-          </Text>
+          </BaseText>
         </SideBySideContainer>
       </IntlProvider>
     );

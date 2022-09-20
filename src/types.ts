@@ -1,3 +1,5 @@
+/// <reference path="../index.d.ts"/>
+
 type PrependNextNum<A extends Array<unknown>> = A['length'] extends infer T ? ((t: T, ...a: A) => void) extends ((...x: infer X) => void) ? X : never : never;
 
 type EnumerateInternal<A extends Array<unknown>, N extends number> = { 0: A, 1: EnumerateInternal<PrependNextNum<A>, N> }[N extends A['length'] ? 0 : 1];
@@ -59,14 +61,14 @@ declare type IsTuple<T extends ReadonlyArray<any>> = number extends T['length'] 
 declare type TupleKey<T extends ReadonlyArray<any>> = Exclude<keyof T, keyof any[]>;
 declare type ArrayKey = number;
 declare type PathImpl<K extends string | number, V> = V extends Primitive ? `${K}` : `${K}.${Path<V>}`;
-export declare type Path<T> = T extends ReadonlyArray<infer V> 
-? 
-  IsTuple<T> extends true 
+export declare type Path<T> = T extends ReadonlyArray<infer V>
+  ?
+  IsTuple<T> extends true
   ? {
     [K in TupleKey<T>]-?: PathImpl<K & string, T[K]>;
-  }[TupleKey<T>] 
-  : PathImpl<ArrayKey, V> 
-: {
+  }[TupleKey<T>]
+  : PathImpl<ArrayKey, V>
+  : {
     [K in keyof T]-?: PathImpl<K & string, T[K]>;
   }[keyof T];
 export declare type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>;

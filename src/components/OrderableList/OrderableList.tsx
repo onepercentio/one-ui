@@ -156,6 +156,12 @@ export default function OrderableList({
             !a.classList.contains(Styles.visible) && a.style.maxHeight !== "0px"
         )!;
         const box = elInvisible.getBoundingClientRect();
+        if (clone.style.top === `${box.top}px` && clone.style.left === `${box.left}px`) {
+          
+          rootRef.current.classList.remove(Styles.ordering);
+          for (let el of els) el.classList.remove(Styles.visible);
+          clone.remove();
+        }
         clone.style.top = `${box.top}px`;
         clone.style.left = `${box.left}px`;
         clone.style.transition = `top 500ms linear, left 500ms linear`;

@@ -76,17 +76,22 @@ export type Paginable<I extends any, A extends any[] = [], E extends any = any> 
 /**
  * This returns a ref to be bound to an elements so it can be able to detect when a pagination whould occur
  */
-export function useContainerPagination(cb: () => void) {
+export function useContainerPagination(cb: () => void, direction: "h" | "v" = "v") {
   const scrollableRef = useRef<HTMLDivElement>(null);
-  const customOptionsRef = useRef<() => ({ offsetBottom: number })>();
+  const customOptionsRef = useRef<() => ({ offsetBottom: number, offsetLeft: number })>();
 
   useEffect(() => {
     const el = scrollableRef.current!
     const scrollElement = (el as unknown as typeof window.document).scrollingElement || el;
     const calculateIfReachedLimit = throttle(() => {
-      const customOptions = customOptionsRef.current?.() || { offsetBottom: 0 }
-      const offsetLimit = scrollElement.scrollHeight - customOptions.offsetBottom - scrollElement.clientHeight * 0.6;
-      const offset = scrollElement.clientHeight + scrollElement.scrollTop;
+      const { offsetBottom = 0, offsetLeft = 0 } = customOptionsRef.current?.() || {}
+      const offsetLimit = (direction === "v")
+        ? scrollElement.scrollHeight - offsetBottom - scrollElement.clientHeight * 0.6
+        : scrollElement.scrollWidth - offsetLeft - scrollElement.clientWidth * 0.6;
+      const offset = (direction === "v")
+        ? scrollElement.clientHeight + scrollElement.scrollTop
+        : scrollElement.clientWidth + scrollElement.scrollLeft;
+
       if (offset >= offsetLimit) {
         cb();
       }

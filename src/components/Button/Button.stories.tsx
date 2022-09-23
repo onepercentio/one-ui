@@ -1,7 +1,6 @@
 import React from "react";
 import Comp, { _Button } from "./Button";
 import Spacing from "../Spacing";
-console.warn(_Button)
 
 export default {
   component: _Button,

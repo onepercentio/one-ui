@@ -28,6 +28,7 @@ export default function OrderableList({
   children: ReactElement[];
   keyOrder?: string[];
 }) {
+  const currentClone = useRef<HTMLDivElement | null>(null);
   const currentWorkingKey = useRef<string>();
   const rootRef = useRef<HTMLDivElement>(null as any);
   const [order, setOrder] = useState(() => {
@@ -99,7 +100,6 @@ export default function OrderableList({
   }, []);
 
   useEffect(() => {
-    console.warn("How many?");
     const els = Array.from(rootRef.current!.children) as HTMLDivElement[];
 
     const calculateReorderingCall = (e: any) => {
@@ -125,6 +125,7 @@ export default function OrderableList({
     const els = Array.from(rootRef.current!.children) as HTMLDivElement[];
 
     const clone = parent.cloneNode(true) as HTMLDivElement;
+    currentClone.current = clone;
     clone.setAttribute("data-testid", "orderable-list-clone");
     clone.style.width = `${box.width}px`;
     clone.style.height = `${box.height}px`;
@@ -156,19 +157,22 @@ export default function OrderableList({
             !a.classList.contains(Styles.visible) && a.style.maxHeight !== "0px"
         )!;
         const box = elInvisible.getBoundingClientRect();
-        if (clone.style.top === `${box.top}px` && clone.style.left === `${box.left}px`) {
-          
+        function cleanUp() {
           rootRef.current.classList.remove(Styles.ordering);
           for (let el of els) el.classList.remove(Styles.visible);
           clone.remove();
+          currentClone.current = null;
+          for (let el of (Array.from(elInvisible.children) as HTMLDivElement[]))
+            el.style.height = "";
+        }
+        if (clone.style.top.startsWith(Math.floor(box.top).toString()) && clone.style.left.startsWith(Math.floor(box.left).toString())) {
+          cleanUp()
         }
         clone.style.top = `${box.top}px`;
         clone.style.left = `${box.left}px`;
         clone.style.transition = `top 500ms linear, left 500ms linear`;
         clone.addEventListener("transitionend", () => {
-          rootRef.current.classList.remove(Styles.ordering);
-          for (let el of els) el.classList.remove(Styles.visible);
-          clone.remove();
+          cleanUp()
         });
       }
     };
@@ -181,6 +185,20 @@ export default function OrderableList({
     window.addEventListener("mouseup", deleteClone);
     window.addEventListener("mousemove", movementControl);
   }, []);
+
+  useLayoutEffect(() => {
+    if (currentClone.current) {
+      const els = Array.from(rootRef.current!.children) as HTMLDivElement[];
+      const elInvisible = els.find(
+        (a) =>
+          !a.classList.contains(Styles.visible) && a.style.maxHeight !== "0px"
+      )!;
+      (elInvisible.children[0] as HTMLDivElement).style.height = `${currentClone.current!.clientHeight}px`;
+      setTimeout(() => {
+        (elInvisible.children[1] as HTMLDivElement).style.height = `${currentClone.current!.clientHeight}px`;
+      }, 150);
+    }
+  }, [cleanOrder])
 
   return (
     <OrderableListContext.Provider

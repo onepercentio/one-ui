@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { mount } from "cypress/react";
 
 import * as AllExamples from "../../../../src/components/OrderableList/OrderableList.stories";
+import Comp, { useOrderableListAnchor } from "../../../../src/components/OrderableList/OrderableList";
+import MutableHamburgerButton from "../../../../src/components/MutableHamburgerButton";
 /**
  * Emulates the focus
  * @param whichOne
@@ -26,11 +28,11 @@ function dragEl(ofWhich: number, to: "start" | "middle" | "end") {
           to === "middle"
             ? el.clientHeight / 2
             : to === "end"
-            ? el.clientHeight * 0.95
-            : el.clientHeight * 0.05,
+              ? el.clientHeight * 0.95
+              : el.clientHeight * 0.05,
       });
     })
-    .wait(1500).realMouseUp();
+    .wait(500).realMouseUp();
 }
 it("Should be able to show the items", () => {
   cy.mount(<AllExamples.InitialImplementation />);
@@ -40,7 +42,7 @@ it("Should be able to show the items on a different order", () => {
     <AllExamples.InitialImplementation keyOrder={["5", "3", "1", "2", "4"]} />
   );
 });
-it.only("Should animate correctly", () => {
+it("Should animate correctly", () => {
   cy.viewport(1920, 2160);
   cy.mount(<AllExamples.InitialImplementation />);
 
@@ -87,3 +89,46 @@ it("Should animate the item repositioning when moving it", () => {
   // Backwards
   switchPlaces(5, 4, "1 2 3 5 4");
 });
+it.only("Should work with variable height elements", () => {
+  cy.viewport(1920, 1080 * 1.6)
+  function Wrapper({ i }: { i: number }) {
+    const { anchorRef } = useOrderableListAnchor();
+    return (
+      <>
+        <div
+          ref={anchorRef}
+          style={{
+            display: "inline-block",
+          }}
+          data-testid={`click`}
+        >
+          <MutableHamburgerButton size={24} />
+        </div>
+      </>
+    );
+  }
+
+  function VariableWrapper({ i }: { i: number }) {
+    const [height, setHeight] = useState(100);
+
+    useEffect(() => {
+      setTimeout(() => {
+        setHeight(300);
+      }, 500);
+    }, []);
+    return <div style={{ height, fontSize: height * 0.8, fontWeight: "bold", lineHeight: `${height}px`, opacity: 0.3, background: "linear-gradient(to right, red, green, blue)" }}>
+      <Wrapper i={i} />
+      {i} - {height}
+    </div>
+  }
+  cy.mount(<Comp>
+    <VariableWrapper key={"1"} i={1} />
+    <VariableWrapper key={"2"} i={2} />
+    <VariableWrapper key={"3"} i={3} />
+    <VariableWrapper key={"4"} i={4} />
+    <VariableWrapper key={"5"} i={5} />
+  </Comp>).wait(700)
+
+  focusDrag(5);
+  dragEl(2, "start").wait(1500);
+})

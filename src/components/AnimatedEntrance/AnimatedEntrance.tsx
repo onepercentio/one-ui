@@ -86,9 +86,7 @@ export function AnimatedEntranceItem({
           const restoreAutoHeight = ({
             target,
             currentTarget,
-            propertyName,
           }: TransitionEvent<HTMLDivElement>) => {
-            console.log(target, currentTarget, target === currentTarget);
             if (target !== currentTarget) return;
             uncontRef.current!.sectionRef.current!.style.maxHeight = "initial";
             uncontRef.current!.sectionRef.current!.removeEventListener(
@@ -100,6 +98,8 @@ export function AnimatedEntranceItem({
             "transitionend",
             restoreAutoHeight as any
           );
+        } else {
+          uncontRef.current!.sectionRef.current!.style.maxHeight = "initial";
         }
       }
     }, 100);

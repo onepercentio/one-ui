@@ -51,12 +51,9 @@ function InfinityScroll(
     page: initialPage,
     offset: 0,
   });
-  const parentDiv = useMemo(
-    () => {
-      return (ref as MutableRefObject<HTMLDivElement | null>) || createRef()
-    },
-    [ref]
-  );
+  const parentDiv = useMemo(() => {
+    return (ref as MutableRefObject<HTMLDivElement | null>) || createRef();
+  }, [ref]);
   const prevDiv = useRef<HTMLDivElement>(null);
   const currDiv = useRef<HTMLDivElement>(null);
   const nextDiv = useRef<HTMLDivElement>(null);
@@ -101,7 +98,7 @@ function InfinityScroll(
     <div
       ref={parentDiv}
       className={`${Styles.container} ${className}`}
-      data-testid="infinity-parent"
+      data-testid={InfinityDataTestId.ROOT}
       onScroll={
         !isCountTheSameOrLowerThanPage
           ? () => {
@@ -139,7 +136,7 @@ function InfinityScroll(
         <div
           key={beforeKey}
           className={pageClass}
-          data-testid="infinity-prev"
+          data-testid={InfinityDataTestId.PREV_PAGE}
           ref={prevDiv}
         >
           {getItems(currPage.page - 1, currPage.offset)}
@@ -148,7 +145,7 @@ function InfinityScroll(
       <div
         key={currKey}
         className={pageClass}
-        data-testid="infinity-curr"
+        data-testid={InfinityDataTestId.CURR_PAGE}
         ref={currDiv}
       >
         {getItems(currPage.page, currPage.offset)}
@@ -157,7 +154,7 @@ function InfinityScroll(
         <div
           key={afterKey}
           className={pageClass}
-          data-testid="infinity-next"
+          data-testid={InfinityDataTestId.NEXT_PAGE}
           ref={nextDiv}
         >
           {getItems(currPage.page + 1, currPage.offset)}
@@ -168,3 +165,10 @@ function InfinityScroll(
 }
 
 export default forwardRef(InfinityScroll);
+
+export enum InfinityDataTestId {
+  PREV_PAGE = "infinity-prev",
+  CURR_PAGE = "infinity-curr",
+  NEXT_PAGE = "infinity-next",
+  ROOT = "infinity-parent"
+}

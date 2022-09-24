@@ -12,17 +12,12 @@ baseConfig.output!.libraryTarget = "umd";
 baseConfig.plugins = baseConfig.plugins!.filter(
     (a) => a.constructor.name !== "ModuleFederationPlugin"
 );
-// baseConfig.resolve!.alias = {
-//     "node-fetch": require.resolve("./cypress/plugins/custom-fetch"),
-//     child_process: require.resolve("./cypress/plugins/child_process"),
-// };
 baseConfig.module!.rules!.push({
     test: /\.m?js$/,
     resolve: {
         fullySpecified: false,
     },
 });
-// (baseConfig as any).module.rules[1].oneOf[3].include = [(baseConfig as any).module.rules[1].oneOf[3].include, resolve(join(__dirname, "cypress"))] as string[];
 baseConfig.plugins.push(new ReactDocgenTypescriptPlugin({
     shouldExtractLiteralValuesFromEnum: true,
     shouldRemoveUndefinedFromOptional: true,

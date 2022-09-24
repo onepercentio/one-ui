@@ -33,7 +33,7 @@ export default function usePagination<I extends any, A extends any[]>(
     const id = paginationId(...args);
     if (paginationData[id]?.finished) return;
     process(async () => {
-      const result = await request(page, items?.[0] === id ? items?.[1] : undefined, ...args);
+      const result = await request(page, items?.[0] === id && page !== 0 ? items?.[1] : undefined, ...args);
       paginationData[id] = {
         finished: result.finished,
         totalItems: result.totalItems,

@@ -126,16 +126,17 @@ function InfinityScroll(
                   let offset = prev.offset;
                   if (nextPage < 0) {
                     nextPage = Math.round(items.length / pageSize) - 1;
-                    const remainingItems = items.length - (nextPage * pageSize + offset)
-                    offset = remainingItems
+                    const finalIndex = (nextPage + 1) * pageSize + offset;
+                    const maxIndex = items.length;
+                    const remainingItems = maxIndex + offset - finalIndex;
+                    offset += remainingItems;
+                    if (offset === -(items.length - 1)) offset = 1;
                   }
                   let nextIndex = nextPage * pageSize + offset;
                   if (nextIndex > items.length) {
                     offset = nextIndex - items.length;
                     nextPage = 0;
                   }
-
-                  alert(`N ${nextIndex} I ${items.length} P ${nextPage} O ${offset}`)
                   return {
                     page: nextPage,
                     offset,

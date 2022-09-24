@@ -11,5 +11,5 @@ module.exports = {
       }
     }
   },
-  "__version": "10.2.0"
+  "__version": "10.8.0"
 }

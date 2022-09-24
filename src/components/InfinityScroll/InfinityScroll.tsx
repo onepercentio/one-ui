@@ -28,6 +28,36 @@ export function keys(currPage: number) {
     .reverse();
 }
 
+export function getItemsFactory<T extends any>(
+  pageSize: number,
+  items: T[],
+  isCountTheSameOrLowerThanPage: boolean
+) {
+  return function getItems(
+    page: number,
+    offset: number,
+    _pageSize: number = pageSize
+  ) {
+    let from = page * _pageSize + offset;
+    if (from < 0) from = items.length + from;
+    if (from > items.length) from = from - items.length;
+    const to = from + _pageSize;
+    const slicedItems = items.slice(from, to);
+
+    if (slicedItems.length < _pageSize && !isCountTheSameOrLowerThanPage) {
+      slicedItems.push(...getItems(0, 0, _pageSize - slicedItems.length));
+    }
+    return slicedItems.map((i, index) =>
+      typeof i === "object"
+        ? {
+            ...i,
+            key: index,
+          }
+        : i
+    );
+  };
+}
+
 /**
  * Manages a set of divs that allows the effect of inifinite scrolling between pages
  **/
@@ -60,29 +90,10 @@ function InfinityScroll(
 
   const isCountTheSameOrLowerThanPage = items.length <= pageSize;
 
-  function getItems(
-    page: number,
-    offset: number,
-    _pageSize: number = pageSize
-  ) {
-    let from = page * _pageSize + offset;
-    if (from < 0) from = items.length + from;
-    if (from > items.length) from = from - items.length;
-    const to = from + _pageSize;
-    const slicedItems = items.slice(from, to);
-
-    if (slicedItems.length < _pageSize && !isCountTheSameOrLowerThanPage) {
-      slicedItems.push(...getItems(0, 0, _pageSize - slicedItems.length));
-    }
-    return slicedItems.map((i, index) =>
-      typeof i === "object"
-        ? {
-            ...i,
-            key: index,
-          }
-        : i
-    );
-  }
+  const getItems = useMemo(
+    () => getItemsFactory(pageSize, items, isCountTheSameOrLowerThanPage),
+    [pageSize, items, isCountTheSameOrLowerThanPage]
+  );
 
   useLayoutEffect(() => {
     if (isCountTheSameOrLowerThanPage || (window as any).PRERENDER) return;
@@ -112,16 +123,19 @@ function InfinityScroll(
               if (pageToIncrement) {
                 setCurrPage((prev) => {
                   let nextPage = prev.page + pageToIncrement;
-                  if (nextPage < 0) {
-                    nextPage = Math.ceil(items.length / pageSize) - 1;
-                  }
                   let offset = prev.offset;
+                  if (nextPage < 0) {
+                    nextPage = Math.round(items.length / pageSize) - 1;
+                    const remainingItems = items.length - (nextPage * pageSize + offset)
+                    offset = remainingItems
+                  }
                   let nextIndex = nextPage * pageSize + offset;
                   if (nextIndex > items.length) {
                     offset = nextIndex - items.length;
                     nextPage = 0;
                   }
 
+                  alert(`N ${nextIndex} I ${items.length} P ${nextPage} O ${offset}`)
                   return {
                     page: nextPage,
                     offset,
@@ -170,5 +184,5 @@ export enum InfinityDataTestId {
   PREV_PAGE = "infinity-prev",
   CURR_PAGE = "infinity-curr",
   NEXT_PAGE = "infinity-next",
-  ROOT = "infinity-parent"
+  ROOT = "infinity-parent",
 }

@@ -23,7 +23,8 @@ describe.only("BUGFIX", () => {
       <h1
         style={{
           display: "inline-block",
-          width: "33vw",
+          width: "23vw",
+          margin: "0px 5vw",
           backgroundColor: `rgb(${r(i, 0)}, ${r(i, 1)}, ${r(i, 2)})`,
         }}
       >
@@ -35,8 +36,21 @@ describe.only("BUGFIX", () => {
         <Component items={amount} pageSize={3} />
       </div>
     );
+    cy.wait(500);
     cy.byTestId("container").should("have.text", "789012345");
-    cy.byTestId(InfinityDataTestId.ROOT).scrollTo(-100, 0);
+
+    cy.byTestId(InfinityDataTestId.ROOT)
+      .scrollTo(1920 - 1920, 0, {
+        duration: 1000,
+      })
+      .wait(500);
+    cy.byTestId("container").should("have.text", "456789012");
+
+    cy.byTestId(InfinityDataTestId.ROOT)
+      .scrollTo(1920 + 1920, 0, {
+        duration: 1000,
+      })
+      .wait(500);
     cy.byTestId("container").should("have.text", "789012345");
-});
+  });
 });

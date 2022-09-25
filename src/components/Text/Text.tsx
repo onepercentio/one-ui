@@ -5,7 +5,7 @@ import Styles from "./Text.module.scss";
 /**
  * A component to hold all text variantions
  **/
-export function Text(
+export function _Text(
   {
     type,
     children,
@@ -44,4 +44,4 @@ export function Text(
   );
 }
 
-export default forwardRef(Text);
+export default forwardRef(_Text);

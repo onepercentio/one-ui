@@ -22,6 +22,7 @@ export default function Collapsable({
   mode = "block",
   contentClassName,
   onContentClick,
+  keepUnderlayingElement,
   ...props
 }: PropsWithChildren<{
   title: React.ReactNode;
@@ -34,6 +35,12 @@ export default function Collapsable({
   mode?: "block" | "float";
   "data-testid"?: string;
   onContentClick?: HTMLAttributes<HTMLInputElement>["onClick"];
+  /**
+   * This flag indicates if the collapsable content should be kept in HTML while it's collapsed
+   * 
+   * Usefull for responsive layouts where the collapsable should not "behave" as a collapsable content
+   */
+  keepUnderlayingElement?: boolean
 }>) {
   const contentRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLDivElement>(null);
@@ -92,7 +99,7 @@ export default function Collapsable({
         id={_collapsableId("content", id)}
         onClick={onContentClick}
       >
-        <FadeIn>{open ? children : null}</FadeIn>
+        <FadeIn>{(open || keepUnderlayingElement) ? children : null}</FadeIn>
       </div>
     </div>
   );

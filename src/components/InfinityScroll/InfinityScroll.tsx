@@ -102,7 +102,7 @@ function InfinityScroll(
     parentDiv.current!.scrollTo({
       left: centerScroll - viewportWidth / 2,
     });
-  }, [isCountTheSameOrLowerThanPage, currPage.page, currPage.offset]);
+  }, [isCountTheSameOrLowerThanPage, currPage.page, currPage.offset, items]);
   const [beforeKey, currKey, afterKey] = keys(currPage.page);
 
   return (

@@ -162,17 +162,20 @@ export default function OrderableList({
           for (let el of els) el.classList.remove(Styles.visible);
           clone.remove();
           currentClone.current = null;
-          for (let el of (Array.from(elInvisible.children) as HTMLDivElement[]))
+          for (let el of Array.from(elInvisible.children) as HTMLDivElement[])
             el.style.height = "";
         }
-        if (clone.style.top.startsWith(Math.floor(box.top).toString()) && clone.style.left.startsWith(Math.floor(box.left).toString())) {
-          cleanUp()
+        if (
+          clone.style.top.startsWith(Math.floor(box.top).toString()) &&
+          clone.style.left.startsWith(Math.floor(box.left).toString())
+        ) {
+          cleanUp();
         }
         clone.style.top = `${box.top}px`;
         clone.style.left = `${box.left}px`;
         clone.style.transition = `top 500ms linear, left 500ms linear`;
         clone.addEventListener("transitionend", () => {
-          cleanUp()
+          cleanUp();
         });
       }
     };
@@ -193,12 +196,16 @@ export default function OrderableList({
         (a) =>
           !a.classList.contains(Styles.visible) && a.style.maxHeight !== "0px"
       )!;
-      (elInvisible.children[0] as HTMLDivElement).style.height = `${currentClone.current!.clientHeight}px`;
+      (elInvisible.children[0] as HTMLDivElement).style.height = `${
+        currentClone.current!.clientHeight
+      }px`;
       setTimeout(() => {
-        (elInvisible.children[1] as HTMLDivElement).style.height = `${currentClone.current!.clientHeight}px`;
+        (elInvisible.children[1] as HTMLDivElement).style.height = `${
+          currentClone.current!.clientHeight
+        }px`;
       }, 150);
     }
-  }, [cleanOrder])
+  }, [cleanOrder]);
 
   return (
     <OrderableListContext.Provider
@@ -232,12 +239,14 @@ export default function OrderableList({
 
 export function useOrderableListAnchor() {
   const anchorRef = useRef<HTMLDivElement>(null as any);
-  const { bindAnchor, unbindAnchor } = useContext(OrderableListContext);
+  const ctx = useContext(OrderableListContext);
   useLayoutEffect(() => {
+    if (!ctx) return;
+    const { bindAnchor, unbindAnchor } = ctx;
     bindAnchor(anchorRef.current!);
     return () => unbindAnchor(anchorRef.current!);
   }, []);
   return {
-    anchorRef,
+    anchorRef: ctx ? anchorRef : undefined,
   };
 }

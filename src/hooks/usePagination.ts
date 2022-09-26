@@ -78,7 +78,7 @@ export type Paginable<I extends any, A extends any[] = [], E extends any = any> 
  */
 export function useContainerPagination(cb: () => void, direction: "h" | "v" = "v") {
   const scrollableRef = useRef<HTMLDivElement>(null);
-  const customOptionsRef = useRef<() => ({ offsetBottom: number, offsetLeft: number })>();
+  const customOptionsRef = useRef<() => ({ offsetBottom?: number, offsetLeft?: number })>();
 
   useEffect(() => {
     const el = scrollableRef.current!

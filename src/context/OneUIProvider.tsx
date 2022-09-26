@@ -147,7 +147,7 @@ export function useOneUIConfig<
   if (process.env.NODE_ENV === "development") {
     const val = get(context, prop);
     if (typeof val === "string") return val as any;
-    return ErrorWrapper(val || defaultValue) as NonNullable<T>;
+    return ErrorWrapper(val || defaultValue) as unknown as NonNullable<T>;
   }
   return get(context, prop) || defaultValue;
 }

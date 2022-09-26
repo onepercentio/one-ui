@@ -7,7 +7,7 @@ import {
 } from "web3-eth-contract";
 import { AbiItem } from "web3-utils";
 
-export type AllABIs = any[];
+export type AllABIs = readonly any[];
 
 type ExtractMethods<A extends AllABIs[number]> = A extends {
   type: "function";

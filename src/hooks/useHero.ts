@@ -1,11 +1,4 @@
-import {
-  CSSProperties,
-  DetailedHTMLProps,
-  HTMLAttributes,
-  useCallback,
-  useEffect,
-  useRef,
-} from "react";
+import { CSSProperties, useCallback, useEffect, useRef } from "react";
 
 const ID = (id: string) => `${id}-hero`;
 
@@ -68,13 +61,27 @@ export default function useHero(
       // Since a transition is now triggering from the old element, he cannot be considered for other transitions
       otherElement.removeAttribute("data-hero");
 
+      /**
+       *
+       * @param el
+       * @returns Returns if it will move
+       */
       function setCloneToCoordinates(el: HTMLDivElement) {
         const coordinates = el.getBoundingClientRect();
+        const currentCoordinates = clone.getBoundingClientRect();
+        const willNotMove =
+          coordinates.top === currentCoordinates.top &&
+          coordinates.top === currentCoordinates.top &&
+          coordinates.top === currentCoordinates.top &&
+          coordinates.top === currentCoordinates.top;
+
         clone.style.position = "fixed";
         clone.style.top = `${coordinates.top}px`;
         clone.style.left = `${coordinates.left}px`;
         clone.style.width = `${coordinates.width}px`;
         clone.style.height = `${coordinates.height}px`;
+
+        return !willNotMove;
       }
 
       if (!oldClone) {
@@ -89,20 +96,27 @@ export default function useHero(
         .join(", ")}`;
 
       setTimeout(() => {
+        const cleanup = () => {
+          if (events.onHeroEnd) events.onHeroEnd();
+          clone.remove();
+          el.style.visibility = "";
+        };
         if (events.onHeroStart) events.onHeroStart(clone);
         if (!heroRef.current) return;
         const el = heroRef.current;
-        setCloneToCoordinates(el);
-        for (let propToTransition of propsToTransition)
-          clone.style[propToTransition as any] =
-            el.style[propToTransition as any];
-        clone.addEventListener("transitionend", ({ target, currentTarget }) => {
-          if (target === currentTarget) {
-            if (events.onHeroEnd) events.onHeroEnd();
-            clone.remove();
-            el.style.visibility = "";
-          }
-        });
+        const willMove = setCloneToCoordinates(el);
+        if (!willMove) cleanup();
+        else {
+          for (let propToTransition of propsToTransition)
+            clone.style[propToTransition as any] =
+              el.style[propToTransition as any];
+          clone.addEventListener(
+            "transitionend",
+            ({ target, currentTarget }: TransitionEvent) => {
+              if (target === currentTarget) cleanup();
+            }
+          );
+        }
       }, 100);
     }
   }, []);

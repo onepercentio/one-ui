@@ -24,9 +24,11 @@ const OrderableListContext = createContext<{
 export default function OrderableList({
   children,
   keyOrder,
+  onChangeKeyOrder,
 }: {
   children: ReactElement[];
   keyOrder?: string[];
+  onChangeKeyOrder: (newOrder: string[]) => void;
 }) {
   const currentClone = useRef<HTMLDivElement | null>(null);
   const currentWorkingKey = useRef<string>();
@@ -108,6 +110,9 @@ export default function OrderableList({
     };
     for (let el of els)
       el.addEventListener("mousemove", calculateReorderingCall);
+
+    onChangeKeyOrder(cleanOrder);
+
     return () => {
       for (let el of els)
         el.removeEventListener("mousemove", calculateReorderingCall);

@@ -67,12 +67,6 @@ export default function AdaptiveContainer({
               sectionDiv.addEventListener("transitionend", func);
             } else {
               const contentHeight = lastChild.scrollHeight;
-              console.log(
-                contentHeight,
-                children.key,
-                lastChild.innerHTML,
-                lastChild
-              );
               const targetHeight = `${contentHeight}px`;
               sectionDiv.style.height = targetHeight;
               const func = resetFactory("height", contentHeight);

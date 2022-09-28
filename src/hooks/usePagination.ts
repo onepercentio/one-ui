@@ -150,6 +150,7 @@ export function useLocalPagination<L>(items: L[], pageSize: number) {
     (page: number, currItems: L[] = []) => {
       const from = pageSize * page;
       const newArray = [...currItems, ...items.slice(from, from + pageSize)];
+
       return Promise.resolve({
         finished: newArray.length === items.length,
         totalItems: items.length,

@@ -10,7 +10,7 @@ export default function useElementFit(baseWidth: number, baseHeight?: number): {
     itemsToShow?: number,
 
     /** The ref to be sent to the element that will receive the items */
-    ref: Ref<HTMLDivElement>
+    ref: RefObject<HTMLDivElement>
 } {
     const ref = useRef<HTMLDivElement>(null);
     function calculateDimension() {

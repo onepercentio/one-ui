@@ -100,7 +100,7 @@ it("Should be able to revert when the user restores old element", () => {
   chain.remount(true);
 });
 
-it.only("Should immediatly remove the clone when the hero will not transition", () => {
+it("Should immediatly remove the clone when the hero will not transition", () => {
   function Square() {
     const hero = useHero("bug");
     return (

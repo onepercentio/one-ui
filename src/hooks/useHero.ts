@@ -12,6 +12,8 @@ export default function useHero(
     "width" | "height" | "top" | "left"
   >[] = [],
   events: {
+    /** Returns if the element should be heroed */
+    onHeroDetect?: (el: HTMLDivElement) => boolean;
     onHeroEnd?: () => void;
     onHeroStart?: (clone: HTMLDivElement) => void;
   } = {}
@@ -37,7 +39,9 @@ export default function useHero(
       "left",
       ...propsToTransition,
     ];
-    const otherElements = getHerosOnScreen();
+    const otherElements = getHerosOnScreen().filter(
+      events.onHeroDetect || (() => true)
+    );
     if (process.env.NODE_ENV === "development" && otherElements.length > 2)
       console.warn(
         "There are too many elements to transition to, I will transition to the first I find",

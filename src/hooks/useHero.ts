@@ -75,9 +75,9 @@ export default function useHero(
         const currentCoordinates = clone.getBoundingClientRect();
         const willNotMove =
           coordinates.top === currentCoordinates.top &&
-          coordinates.top === currentCoordinates.top &&
-          coordinates.top === currentCoordinates.top &&
-          coordinates.top === currentCoordinates.top;
+          coordinates.left === currentCoordinates.left &&
+          coordinates.width === currentCoordinates.width &&
+          coordinates.height === currentCoordinates.height;
 
         clone.style.position = "fixed";
         clone.style.top = `${coordinates.top}px`;
@@ -121,7 +121,7 @@ export default function useHero(
             }
           );
         }
-      }, 100);
+      }, 0);
     }
   }, []);
 

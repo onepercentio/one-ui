@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { mount } from "cypress/react";
 
+import Comp, {
+  OrderableListReorderMode,
+  useOrderableListAnchor,
+} from "../../../../src/components/OrderableList/OrderableList";
 import * as AllExamples from "../../../../src/components/OrderableList/OrderableList.stories";
-import Comp, { useOrderableListAnchor } from "../../../../src/components/OrderableList/OrderableList";
 import MutableHamburgerButton from "../../../../src/components/MutableHamburgerButton";
+import Styles from "./OrderableList.module.scss";
+
 /**
  * Emulates the focus
  * @param whichOne
@@ -28,11 +33,12 @@ function dragEl(ofWhich: number, to: "start" | "middle" | "end") {
           to === "middle"
             ? el.clientHeight / 2
             : to === "end"
-              ? el.clientHeight * 0.95
-              : el.clientHeight * 0.05,
+            ? el.clientHeight * 0.95
+            : el.clientHeight * 0.05,
       });
     })
-    .wait(500).realMouseUp();
+    .wait(500)
+    .realMouseUp();
 }
 it("Should be able to show the items", () => {
   cy.mount(<AllExamples.InitialImplementation />);
@@ -89,8 +95,8 @@ it("Should animate the item repositioning when moving it", () => {
   // Backwards
   switchPlaces(5, 4, "1 2 3 5 4");
 });
-it.only("Should work with variable height elements", () => {
-  cy.viewport(1920, 1080 * 1.6)
+it("Should work with variable height elements", () => {
+  cy.viewport(1920, 1080 * 1.6);
   function Wrapper({ i }: { i: number }) {
     const { anchorRef } = useOrderableListAnchor();
     return (
@@ -116,19 +122,109 @@ it.only("Should work with variable height elements", () => {
         setHeight(300);
       }, 500);
     }, []);
-    return <div style={{ height, fontSize: height * 0.8, fontWeight: "bold", lineHeight: `${height}px`, opacity: 0.3, background: "linear-gradient(to right, red, green, blue)" }}>
-      <Wrapper i={i} />
-      {i} - {height}
-    </div>
+    return (
+      <div
+        style={{
+          height,
+          fontSize: height * 0.8,
+          fontWeight: "bold",
+          lineHeight: `${height}px`,
+          opacity: 0.3,
+          background: "linear-gradient(to right, red, green, blue)",
+        }}
+      >
+        <Wrapper i={i} />
+        {i} - {height}
+      </div>
+    );
   }
-  cy.mount(<Comp>
-    <VariableWrapper key={"1"} i={1} />
-    <VariableWrapper key={"2"} i={2} />
-    <VariableWrapper key={"3"} i={3} />
-    <VariableWrapper key={"4"} i={4} />
-    <VariableWrapper key={"5"} i={5} />
-  </Comp>).wait(700)
+  cy.mount(
+    <Comp onChangeKeyOrder={() => {}}>
+      <VariableWrapper key={"1"} i={1} />
+      <VariableWrapper key={"2"} i={2} />
+      <VariableWrapper key={"3"} i={3} />
+      <VariableWrapper key={"4"} i={4} />
+      <VariableWrapper key={"5"} i={5} />
+    </Comp>
+  ).wait(700);
 
   focusDrag(5);
   dragEl(2, "start").wait(1500);
-})
+});
+function gridRender() {
+  const chain = cy.mountChain((currentOrder: number[]) => {
+    const els = currentOrder.map((i) =>
+      new Intl.NumberFormat(undefined, {
+        minimumIntegerDigits: 4,
+      }).format(i)
+    );
+    return (
+      <Comp
+        className={Styles.root}
+        onChangeKeyOrder={() => {}}
+        currentOrder={els}
+        mode={OrderableListReorderMode.TWO_DIMENSIONS}
+      >
+        {els.map((fo) => (
+          <div
+            key={fo}
+            style={{
+              background: "linear-gradient(red, green, blue)",
+              height: 100,
+              width: 100,
+              fontSize: 25,
+              lineHeight: "100px",
+              verticalAlign: "middle",
+              textAlign: "center",
+              color: "white",
+            }}
+          >
+            {fo}
+          </div>
+        ))}
+      </Comp>
+    );
+  });
+  return chain;
+}
+it.only("Should be able to transition ordered elements", () => {
+  cy.viewport(1366, 768);
+  const order1 = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const order2 = [1, 2, 4, 3, 5, 6, 7, 8, 9];
+  const order3 = [1, 2, 4, 3, 6, 7, 8, 9];
+  const order4 = [1, 4, 3, 6, 7, 8, 9];
+  const order5 = [1, 9, 3, 6, 7, 8, 4];
+  gridRender()
+    .remount([...order1, ...order1.map((a) => a + 10)])
+    .wait(1000)
+    .remount([...order2, ...order2.map((a) => a + 10)])
+    .wait(1000)
+    .remount([...order3, ...order3.map((a) => a + 10)])
+    .wait(1000)
+    .remount([...order4, ...order4.map((a) => a + 10)])
+    .wait(1000)
+    .remount([...order5, ...order5.map((a) => a + 10)]);
+});
+it("Should be able to transition grid elements", () => {
+  cy.viewport(300, 800);
+  const all = new Array(20).fill(undefined).map((_, i) => i);
+
+  const evenOnly = all.filter((a) => Number(a) % 2 === 0);
+  const oddOnly = all.filter((a) => Number(a) % 2 !== 0);
+  const tripleOnly = all.filter((a) => Number(a) % 3 === 0);
+
+  gridRender()
+    .remount(all)
+    .wait(1000)
+    .remount(evenOnly)
+    .wait(1000)
+    .remount(all)
+    .wait(1000)
+    .remount(oddOnly)
+    .wait(1000)
+    .remount(all)
+    .wait(1000)
+    .remount(tripleOnly)
+    .wait(1000)
+    .remount(all);
+});

@@ -6,7 +6,7 @@ process.env.NODE_ENV = "development"
 process.env.DEBUG = "docgen*"
 process.env.FAST_REFRESH = "false"
 const configFactory = require("@muritavo/webpack-microfrontend-scripts/bin/react/scripts/_webpackConfiguration").createBaseConfiguration
-const baseConfig: Configuration = configFactory(process.env.INIT_CWD, process.env.NODE_ENV);
+const baseConfig: Configuration = configFactory(__dirname, process.env.NODE_ENV);
 
 baseConfig.output!.libraryTarget = "umd";
 baseConfig.plugins = baseConfig.plugins!.filter(

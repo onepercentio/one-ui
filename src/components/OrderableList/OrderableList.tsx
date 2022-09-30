@@ -1,6 +1,9 @@
 import { throttle } from "lodash";
+import UncontrolledTransition from "../UncontrolledTransition";
 import React, {
   createContext,
+  Fragment,
+  PropsWithChildren,
   ReactElement,
   useCallback,
   useContext,
@@ -10,13 +13,20 @@ import React, {
   useRef,
   useState,
 } from "react";
+import useHero from "../../hooks/useHero";
 import AnimatedEntrance from "../AnimatedEntrance";
+import { TransitionAnimationTypes } from "../Transition";
 import Styles from "./OrderableList.module.scss";
 
 const OrderableListContext = createContext<{
   bindAnchor: (bindElement: HTMLDivElement) => void;
   unbindAnchor: (bindElement: HTMLDivElement) => void;
 }>(null as any);
+
+export enum OrderableListReorderMode {
+  VERTICAL = "v",
+  TWO_DIMENSIONS = "hv",
+}
 
 /**
  * This component receives a list of keyed elements and orders it based of the order provided via the prop "keyOrder"
@@ -25,18 +35,26 @@ export default function OrderableList({
   children,
   keyOrder,
   onChangeKeyOrder,
+  className = "",
+  mode = OrderableListReorderMode.VERTICAL,
+  currentOrder,
 }: {
   children: ReactElement[];
   keyOrder?: string[];
   onChangeKeyOrder: (newOrder: string[]) => void;
+  className?: string;
+  mode?: OrderableListReorderMode;
+  currentOrder?: string[];
 }) {
   const currentClone = useRef<HTMLDivElement | null>(null);
   const currentWorkingKey = useRef<string>();
   const rootRef = useRef<HTMLDivElement>(null as any);
-  const [order, setOrder] = useState(() => {
+  const [_order, setOrder] = useState(() => {
     return keyOrder || children.map((a) => a.key as string);
   });
+  const order = currentOrder || _order;
   const cleanOrder = useMemo(() => order.map((a) => a.split(";")[0]), [order]);
+  const orderId = useMemo(() => cleanOrder.join(""), [cleanOrder]);
 
   const findParentElement = (target: HTMLDivElement) => {
     let parent: HTMLDivElement = target as HTMLDivElement;
@@ -223,23 +241,51 @@ export default function OrderableList({
         },
       }}
     >
-      <div ref={rootRef} className={Styles.root}>
-        <AnimatedEntrance>
-          {[...children]
-            .filter((a) => cleanOrder.includes(a.key as string))
-            .sort(
-              (a, b) =>
-                cleanOrder.indexOf(a.key as string) -
-                cleanOrder.indexOf(b.key as string)
-            )
-            .map((a, i) => ({
-              ...a,
-              key: order[i],
-            }))}
-        </AnimatedEntrance>
+      <div ref={rootRef} className={`${Styles.root} ${className}`}>
+        {mode === OrderableListReorderMode.VERTICAL ? (
+          <AnimatedEntrance>
+            {[...children]
+              .filter((a) => cleanOrder.includes(a.key as string))
+              .sort(
+                (a, b) =>
+                  cleanOrder.indexOf(a.key as string) -
+                  cleanOrder.indexOf(b.key as string)
+              )
+              .map((a, i) => ({
+                ...a,
+                key: order[i],
+              }))}
+          </AnimatedEntrance>
+        ) : (
+          <UncontrolledTransition
+            className={Styles.transition}
+            transitionType={TransitionAnimationTypes.FADE}
+            contentClassName={`${className}`}
+          >
+            <Fragment key={orderId}>
+              {[...children]
+                .filter((a) => cleanOrder.includes(a.key as string))
+                .sort(
+                  (a, b) =>
+                    cleanOrder.indexOf(a.key as string) -
+                    cleanOrder.indexOf(b.key as string)
+                )
+                .map((a,i) => (
+                  <HeroWrapper key={i} id={a.key as string}>
+                    {a}
+                  </HeroWrapper>
+                ))}
+            </Fragment>
+          </UncontrolledTransition>
+        )}
       </div>
     </OrderableListContext.Provider>
   );
+}
+
+function HeroWrapper({ children, id }: PropsWithChildren<{ id: string }>) {
+  const { heroRef } = useHero(id);
+  return <div ref={heroRef}>{children}</div>;
 }
 
 export function useOrderableListAnchor() {

@@ -337,7 +337,7 @@ describe("Business Rules", () => {
         const { targetElRef } = useAsyncProcessQueueContext();
         return <div ref={targetElRef} />;
       }
-      type Base = typeof AsyncProcessQueueProvider<ExampleRecoveryModel>;
+      type Base = typeof AsyncProcessQueueProvider;
       function Wrapper({
         children,
         recoveries,

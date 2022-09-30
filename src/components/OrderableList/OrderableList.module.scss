@@ -25,3 +25,12 @@
 .root > * {
   transition: max-height 250ms;
 }
+
+.transition {
+  width: 100%;
+  > * {
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    opacity: 1 !important;
+  }
+}

@@ -28,14 +28,15 @@
 
 .transition {
   width: 100%;
+  align-items: flex-start !important;
   > * {
     flex-direction: row !important;
     flex-wrap: wrap;
     &:first-child {
-      opacity: 0 !important;
+      visibility: hidden;
     }
     &:last-child {
-      opacity: 1 !important;
+      visibility: visible;
     }
   }
 }

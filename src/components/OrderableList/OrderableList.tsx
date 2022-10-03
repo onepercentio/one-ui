@@ -33,28 +33,34 @@ export enum OrderableListReorderMode {
  **/
 export default function OrderableList({
   children,
-  keyOrder,
-  onChangeKeyOrder,
   className = "",
   mode = OrderableListReorderMode.VERTICAL,
-  currentOrder,
+  ...props
 }: {
   children: ReactElement[];
-  keyOrder?: string[];
-  onChangeKeyOrder: (newOrder: string[]) => void;
   className?: string;
   mode?: OrderableListReorderMode;
-  currentOrder?: string[];
-}) {
+} & (
+  | {
+      keyOrder?: string[];
+      onChangeKeyOrder: (newOrder: string[]) => void;
+    }
+  | {
+      currentOrder?: string[];
+    }
+)) {
   const currentClone = useRef<HTMLDivElement | null>(null);
   const currentWorkingKey = useRef<string>();
   const rootRef = useRef<HTMLDivElement>(null as any);
   const [_order, setOrder] = useState(() => {
-    return keyOrder || children.map((a) => a.key as string);
+    return (
+      ("keyOrder" in props ? props.keyOrder : undefined) ||
+      children.map((a) => a.key as string)
+    );
   });
-  const order = currentOrder || _order;
+  const order = "currentOrder" in props ? props.currentOrder || _order : _order;
   const cleanOrder = useMemo(() => order.map((a) => a.split(";")[0]), [order]);
-  const orderId = useMemo(() => cleanOrder.join(""), [cleanOrder]);
+  const orderId = useMemo(() => "key-" + cleanOrder.join(""), [cleanOrder]);
 
   const findParentElement = (target: HTMLDivElement) => {
     let parent: HTMLDivElement = target as HTMLDivElement;
@@ -129,7 +135,7 @@ export default function OrderableList({
     for (let el of els)
       el.addEventListener("mousemove", calculateReorderingCall);
 
-    onChangeKeyOrder(cleanOrder);
+    if ("onChangeKeyOrder" in props) props.onChangeKeyOrder(cleanOrder);
 
     return () => {
       for (let el of els)
@@ -270,7 +276,7 @@ export default function OrderableList({
                     cleanOrder.indexOf(a.key as string) -
                     cleanOrder.indexOf(b.key as string)
                 )
-                .map((a,i) => (
+                .map((a, i) => (
                   <HeroWrapper key={i} id={a.key as string}>
                     {a}
                   </HeroWrapper>

@@ -31,5 +31,11 @@
   > * {
     flex-direction: row !important;
     flex-wrap: wrap;
+    &:first-child {
+      opacity: 0 !important;
+    }
+    &:last-child {
+      opacity: 1 !important;
+    }
   }
 }

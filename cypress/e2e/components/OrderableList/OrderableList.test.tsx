@@ -187,7 +187,7 @@ function gridRender() {
   });
   return chain;
 }
-it.only("Should be able to transition ordered elements", () => {
+it("Should be able to transition ordered elements", () => {
   cy.viewport(1366, 768);
   const order1 = [1, 2, 3, 4, 5, 6, 7, 8, 9];
   const order2 = [1, 2, 4, 3, 5, 6, 7, 8, 9];

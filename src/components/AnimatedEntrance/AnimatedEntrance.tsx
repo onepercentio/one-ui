@@ -106,7 +106,7 @@ export function AnimatedEntranceItem({
     return () => {
       clearTimeout(x);
     };
-  }, [screen]);
+  }, [typeof screen === "object" ? screen?.key : screen]);
 
   const className = useMemo(
     () => (!noEntranceAnimation ? Styles.maxHeight : ""),

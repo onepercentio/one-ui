@@ -86,13 +86,6 @@ export function AsyncProcessQueueProvider<
   const targetRef = useRef<HTMLDivElement>(null);
   const pendingCounter = useCounter();
   const [UIs, setUIs] = useState<ReactElementWithState[]>([]);
-  if (process.env.NODE_ENV === "development")
-    useLayoutEffect(() => {
-      if (!targetRef.current)
-        throw new Error(
-          `The target for the async elements to transition to is not defined, please review your UI hierarchy`
-        );
-    }, []);
 
   const _recoveries =
     process.env.NODE_ENV === "development"
@@ -255,16 +248,17 @@ export function useAsyncProcessQueue<
       dimensions: [number, number];
     }>();
   useEffect(() => {
-    initialCenter.current = {
-      center: calculateCenter(targetEl.current!),
-      dimensions: [
-        targetEl.current!.clientWidth,
-        targetEl.current!.clientHeight,
-      ],
-    };
+    if (targetEl.current)
+      initialCenter.current = {
+        center: calculateCenter(targetEl.current!),
+        dimensions: [
+          targetEl.current!.clientWidth,
+          targetEl.current!.clientHeight,
+        ],
+      };
   }, []);
   const wrapQueue = useCallback(() => {
-    if (wrapped.current || !loadingRef.current) return;
+    if (wrapped.current || !loadingRef.current || !targetEl.current) return;
     const wrapUI = loadingRef.current;
     wrapped.current = true;
 

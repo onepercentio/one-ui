@@ -9,7 +9,7 @@ function resolveFromMainContext(module) {
 }
 const { join, relative, resolve } = require("path");
 const HTMLPlugin = require.main.require("html-webpack-plugin");
-const { writeFileSync } = require("fs");
+const { writeFileSync, readdirSync, lstat, lstatSync, rmSync } = require("fs");
 const lodash = require("lodash");
 const { findPathDeep } = require("deepdash")(lodash);
 const chalk = require("chalk");
@@ -113,6 +113,14 @@ function createConfig(
   baseConfig.entry = entries;
   let resourcesPath = join(resolve("."), "build", "templates");
   if (process.env.NODE_ENV === "production") {
+    const outputFolderFiles = readdirSync(outputDir);
+    const onlyHTMLs = !outputFolderFiles
+    .some(file => lstatSync(join(outputDir, file)).isDirectory() || !file.endsWith(".html"));
+    if (onlyHTMLs) {
+      rmSync(outputDir, {
+        recursive: true
+      })
+    }
     baseConfig.output.path = resourcesPath;
     baseConfig.output.publicPath =
       (process.env.EMAIL_TEMPLATES_BASE_DOMAIN || "") + "/templates/";
@@ -127,6 +135,25 @@ function createConfig(
         a.constructor.name.includes(pattern)
       )
   );
+  /** @type {import("webpack").WebpackPluginInstance} */
+  const LogPlugin = {
+    apply(compiler) {
+      let warned = {};
+      compiler.hooks.afterEmit.tap("Logger", (compilation) => {
+        console.log(chalk.green("Output successfull"))
+        const htmls = Object.keys(compilation.assets).filter(a => a.endsWith(".html"))
+        const lazyFindPort = process.argv.find(a => a === "--port");
+        const port = process.argv[process.argv.indexOf(lazyFindPort) + 1];
+        for (let htmlPath of htmls) {
+          if (warned[htmlPath]) return;
+          warned[htmlPath] = true;
+          console.log(`Template ${htmlPath.replace(".html", "")}:`)
+          console.log(chalk.green(`\thttp://localhost:${port}/${htmlPath}\n`))
+        }
+      })
+    }
+  }
+  baseConfig.plugins.push(LogPlugin)
   const babelLoaderPath = findFirstBabelLoaderConfigPath(baseConfig);
   const babelLoader = lodash.get(baseConfig.module.rules, babelLoaderPath);
   const indexOfOneOf = babelLoaderPath.indexOf("oneOf");
@@ -236,9 +263,14 @@ function createConfig(
   baseConfig.optimization.runtimeChunk = false;
 
   baseConfig.plugins = baseConfig.plugins.filter(
-    (a) => a.constructor.name !== "ModuleFederationPlugin"
+    (a) => !["ModuleFederationPlugin", "SourceMapDevToolPlugin"].includes(a.constructor.name)
   );
-  baseConfig.plugins.splice(0, 1);
+
+  const providePlugin = baseConfig.plugins.find(
+    (a) => (a.constructor.name) === "ProvidePlugin"
+  );
+
+  if (providePlugin) delete providePlugin.definitions.process;
 
   return baseConfig;
 }

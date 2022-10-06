@@ -1,7 +1,12 @@
 import { useCallback, useState } from "react";
-import { CommonErrorCodes } from "../types";
+import { Primitive } from "type-fest";
 
-export default function useAsyncControl<E = any, F = {}>(functionsToWrap?: F) {
+export default function useAsyncControl<
+  E = any,
+  F extends {
+    [f: string]: ((...args: any[]) => Promise<any>) | Object | Primitive;
+  } = {}
+>(functionsToWrap?: F) {
   const [error, setError] = useState<E | Error>();
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -25,11 +30,14 @@ export default function useAsyncControl<E = any, F = {}>(functionsToWrap?: F) {
     error,
     setError,
     setLoading,
-    ...Object.entries(functionsToWrap || {}).reduce((r, [k, func]) => {
+    ...(Object.entries(functionsToWrap || {}).reduce((r, [k, func]) => {
       return {
         ...r,
-        [k]: typeof func === "function" ? (...args: any[]) => _process(() => (func as any)(...args)) : func
-      }
-    }, {} as F) as F
+        [k]:
+          typeof func === "function"
+            ? (...args: any[]) => _process(() => (func as any)(...args))
+            : func,
+      };
+    }, {} as F) as F),
   };
 }

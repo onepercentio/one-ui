@@ -1,0 +1,46 @@
+$x: 0.1em;
+
+.root {
+  height: 1.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: contrast(40);
+  background-color: white;
+  overflow: hidden;
+  > * {
+    height: 1em;
+    width: 1em;
+    margin: 0px 0.1em;
+    border-radius: 0.5em;
+    background-color: #000;
+    position: relative;
+    filter: blur($x);
+    // animation-name: a;
+    // animation-iteration-count: infinite;
+    // animation-duration: 1s;
+    // animation-timing-function: linear;
+    // animation-direction: alternate;
+  }
+  &::after {
+    content: " ";
+    position: absolute;
+    background-color: #000;
+    filter: blur($x * 2);
+    height: 1em * 0.8;
+    width: 1em * 0.8;
+    border-radius: 0.5em;
+  }
+}
+
+// @keyframes a {
+//   0% {
+//     right: 2em;
+//   }
+//   50% {
+//     right: 0em;
+//   }
+//   100% {
+//     right: -2em;
+//   }
+// }

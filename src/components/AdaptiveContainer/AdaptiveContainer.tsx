@@ -23,6 +23,12 @@ export default function AdaptiveContainer({
 }: {
   containerElement?: keyof JSX.IntrinsicElements | FunctionComponent;
   children: ReactElement;
+  /**
+   * The direction in which the content will be resized
+   * 
+   *     "h" // When the content will change in width
+   *     "v" // When the content will change in height
+   */
   direction?: "h" | "v";
 } & {
   [k: string]: any;

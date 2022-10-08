@@ -28,11 +28,15 @@ function Select<I extends SelectItem>({
   label,
   onClick,
   loading,
+  rootClassName = "",
+  dropdownClassName = "",
   ...otherProps
 }: {
   loading?: boolean;
   items: Readonly<I[]>;
   onClick: (i: I) => void;
+  rootClassName?: string;
+  dropdownClassName?: string;
 } & (
   | {
       selected?: I["value"];
@@ -81,8 +85,8 @@ function Select<I extends SelectItem>({
       onToggleOpen={(open) => {
         if (items.length) setOpen(open);
       }}
-      className={otherProps.disabled ? "disabled" : ""}
-      contentClassName={`${Styles.optionsContainer}`}
+      className={`${otherProps.disabled ? "disabled" : ""} ${rootClassName}`}
+      contentClassName={`${Styles.optionsContainer} ${dropdownClassName}`}
     >
       <div
         className={Styles.items}

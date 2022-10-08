@@ -23,6 +23,7 @@ export default function Collapsable({
   contentClassName,
   onContentClick,
   keepUnderlayingElement,
+  onClickOut,
   ...props
 }: PropsWithChildren<{
   title: React.ReactNode;
@@ -37,13 +38,25 @@ export default function Collapsable({
   onContentClick?: HTMLAttributes<HTMLInputElement>["onClick"];
   /**
    * This flag indicates if the collapsable content should be kept in HTML while it's collapsed
-   * 
+   *
    * Usefull for responsive layouts where the collapsable should not "behave" as a collapsable content
    */
-  keepUnderlayingElement?: boolean
+  keepUnderlayingElement?: boolean;
+
+  /**
+   * To detect when the user clicks out of the container
+   */
+  onClickOut?: () => void;
 }>) {
   const contentRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (open && onClickOut) {
+      window.addEventListener("click", onClickOut);
+      return () => window.removeEventListener("click", onClickOut);
+    }
+  }, [!!onClickOut, open]);
 
   useEffect(() => {
     const el = contentRef.current!;
@@ -92,14 +105,17 @@ export default function Collapsable({
       </div>
       <div ref={toggleRef} />
       <div
+        onClick={(e) => {
+          e.stopPropagation();
+          if (onContentClick) onContentClick(e as any);
+        }}
         ref={contentRef}
         className={`${Styles.content} ${
           Styles[mode] || ""
         } ${contentClassName}`}
         id={_collapsableId("content", id)}
-        onClick={onContentClick}
       >
-        <FadeIn>{(open || keepUnderlayingElement) ? children : null}</FadeIn>
+        <FadeIn>{open || keepUnderlayingElement ? children : null}</FadeIn>
       </div>
     </div>
   );

@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Components App</title>
     <style>
+      html, body {
+        padding: 0;
+        margin: 0;
+      }
       * {
         box-sizing: border-box;
       }
@@ -15,6 +19,15 @@
     </style>
   </head>
   <body>
+    <svg>
+      <defs>
+        <filter id="goo">
+          <feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="10" />
+          <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
+          <feBlend in2="goo" in="SourceGraphic" result="mix" />
+        </filter>
+      </defs>
+    </svg>
     <div data-cy-root></div>
   </body>
 </html>

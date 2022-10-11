@@ -36,7 +36,14 @@ it("Should indicate pagination for a long number of pages", () => {
             Scrollable content
           </h1>
         </div>
-        <PaginationIndicator scrollableRef={ref} size={24} />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <PaginationIndicator scrollableRef={ref} size={24} />
+        </div>
       </>
     );
   }
@@ -70,4 +77,34 @@ it("Should indicate pagination for a long number of pages", () => {
     );
   });
   chain.remount();
+});
+
+it.only("Should be able to change page based on scroll", () => {
+  function Wrapper() {
+    const ref = useRef<HTMLDivElement>(null);
+    return (
+      <>
+        <div
+          ref={ref}
+          style={{
+            width: "400px",
+            overflow: "auto",
+          }}
+        >
+          <h1 style={{ width: "1640px" }}>CONTEUDO</h1>
+        </div>
+        <PaginationIndicator
+          mode="scroll"
+          scrollableRef={ref}
+          size={24}
+          estimatedWidth={1640}
+        />
+      </>
+    );
+  }
+  mount(
+    <>
+      <Wrapper />
+    </>
+  );
 });

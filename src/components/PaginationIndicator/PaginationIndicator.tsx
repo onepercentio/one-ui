@@ -1,7 +1,17 @@
-import throttle from "lodash/throttle";
 import React, { RefObject, useEffect, useMemo, useRef, useState } from "react";
-import Styles from "./PaginationIndicator.module.scss";
 
+type CustomizationProps = {
+  /**
+   * This will define how the pagination indicator calculates start and end
+   *
+   *      "page" - Calculates scrolling over client width as each page
+   *      "scroll" - Calculates scrolling progress over maximum scrollable width
+   */
+  mode?: "page" | "scroll";
+};
+
+const eachBallWidthEm = 1.2;
+const pushToborder = 7 * eachBallWidthEm;
 /**
  * A cool component to indicate how many pages are
  **/
@@ -9,18 +19,20 @@ export function PaginationIndicatorView({
   size,
   page,
   pages,
+  className,
 }: {
   size: number;
   page: number;
   pages: number;
+  className: string;
 }) {
-  const root = useRef<HTMLDivElement>(null);
+  const rand = useMemo(() => Math.random().toString(), []);
   const pageIndex = page - 1;
   const numBalls = useMemo(() => {
     const numBalls = pages >= 7 ? 7 : Math.ceil(pages) + 1;
 
     return numBalls;
-  }, []);
+  }, [pages]);
 
   const maxBallsOffset = useMemo(() => (numBalls - 1) / 2, [numBalls]);
   const prevVal = useRef(0);
@@ -36,43 +48,86 @@ export function PaginationIndicatorView({
       ? numBalls - 1 - (pages - pageIndex)
       : pageIndex;
     prevVal.current = modulus;
-    const left = 1.4 * (maxBallsOffset - resetPageIndex) + "em";
-    return new Array(numBalls).fill(undefined).map((_, i) => {
-      const isLastBall = i === numBalls - 1;
-      const isFirstBall = i === 0;
-      return (
-        <div
-          key={String(i)}
-          style={{
-            left,
-            transform:
-              numBalls < 7 || pages === 6
-                ? undefined
-                : page <= maxBallsOffset + 1 && isLastBall
-                ? `scale(0)`
-                : page >= lastPages + 1 && isFirstBall
-                ? `scale(0)`
-                : isCenterPage
-                ? isFirstBall
-                  ? `scale(${1 - modulus})`
-                  : isLastBall
-                  ? `scale(${modulus})`
-                  : undefined
-                : undefined,
-          }}
-        />
-      );
-    });
-  }, [maxBallsOffset, pageIndex, pages]);
+    const left = 1.2 * resetPageIndex;
+    return new Array(
+      numBalls + 1 + (isCenterPage && pages >= 7 && page < lastPages ? 1 : 0)
+    )
+      .fill(undefined)
+      .map((_, i) => {
+        const isLastBall = i === numBalls + 1;
+        const isFirstBall = i === 1;
 
+        if (i === 0)
+          return (
+            <circle
+              fill="#fff"
+              r={`${0.45}em`}
+              cx={`${pushToborder}em`}
+              cy={"0.5em"}
+            />
+          );
+        const ballSize =
+          numBalls < 7 || pages === 6
+            ? 0.5
+            : page <= maxBallsOffset + 1 && isLastBall
+            ? 0
+            : page >= lastPages + 1 && isFirstBall
+            ? 0
+            : isCenterPage
+            ? isFirstBall
+              ? 0.5 - modulus * 0.5
+              : isLastBall
+              ? modulus * 0.5
+              : 0.5
+            : 0.5;
+        return (
+          <circle
+            fill="#fff"
+            r={`${ballSize * 0.6}em`}
+            cx={`${pushToborder + (i - 1) * eachBallWidthEm - left}em`}
+            cy={"0.5em"}
+          />
+        );
+      });
+  }, [maxBallsOffset, pageIndex, pages]);
+  const [guideBall, ...pageBalls] = balls;
   return (
-    <div
-      className={`${Styles.root}`}
-      ref={root}
-      style={{ fontSize: `${size}px` }}
+    <svg
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      style={{
+        width: `${eachBallWidthEm * 7 * 2}em`,
+        minWidth: `${eachBallWidthEm * 7 * 2}em`,
+        height: "1em",
+        fontSize: `${size}px`,
+      }}
     >
-      {balls}
-    </div>
+      <filter id={`goo-${rand}`}>
+        <feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="5" />
+        <feColorMatrix
+          in="blur"
+          mode="matrix"
+          values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7"
+          result="goo"
+        />
+        <feBlend in2="goo" in="SourceGraphic" result="mix" />
+      </filter>
+      <mask id={`mask-${rand}`}>
+        <g filter={`url(#${`goo-${rand}`})`}>
+          {[pageBalls]}
+          {guideBall}
+        </g>
+      </mask>
+      <rect
+        x="0"
+        y="0"
+        mask={`url(#${`mask-${rand}`})`}
+        width="100%"
+        height="100%"
+        style={{ fill: "var(--digital-blue)" }}
+      ></rect>
+    </svg>
   );
 }
 
@@ -80,11 +135,14 @@ export default function PaginationIndicator({
   scrollableRef,
   estimatedWidth,
   size,
+  mode = "scroll",
+  className = "",
 }: {
   scrollableRef: RefObject<HTMLDivElement>;
   estimatedWidth?: number;
   size: number;
-}) {
+  className?: string;
+} & CustomizationProps) {
   const [currentPage, setCurrentPage] = useState(1);
 
   const [defs, setDefs] =
@@ -97,15 +155,31 @@ export default function PaginationIndicator({
     setDefs({
       pages: Math.ceil(maxWidth / scrollableRef.current!.clientWidth) - 1,
     });
-  }, []);
+  }, [estimatedWidth]);
 
   useEffect(() => {
     if (!defs) return;
     const el = scrollableRef.current!;
     const calculateScroll = (e: React.UIEvent<HTMLDivElement>) => {
-      const page =
-        1 + e.currentTarget.scrollLeft / scrollableRef.current!.clientWidth;
-      setCurrentPage(page);
+      if (mode === "page") {
+        const eachPageWidth = scrollableRef.current!.clientWidth;
+        const page = 1 + e.currentTarget.scrollLeft / eachPageWidth;
+        setCurrentPage(page);
+      } else {
+        const maxWidth = estimatedWidth || scrollableRef.current!.scrollWidth;
+        const availableTOScroll = maxWidth - scrollableRef.current!.clientWidth;
+        const page =
+          1 +
+          ((e.currentTarget.scrollLeft * 100) / availableTOScroll / 100) *
+            defs.pages;
+        console.log(
+          e.currentTarget.scrollLeft,
+          availableTOScroll,
+          (e.currentTarget.scrollLeft * 100) / availableTOScroll / 100,
+          page - 1
+        );
+        setCurrentPage(page);
+      }
     };
     el.addEventListener("scroll", calculateScroll as any);
     return () => {
@@ -118,6 +192,7 @@ export default function PaginationIndicator({
       pages={defs.pages}
       page={currentPage}
       size={size}
+      className={className}
     />
   );
 }

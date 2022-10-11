@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { mount } from "cypress/react";
 import * as AllExamples from "../../../../src/components/AdaptiveContainer/AdaptiveContainer.stories";
 
@@ -10,3 +10,4 @@ it("All examples mount at least", () => {
     cy.wait(500);
   }
 });
+

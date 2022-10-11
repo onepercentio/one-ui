@@ -3,7 +3,7 @@ import get from "lodash/get";
 import merge from "lodash/merge";
 import clone from "lodash/cloneDeep";
 import { Get } from "type-fest";
-import React, { useEffect } from "react";
+import React, { ReactElement, useEffect } from "react";
 import { createContext, PropsWithChildren, useContext } from "react";
 import { FieldPath } from "../utils";
 
@@ -66,6 +66,15 @@ export type ContextSpecs = {
     };
     tooltip: {
       className?: string;
+    };
+  };
+  hook: {
+    ui: {
+      usePaginationControls: {
+        LeftControl: () => ReactElement;
+        RightControl: () => ReactElement;
+        className?: string;
+      };
     };
   };
 };
@@ -146,7 +155,7 @@ export function useOneUIConfig<
   const context = useContext(Context);
   if (process.env.NODE_ENV === "development") {
     const val = get(context, prop);
-    if (typeof val === "string") return val as any;
+    if (typeof val === "string" || typeof val === "function") return val as any;
     return ErrorWrapper(val || defaultValue) as unknown as NonNullable<T>;
   }
   return get(context, prop) || defaultValue;

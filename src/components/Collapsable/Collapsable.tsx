@@ -98,7 +98,10 @@ export default function Collapsable({
       } ${className}`}
     >
       <div
-        onClick={() => onToggleOpen(!open)}
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleOpen(!open);
+        }}
         id={_collapsableId("header", id)}
       >
         {title}

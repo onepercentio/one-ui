@@ -3,7 +3,7 @@ import get from "lodash/get";
 import merge from "lodash/merge";
 import clone from "lodash/cloneDeep";
 import { Get } from "type-fest";
-import React, { ReactElement, useEffect } from "react";
+import React, { ReactElement } from "react";
 import { createContext, PropsWithChildren, useContext } from "react";
 import { FieldPath } from "../utils";
 

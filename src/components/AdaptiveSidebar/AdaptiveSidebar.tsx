@@ -10,6 +10,7 @@ import React, {
 import MutableHamburgerButton from "../MutableHamburgerButton";
 import ScrollAndFocusLock from "../utilitary/ScrollAndFocusLock";
 import Styles from "./AdaptiveSidebar.module.scss";
+import useBreakpoint from "../../hooks/ui/useBreakpoint";
 
 const DefaultVisibilityControl = ({ open }: { open: boolean }) => (
   <MutableHamburgerButton size={48} state={open ? "closed" : "default"} />
@@ -27,6 +28,7 @@ function AdaptiveSidebar(
     open: externalOpen,
     children,
     className = "",
+    breakInto = 640,
     visibilityControlComponent:
       VisibilityControlComponent = DefaultVisibilityControl,
     ...props
@@ -36,6 +38,10 @@ function AdaptiveSidebar(
        * (created for flows that requires floating views when on mobile)
        **/
       open?: boolean;
+      /**
+       * The screen width to turn into responsive mode
+       */
+      breakInto?: number;
       className?: string;
       visibilityControlComponent?: (props: {
         open: boolean;
@@ -47,7 +53,8 @@ function AdaptiveSidebar(
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const _open = externalOpen === undefined ? open : externalOpen;
-  
+  const isMobile = useBreakpoint(breakInto);
+
   useImperativeHandle(
     ref,
     () => ({
@@ -70,7 +77,9 @@ function AdaptiveSidebar(
     <>
       <div
         ref={containerRef}
-        className={`${Styles.container} ${
+        className={`${isMobile ? Styles.mobile : Styles.desktop} ${
+          Styles.container
+        } ${
           !externalControl &&
           DefaultVisibilityControl === VisibilityControlComponent
             ? Styles.defaultPadding
@@ -81,7 +90,12 @@ function AdaptiveSidebar(
         <ScrollAndFocusLock open={_open}>{children}</ScrollAndFocusLock>
       </div>
       {!externalControl && (
-        <div className={Styles.hamburger} onClick={() => setOpen((a) => !a)}>
+        <div
+          className={`${isMobile ? Styles.mobile : Styles.desktop} ${
+            Styles.hamburger
+          }`}
+          onClick={() => setOpen((a) => !a)}
+        >
           <VisibilityControlComponent open={_open} />
         </div>
       )}

@@ -9,6 +9,7 @@ export default function Tabs<O extends string>({
   selected,
   onSelect,
   itemClassName = "",
+  className = "",
 }: {
   options: Readonly<
     {
@@ -19,6 +20,7 @@ export default function Tabs<O extends string>({
   selected?: O;
   onSelect: (option: O) => void;
   itemClassName?: string;
+  className?: string;
 }) {
   const selectedRef = useRef<HTMLParagraphElement>(null);
   const guideRef = useRef<HTMLDivElement>(null);
@@ -38,7 +40,7 @@ export default function Tabs<O extends string>({
   }, [selected]);
   return (
     <>
-      <div className={Styles.container}>
+      <div className={`${Styles.container} ${className}`}>
         {options.map((o) => (
           <p
             ref={selected === o.id ? selectedRef : undefined}

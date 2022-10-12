@@ -1,4 +1,14 @@
-import React, { RefObject, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  ForwardedRef,
+  forwardRef,
+  RefObject,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 type CustomizationProps = {
   /**
@@ -131,24 +141,36 @@ export function PaginationIndicatorView({
   );
 }
 
-export default function PaginationIndicator({
-  scrollableRef,
-  estimatedWidth,
-  size,
-  mode = "scroll",
-  className = "",
-}: {
-  scrollableRef: RefObject<HTMLDivElement>;
-  estimatedWidth?: number;
-  size: number;
-  className?: string;
-} & CustomizationProps) {
+function _PaginationIndicator(
+  {
+    scrollableRef,
+    estimatedWidth,
+    size,
+    mode = "scroll",
+    className = "",
+  }: {
+    scrollableRef: RefObject<HTMLDivElement>;
+    estimatedWidth?: number;
+    size: number;
+    className?: string;
+  } & CustomizationProps,
+  ref: ForwardedRef<{
+    refreshPages: () => void;
+  }>
+) {
   const [currentPage, setCurrentPage] = useState(1);
 
   const [defs, setDefs] =
     useState<{
       pages: number;
     }>();
+
+  const refreshPages = useCallback(() => {
+    const maxWidth = estimatedWidth || scrollableRef.current!.scrollWidth;
+    setDefs({
+      pages: Math.ceil(maxWidth / scrollableRef.current!.clientWidth) - 1,
+    });
+  }, [estimatedWidth]);
 
   useEffect(() => {
     const maxWidth = estimatedWidth || scrollableRef.current!.scrollWidth;
@@ -157,33 +179,40 @@ export default function PaginationIndicator({
     });
   }, [estimatedWidth]);
 
-  useEffect(() => {
-    if (!defs) return;
-    const el = scrollableRef.current!;
-    const calculateScroll = (e: React.UIEvent<HTMLDivElement>) => {
+  const updatePageIndicators = useCallback(
+    (target: HTMLDivElement, pages: number) => {
       if (mode === "page") {
         const eachPageWidth = scrollableRef.current!.clientWidth;
-        const page = 1 + e.currentTarget.scrollLeft / eachPageWidth;
+        const page = 1 + target.scrollLeft / eachPageWidth;
         setCurrentPage(page);
       } else {
         const maxWidth = estimatedWidth || scrollableRef.current!.scrollWidth;
         const availableTOScroll = maxWidth - scrollableRef.current!.clientWidth;
         const page =
-          1 +
-          ((e.currentTarget.scrollLeft * 100) / availableTOScroll / 100) *
-            defs.pages;
-        console.log(
-          e.currentTarget.scrollLeft,
-          availableTOScroll,
-          (e.currentTarget.scrollLeft * 100) / availableTOScroll / 100,
-          page - 1
-        );
+          1 + ((target.scrollLeft * 100) / availableTOScroll / 100) * pages;
         setCurrentPage(page);
       }
-    };
-    el.addEventListener("scroll", calculateScroll as any);
+    },
+    []
+  );
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      refreshPages,
+    }),
+    []
+  );
+
+  useEffect(() => {
+    if (!defs) return;
+    const el = scrollableRef.current!;
+    const onScroll = (e: Event) =>
+      updatePageIndicators(e.currentTarget as HTMLDivElement, defs.pages);
+    updatePageIndicators(el, defs.pages);
+    el.addEventListener("scroll", onScroll);
     return () => {
-      el.removeEventListener("scroll", calculateScroll as any);
+      el.removeEventListener("scroll", onScroll);
     };
   }, [defs]);
 
@@ -196,3 +225,5 @@ export default function PaginationIndicator({
     />
   );
 }
+
+export default forwardRef(_PaginationIndicator);

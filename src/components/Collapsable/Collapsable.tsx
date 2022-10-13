@@ -3,6 +3,7 @@ import React, {
   HTMLAttributes,
   PropsWithChildren,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
 } from "react";
@@ -58,12 +59,35 @@ export default function Collapsable({
     }
   }, [!!onClickOut, open]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const el = contentRef.current!;
     if (open) {
       el.style.height = el.scrollHeight + "px";
       el.parentElement!.style.position = "relative";
-      if (mode === "float") updateTooltipPosition(el, toggleRef.current!, true);
+      if (mode === "float") {
+        el.style.minHeight = el.style.height;
+        const { shouldAnchorToBottom } = updateTooltipPosition(
+          el,
+          toggleRef.current!,
+          true
+        );
+        el.style.minHeight = "";
+        if (!shouldAnchorToBottom) {
+          el.style.marginTop = el.style.height;
+        }
+        const transitionStart = ({
+          currentTarget,
+          target,
+          propertyName,
+        }: TransitionEvent) => {
+          if (currentTarget === target && propertyName == "height" && !shouldAnchorToBottom) {
+            el.classList.add(Styles.transitionMarginTop);
+            el.style.marginTop = "0px";
+          }
+        };
+        el.addEventListener("transitionstart", transitionStart);
+        return () => el.removeEventListener("transitionstart", transitionStart);
+      }
       const onTransitionEnd = () => {
         el.style.height = "auto";
       };
@@ -77,10 +101,14 @@ export default function Collapsable({
     } else {
       el.style.height = el.clientHeight + "px";
       setTimeout(() => {
+        if (el.style.marginTop === "0px")
+          el.style.marginTop = `${el.clientHeight}px`;
         el.style.height = 0 + "px";
       }, 100);
       const onTransitionEnd = () => {
         el.parentElement!.style.position = "initial";
+        el.classList.remove(Styles.transitionMarginTop);
+        el.style.marginTop = ``;
         el.removeEventListener("transitionend", onTransitionEnd);
       };
       el.addEventListener("transitionend", onTransitionEnd);
@@ -98,6 +126,7 @@ export default function Collapsable({
       } ${className}`}
     >
       <div
+        ref={toggleRef}
         onClick={(e) => {
           e.stopPropagation();
           onToggleOpen(!open);
@@ -106,7 +135,6 @@ export default function Collapsable({
       >
         {title}
       </div>
-      <div ref={toggleRef} />
       <div
         onClick={(e) => {
           e.stopPropagation();

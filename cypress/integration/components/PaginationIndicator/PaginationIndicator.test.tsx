@@ -79,7 +79,7 @@ it("Should indicate pagination for a long number of pages", () => {
   chain.remount();
 });
 
-it.only("Should be able to change page based on scroll", () => {
+it("Should be able to change page based on scroll", () => {
   function Wrapper() {
     const ref = useRef<HTMLDivElement>(null);
     return (
@@ -107,4 +107,34 @@ it.only("Should be able to change page based on scroll", () => {
       <Wrapper />
     </>
   );
+});
+
+describe.only("Bugfix", () => {
+  it("Should not have unwanted dot location when there is a single page", () => {
+    function Wrapper({ page }: { page: number }) {
+      const ref = useRef<HTMLDivElement>(null);
+      return (
+        <>
+          <div style={{ width: "100vw", overflow: "auto" }} ref={ref}>
+            <h1
+              style={{
+                fontSize: "2em",
+                width: `calc(${page * 100 + "vw"} + 20px)`,
+                backgroundColor: "lightcoral",
+              }}
+            >
+              Scrollable content
+            </h1>
+          </div>
+          <PaginationIndicator scrollableRef={ref} size={24} />
+        </>
+      );
+    }
+    mount(
+      <>
+        <Wrapper page={1} />
+        <Wrapper page={2} />
+      </>
+    );
+  });
 });

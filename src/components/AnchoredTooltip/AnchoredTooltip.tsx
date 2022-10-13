@@ -100,6 +100,8 @@ export function updateTooltipPosition(
     tooltipRef.classList.add(Styles.anchoredTop);
     tooltipRef.classList.remove(Styles.anchoredBottom);
   }
+
+  return { shouldAnchorToBottom };
 }
 
 /**

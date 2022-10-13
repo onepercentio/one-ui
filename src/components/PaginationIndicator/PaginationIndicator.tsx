@@ -172,12 +172,7 @@ function _PaginationIndicator(
     });
   }, [estimatedWidth]);
 
-  useEffect(() => {
-    const maxWidth = estimatedWidth || scrollableRef.current!.scrollWidth;
-    setDefs({
-      pages: Math.ceil(maxWidth / scrollableRef.current!.clientWidth) - 1,
-    });
-  }, [estimatedWidth]);
+  useEffect(() => refreshPages(), [refreshPages]);
 
   const updatePageIndicators = useCallback(
     (target: HTMLDivElement, pages: number) => {
@@ -188,6 +183,7 @@ function _PaginationIndicator(
       } else {
         const maxWidth = estimatedWidth || scrollableRef.current!.scrollWidth;
         const availableTOScroll = maxWidth - scrollableRef.current!.clientWidth;
+        if (availableTOScroll === 0) return setCurrentPage(1);
         const page =
           1 + ((target.scrollLeft * 100) / availableTOScroll / 100) * pages;
         setCurrentPage(page);

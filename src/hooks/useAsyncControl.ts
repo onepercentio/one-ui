@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Primitive } from "type-fest";
 
 export default function useAsyncControl<
@@ -24,20 +24,54 @@ export default function useAsyncControl<
     }
   }, []);
 
+  const { functionsToMemoize, other } = Object.entries(
+    functionsToWrap || {}
+  ).reduce(
+    (r, [k, func]) => {
+      return {
+        ...r,
+        ...(typeof func === "function"
+          ? {
+              functionsToMemoize: {
+                ...r.functionsToMemoize,
+                [k]: func,
+              },
+            }
+          : {
+              other: {
+                ...r.other,
+                [k]: func,
+              },
+            }),
+      };
+    },
+    {
+      functionsToMemoize: {},
+      other: {},
+    } as {
+      functionsToMemoize: F;
+      other: F;
+    }
+  );
+
   return {
     process: _process,
     loading,
     error,
     setError,
     setLoading,
-    ...(Object.entries(functionsToWrap || {}).reduce((r, [k, func]) => {
-      return {
+    ...other,
+    ...Object.entries(functionsToMemoize).reduce(
+      (r, [k, v]) => ({
         ...r,
-        [k]:
-          typeof func === "function"
-            ? (...args: any[]) => _process(() => (func as any)(...args))
-            : func,
-      };
-    }, {} as F) as F),
+        [k]: useMemo(
+          () =>
+            (...args: any[]) =>
+              _process(() => (v as any)(...args)),
+          [v]
+        ),
+      }),
+      {} as F
+    ),
   };
 }

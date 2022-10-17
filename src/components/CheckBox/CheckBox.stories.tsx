@@ -3,7 +3,7 @@ import {
   extractAllPossibilitiesFromEnumProp,
   SideBySideContainer,
 } from "../../storybookUtils";
-import Text, { _Text } from "../Text/Text";
+import BaseText, { _Text } from "../Text/Text";
 import CheckBox from "./CheckBox";
 
 export default {
@@ -23,9 +23,9 @@ export const SynergyTextAndCheckbox = (args: any) => {
   return variants.map((type) => {
     return (
       <SideBySideContainer exampleName={`Checkbox com text type=${type}`}>
-        <Text type={type}>
+        <BaseText type={type}>
           <CheckBox label={type} checked={Math.random() >= 0.5} {...args} />
-        </Text>
+        </BaseText>
       </SideBySideContainer>
     );
   });

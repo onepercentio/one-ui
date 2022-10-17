@@ -3,7 +3,7 @@ import { mount } from "cypress/react";
 
 import { InitialImplementation as Component } from "../../../../src/components/AnimatedEntrance/AnimatedEntrance.stories";
 import * as AllExamples from "../../../../src/components/AnimatedEntrance/AnimatedEntrance.stories";
-import {
+import AnimatedEntrance, {
   AnimatedEntranceItem,
   EntranceType,
 } from "../../../../src/components/AnimatedEntrance/AnimatedEntrance";
@@ -41,7 +41,7 @@ it("Should exit correctly", () => {
     .remount(<Fragment key={"first_render-nullated"} />, false);
 });
 
-it.only(`Should reveal a component
+it(`Should reveal a component
 Should animate exiting of a component`, () => {
   mount(<Component />);
   for (let i = 0; i < 2; i++) cy.get("button").last().click();
@@ -50,12 +50,63 @@ Should animate exiting of a component`, () => {
   cy.wait(1000);
 
   cy.contains("Elemento 5").find("button").click();
-  // cy.contains("Elemento 8").find("button").click();
-  // cy.contains("Elemento 2").find("button").click();
-  // cy.contains("Elemento 1").find("button").click();
-  // cy.contains("Elemento 1").find("button").click({ force: true });
-  // cy.contains("Elemento 1").find("button").click({ force: true });
+});
 
-  // cy.wait(1500);
-  // cy.contains("Elemento 7").find("button").click();
+it.only("Should transition between elements out of order", () => {
+  cy.mountChain((children: ReactElement[]) => (
+    <AnimatedEntrance>{children}</AnimatedEntrance>
+  ))
+    .remount([
+      <h1 key="1">First element</h1>,
+      <h1 key="2">Second element</h1>,
+      <h1 key="3">Third element</h1>,
+      <h1 key="4">Fourth element</h1>,
+      <h1 key="5">Fifth element</h1>,
+    ])
+    .wait(1500)
+    .remount([
+      <h1 key="1">First element</h1>,
+      <h1 key="2">Second element</h1>,
+      <h1 key="4v2">Fourth element</h1>,
+      <h1 key="3">Third element</h1>,
+      <h1 key="5">Fifth element</h1>,
+    ])
+    .wait(1500)
+    .remount([
+      <h1 key="1">First element</h1>,
+      <h1 key="2">Second element</h1>,
+      <h1 key="4v2">
+        Fourth element
+        <br />
+        WITH A TON OF MORE CONTENT
+        <br />
+        WITH A TON OF MORE CONTENT
+        <br />
+        WITH A TON OF MORE CONTENT
+        <br />
+        WITH A TON OF MORE CONTENT
+        <br />
+        WITH A TON OF MORE CONTENT
+        <br />
+        WITH A TON OF MORE CONTENT
+        <br />
+        WITH A TON OF MORE CONTENT
+        <br />
+        WITH A TON OF MORE CONTENT
+        <br />
+        WITH A TON OF MORE CONTENT
+        <br />
+        WITH A TON OF MORE CONTENT
+      </h1>,
+      <h1 key="3">Third element</h1>,
+      <h1 key="5">Fifth element</h1>,
+    ])
+    .wait(1500)
+    .remount([
+      <h1 key="1">First element</h1>,
+      <h1 key="2">Second element</h1>,
+      <h1 key="3">Third element</h1>,
+      <h1 key="4v3">Fourth element</h1>,
+      <h1 key="5">Fifth element</h1>,
+    ]);
 });

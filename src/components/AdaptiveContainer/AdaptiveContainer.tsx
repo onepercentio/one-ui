@@ -18,10 +18,18 @@ export default function AdaptiveContainer({
   children,
   className = "",
   containerElement: _Wrapper = "div",
+  direction = "h",
   ...otherProps
 }: {
   containerElement?: keyof JSX.IntrinsicElements | FunctionComponent;
   children: ReactElement;
+  /**
+   * The direction in which the content will be resized
+   * 
+   *     "h" // When the content will change in width
+   *     "v" // When the content will change in height
+   */
+  direction?: "h" | "v";
 } & {
   [k: string]: any;
 }) {
@@ -31,31 +39,51 @@ export default function AdaptiveContainer({
 
   useEffect(() => {
     const sectionDiv = uncontrolledRef.current!.sectionRef.current;
-    if (sectionDiv) sectionDiv.style.width = `${sectionDiv.clientWidth}px`;
-    setTimeout(() => {
+    if (sectionDiv)
+      if (direction === "h") {
+        sectionDiv.style.width = `${sectionDiv.clientWidth}px`;
+        sectionDiv.style.height = ``;
+      } else {
+        sectionDiv.style.height = `${sectionDiv.clientHeight}px`;
+        sectionDiv.style.width = ``;
+      }
+    const t = setTimeout(() => {
       if (uncontrolledRef.current) {
         const sectionDiv = uncontrolledRef.current.sectionRef.current;
         if (sectionDiv) {
           const lastChild = sectionDiv.lastChild as HTMLDivElement;
           if (lastChild) {
-            const contentWidth = lastChild.clientWidth;
-            const targetWidth = `${contentWidth}px`;
-            sectionDiv.style.width = targetWidth;
-            function transEnd() {
-              setTimeout(() => {
-                if (sectionDiv?.style.width === `${contentWidth}px`)
-                  sectionDiv!.style.width = "";
-              }, 100);
+            function resetFactory(param: "height" | "width", target: number) {
+              const instance = () => {
+                setTimeout(() => {
+                  if (sectionDiv?.style[param] === `${target}px`)
+                    sectionDiv!.style[param] = "";
+                }, 100);
 
-              if (sectionDiv)
-                sectionDiv.removeEventListener("transitionend", transEnd);
+                if (sectionDiv)
+                  sectionDiv.removeEventListener("transitionend", instance);
+              };
+              return instance;
             }
-            sectionDiv.addEventListener("transitionend", transEnd);
+            if (direction === "h") {
+              const contentWidth = lastChild.clientWidth;
+              const targetWidth = `${contentWidth}px`;
+              sectionDiv.style.width = targetWidth;
+              const func = resetFactory("width", contentWidth);
+              sectionDiv.addEventListener("transitionend", func);
+            } else {
+              const contentHeight = lastChild.scrollHeight;
+              const targetHeight = `${contentHeight}px`;
+              sectionDiv.style.height = targetHeight;
+              const func = resetFactory("height", contentHeight);
+              sectionDiv.addEventListener("transitionend", func);
+            }
           }
         }
       }
     }, 100);
-  }, [children.key]);
+    return () => clearTimeout(t);
+  }, [children.key, direction]);
   const Wrapper = _Wrapper as any;
 
   return (

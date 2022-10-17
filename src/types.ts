@@ -29,7 +29,7 @@ export type DistributiveOmit<T, K extends keyof any> = T extends any
 
 declare global {
   interface Window {
-    ethereum: any;
+    ethereum: import("@metamask/providers").MetaMaskInpageProvider | undefined;
     PRERENDER: boolean;
     Cypress: any;
   }
@@ -59,14 +59,14 @@ declare type IsTuple<T extends ReadonlyArray<any>> = number extends T['length'] 
 declare type TupleKey<T extends ReadonlyArray<any>> = Exclude<keyof T, keyof any[]>;
 declare type ArrayKey = number;
 declare type PathImpl<K extends string | number, V> = V extends Primitive ? `${K}` : `${K}.${Path<V>}`;
-export declare type Path<T> = T extends ReadonlyArray<infer V> 
-? 
-  IsTuple<T> extends true 
+export declare type Path<T> = T extends ReadonlyArray<infer V>
+  ?
+  IsTuple<T> extends true
   ? {
     [K in TupleKey<T>]-?: PathImpl<K & string, T[K]>;
-  }[TupleKey<T>] 
-  : PathImpl<ArrayKey, V> 
-: {
+  }[TupleKey<T>]
+  : PathImpl<ArrayKey, V>
+  : {
     [K in keyof T]-?: PathImpl<K & string, T[K]>;
   }[keyof T];
 export declare type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>;

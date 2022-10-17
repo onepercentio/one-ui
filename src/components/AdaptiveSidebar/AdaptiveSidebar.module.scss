@@ -20,33 +20,30 @@ $hamburgerOffset: 24;
   z-index: 1000;
 }
 
-@media screen and (min-width: 640px) {
-  .hamburger {
-    display: none;
-  }
-}
-
 .container {
   box-sizing: border-box;
   height: 100%;
+}
+.hamburger.desktop {
+  display: none;
+}
 
-  @media screen and (max-width: 639px) {
-    &.defaultPadding {
-      padding-top: #{$hamburgerSize + $hamburgerOffset * 2}px;
-    }
-    position: fixed;
-    width: 100%;
-    overflow: auto;
-    z-index: 1000;
-    left: 0;
+.container.mobile {
+  &.defaultPadding {
+    padding-top: #{$hamburgerSize + $hamburgerOffset * 2}px;
+  }
+  position: fixed;
+  width: 100%;
+  overflow: auto;
+  z-index: 1000;
+  left: 0;
 
-    &.open {
-      transition: transform $veryFast ease-out;
-      transform: translateX(-0%);
-    }
-    &.closed {
-      transition: transform $veryFast ease-in;
-      transform: translateX(-100%);
-    }
+  &.open {
+    transition: transform $veryFast ease-out;
+    transform: translateX(-0%);
+  }
+  &.closed {
+    transition: transform $veryFast ease-in;
+    transform: translateX(-100%);
   }
 }

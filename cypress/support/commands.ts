@@ -36,3 +36,14 @@ import "@muritavo/cypress-toolkit/dist/support/essentials"
 //     }
 //   }
 // }
+
+beforeEach(() => {
+    const w = window.parent;
+    const style = w.document.createElement("style");
+    style.innerHTML = `.collapsible-content ul {
+        display: flex;
+        flex-direction: column-reverse;
+    }
+    `
+    w.document.head.appendChild(style)
+})

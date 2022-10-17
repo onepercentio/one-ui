@@ -10,7 +10,7 @@ export default function useElementFit(baseWidth: number, baseHeight?: number): {
     itemsToShow?: number,
 
     /** The ref to be sent to the element that will receive the items */
-    ref: Ref<HTMLDivElement>
+    ref: RefObject<HTMLDivElement>
 } {
     const ref = useRef<HTMLDivElement>(null);
     function calculateDimension() {
@@ -21,7 +21,7 @@ export default function useElementFit(baseWidth: number, baseHeight?: number): {
         }
         if ((window as any).PRERENDER) return 4;
 
-        const width = ref.current?.clientWidth || window.visualViewport.width;
+        const width = ref.current?.clientWidth || window.visualViewport!.width;
         const maxItemsVertically = Math.floor(width / baseWidth) || 1;
 
         return maxItemsVertically * fittingRows();

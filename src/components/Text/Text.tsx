@@ -14,18 +14,7 @@ export function _Text(
   }: React.PropsWithChildren<
     {
       className?: string;
-      type:
-        | "title"
-        | "description"
-        | "error"
-        | "caption"
-        | "highlightTitle"
-        | "highlight"
-        | "subtitle"
-        | "boldTitle"
-        | "link"
-        | "boldTitleBig"
-        | "content";
+      type: OnepercentUtility.UIElements.TextVariants;
     } & React.HTMLAttributes<HTMLParagraphElement>
   >,
 ) {

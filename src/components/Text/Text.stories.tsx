@@ -3,7 +3,7 @@ import {
   extractAllPossibilitiesFromEnumProp,
   SideBySideContainer,
 } from "../../storybookUtils";
-import C, {_Text as CompType} from "./Text";
+import C, { _Text as CompType } from "./Text";
 
 export default {
   component: CompType,

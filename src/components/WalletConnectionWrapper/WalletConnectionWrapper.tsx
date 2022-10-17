@@ -136,7 +136,7 @@ function Content({
 
   async function changeChainId() {
     try {
-      await window.ethereum.request({
+      await window.ethereum!.request({
         method: "wallet_switchEthereumChain",
         params: [
           {
@@ -147,7 +147,7 @@ function Content({
     } catch (e: any) {
       switch (e.code) {
         case 4902:
-          window.ethereum.request({
+          window.ethereum!.request({
             method: "wallet_addEthereumChain",
             params: [
               {

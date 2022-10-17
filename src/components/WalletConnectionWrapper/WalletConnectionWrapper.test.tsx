@@ -28,7 +28,7 @@ it("Should auto connect the connection after the user connects", async () => {
     reset: () => {},
     ...({} as any),
   }));
-  global.window.ethereum = {};
+  global.window.ethereum = {} as any;
   function getAutoConnectFlag() {
     return !!localStorage.getItem("auto_connect");
   }
@@ -67,7 +67,7 @@ it("Should warn when there is no provider available", () => {
   );
   expect(container.textContent).toEqual("Provider unavailable");
 
-  window.ethereum = {};
+  window.ethereum = {} as any;
   const { container: continer2 } = render(
     <Component
       ProviderUnavailable={() => <h1>Provider unavailable</h1>}
@@ -80,7 +80,7 @@ it("Should warn when the chainId is not the correct one", () => {
   const requestMock = jest.fn();
   window.ethereum = {
     request: requestMock,
-  };
+  } as any;
   useWalletMock.mockImplementation(() => ({
     chainId: 56,
     isConnected: () => true,
@@ -134,7 +134,7 @@ it("Should warn when the connection fails", async () => {
     ...({} as any),
   }));
 
-  window.ethereum = {};
+  window.ethereum = {} as any;
 
   const ref = createRef<ElementRef<typeof Component>>();
   const mockComp = jest.fn<
@@ -157,7 +157,7 @@ it("Should warn when the connection fails", async () => {
 
 describe("BUGFIX", () => {
   it("Should not validate chainId if not connected yet", () => {
-    window.ethereum = {};
+    window.ethereum = {} as any;
     useWalletMock.mockImplementation(() => ({
       chainId: undefined,
       isConnected: () => false,

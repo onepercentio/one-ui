@@ -1,6 +1,6 @@
 .resetSection {
   min-height: 0px;
-  transition: width 400ms;
+  transition: width 400ms, height 400ms;
   transition-timing-function: linear;
   overflow: hidden;
   > * {

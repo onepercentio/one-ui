@@ -4,7 +4,7 @@ import Styles from "./Button.module.scss";
 
 type ButtonProps = React.PropsWithChildren<
   React.ButtonHTMLAttributes<HTMLButtonElement> & {
-    variant?: "transparent" | "filled" | "outline";
+    variant?: OnepercentUtility.UIElements.ButtonVariants;
   }
 >;
 
@@ -21,7 +21,9 @@ export function _Button({
   return (
     <button
       ref={arguments[1]}
-      className={`${Styles.button} ${Styles[variant]} ${className} ${classNameType[variant] || ""}`}
+      className={`${Styles.button} ${Styles[variant]} ${className} ${
+        classNameType[variant] || ""
+      }`}
       {...otherProps}
     >
       {children}

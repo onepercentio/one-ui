@@ -22,10 +22,15 @@
   transition: height $fast ease-in;
   height: 0px;
   &.float {
+    width: initial;
+    max-width: initial;
     position: fixed;
     z-index: 100;
     background: $mainBackgroundColor;
     overflow: auto;
+  }
+  &.transitionMarginTop {
+    transition: height $fast ease-in, margin-top $fast ease-in;
   }
 }
 

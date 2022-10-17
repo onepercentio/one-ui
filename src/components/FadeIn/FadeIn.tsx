@@ -16,13 +16,21 @@ type FadeInProps = PropsWithChildren<{
   active?: boolean;
   onClick?: (e: SyntheticEvent<HTMLDivElement>) => void;
   onHidden?: () => void;
+  "data-testid"?: string;
 }>;
 
 /**
  * Receives a children and displays it with a fade in animation, also when it's removed, it hides with a fadeout
  **/
 function FadeIn(
-  { onHidden, children, className = "", active, onClick }: FadeInProps,
+  {
+    onHidden,
+    children,
+    className = "",
+    active,
+    onClick,
+    ...props
+  }: FadeInProps,
   divRef: ForwardedRef<HTMLDivElement>
 ) {
   if (!divRef) {
@@ -54,9 +62,9 @@ function FadeIn(
   return (
     <div
       ref={divRef}
-      data-testid="fadein_container"
       className={`${Styles.container} ${className}`}
       onClick={onClick}
+      {...props}
     >
       {prevChildren.current}
     </div>

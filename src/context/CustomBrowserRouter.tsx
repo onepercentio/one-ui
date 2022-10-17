@@ -13,7 +13,18 @@ export type CustomState = {
 
 export default function CustomBrowserRouter({
   children,
-}: PropsWithChildren<{}>) {
+  beforeRouteChange = (s) => s,
+}: PropsWithChildren<{
+  /**
+   * Allows the dev to modify the route before commiting the route change
+   *
+   * @returns The new route
+   */
+  beforeRouteChange?: (
+    newRoute: string,
+    history: ReturnType<typeof createBrowserHistory>
+  ) => string;
+}>) {
   const { current: historyCustom } = useRef(createBrowserHistory<any>());
   useLayoutEffect(() => {
     function overrideFunction(name: keyof typeof historyCustom) {
@@ -33,7 +44,8 @@ export default function CustomBrowserRouter({
             name === "replace"
               ? history.state?.state?.internalNavigation
               : true;
-        return orig(route, state, ...args);
+        const modifiedRoute = beforeRouteChange(route, historyCustom);
+        return orig(modifiedRoute, state, ...args);
       };
     }
     overrideFunction("push");

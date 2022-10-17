@@ -40,7 +40,7 @@ export default function useShortIntl(): IntlShape & {
       const decimals = bigNumber
         .minus(integerPart)
         .decimalPlaces(
-          options?.maximumFractionDigits || bigNumber.decimalPlaces(),
+          options?.maximumFractionDigits || bigNumber.decimalPlaces()!,
           5
         )
         .toString()

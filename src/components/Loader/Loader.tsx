@@ -4,9 +4,12 @@ import Styles from "./Loader.module.scss";
 /**
  * A simple loader
  **/
-export default function Loader({ className = "" }: { className?: string }) {
+export default function Loader({
+  className = "",
+  ...props
+}: { className?: string } & React.HTMLProps<HTMLDivElement>) {
   return (
-    <span className={`${Styles.indicator} ${className}`}>
+    <span className={`${Styles.indicator} ${className}`} {...props}>
       <span />
       <span />
       <span />

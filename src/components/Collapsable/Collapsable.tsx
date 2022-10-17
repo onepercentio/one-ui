@@ -3,6 +3,7 @@ import React, {
   HTMLAttributes,
   PropsWithChildren,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
 } from "react";
@@ -22,6 +23,8 @@ export default function Collapsable({
   mode = "block",
   contentClassName,
   onContentClick,
+  keepUnderlayingElement,
+  onClickOut,
   ...props
 }: PropsWithChildren<{
   title: React.ReactNode;
@@ -34,16 +37,57 @@ export default function Collapsable({
   mode?: "block" | "float";
   "data-testid"?: string;
   onContentClick?: HTMLAttributes<HTMLInputElement>["onClick"];
+  /**
+   * This flag indicates if the collapsable content should be kept in HTML while it's collapsed
+   *
+   * Usefull for responsive layouts where the collapsable should not "behave" as a collapsable content
+   */
+  keepUnderlayingElement?: boolean;
+
+  /**
+   * To detect when the user clicks out of the container
+   */
+  onClickOut?: () => void;
 }>) {
   const contentRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (open && onClickOut) {
+      window.addEventListener("click", onClickOut);
+      return () => window.removeEventListener("click", onClickOut);
+    }
+  }, [!!onClickOut, open]);
+
+  useLayoutEffect(() => {
     const el = contentRef.current!;
     if (open) {
       el.style.height = el.scrollHeight + "px";
       el.parentElement!.style.position = "relative";
-      if (mode === "float") updateTooltipPosition(el, toggleRef.current!, true);
+      if (mode === "float") {
+        el.style.minHeight = el.style.height;
+        const { shouldAnchorToBottom } = updateTooltipPosition(
+          el,
+          toggleRef.current!,
+          true
+        );
+        el.style.minHeight = "";
+        if (!shouldAnchorToBottom) {
+          el.style.marginTop = el.style.height;
+        }
+        const transitionStart = ({
+          currentTarget,
+          target,
+          propertyName,
+        }: TransitionEvent) => {
+          if (currentTarget === target && propertyName == "height" && !shouldAnchorToBottom) {
+            el.classList.add(Styles.transitionMarginTop);
+            el.style.marginTop = "0px";
+          }
+        };
+        el.addEventListener("transitionstart", transitionStart);
+        return () => el.removeEventListener("transitionstart", transitionStart);
+      }
       const onTransitionEnd = () => {
         el.style.height = "auto";
       };
@@ -57,10 +101,14 @@ export default function Collapsable({
     } else {
       el.style.height = el.clientHeight + "px";
       setTimeout(() => {
+        if (el.style.marginTop === "0px")
+          el.style.marginTop = `${el.clientHeight}px`;
         el.style.height = 0 + "px";
       }, 100);
       const onTransitionEnd = () => {
         el.parentElement!.style.position = "initial";
+        el.classList.remove(Styles.transitionMarginTop);
+        el.style.marginTop = ``;
         el.removeEventListener("transitionend", onTransitionEnd);
       };
       el.addEventListener("transitionend", onTransitionEnd);
@@ -78,21 +126,27 @@ export default function Collapsable({
       } ${className}`}
     >
       <div
-        onClick={() => onToggleOpen(!open)}
+        ref={toggleRef}
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleOpen(!open);
+        }}
         id={_collapsableId("header", id)}
       >
         {title}
       </div>
-      <div ref={toggleRef} />
       <div
+        onClick={(e) => {
+          e.stopPropagation();
+          if (onContentClick) onContentClick(e as any);
+        }}
         ref={contentRef}
         className={`${Styles.content} ${
           Styles[mode] || ""
         } ${contentClassName}`}
         id={_collapsableId("content", id)}
-        onClick={onContentClick}
       >
-        <FadeIn>{open ? children : null}</FadeIn>
+        <FadeIn>{open || keepUnderlayingElement ? children : null}</FadeIn>
       </div>
     </div>
   );

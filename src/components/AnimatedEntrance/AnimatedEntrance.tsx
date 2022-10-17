@@ -3,6 +3,7 @@ import React, {
   Fragment,
   Key,
   ReactElement,
+  TransitionEvent,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -53,11 +54,11 @@ export function AnimatedEntranceItem({
   entranceType: EntranceType;
 }) {
   const uncontRef = useRef<ElementRef<typeof UncontrolledTransition>>(null);
-  const [screen, setScreen] = useState<ReactElement | string>(
+  const [screen, setScreen] = useState<ReactElement | string | null>(
     noEntranceAnimation ? children : <Fragment key={"null"} />
   );
   useLayoutEffect(() => {
-    if (String(children.key).includes("-nullated")) {
+    if (String(children.key).includes("-nullated") && uncontRef.current) {
       uncontRef.current!.setOrientation("backward");
     }
   }, [children.key]);
@@ -67,34 +68,52 @@ export function AnimatedEntranceItem({
   }, [children.key]);
 
   useEffect(() => {
+    if (screen === null) return;
     const x = setTimeout(() => {
       const key = String(typeof screen === "string" ? screen : screen.key!);
-      if (key === "null" || key.includes("-nullated"))
-        uncontRef.current!.sectionRef.current!.style.maxHeight = `0px`;
-      else {
+      if (key === "null" || key.includes("-nullated")) {
         uncontRef.current!.sectionRef.current!.style.maxHeight = `${
           uncontRef.current!.sectionRef.current!.scrollHeight
         }px`;
-        uncontRef.current!.sectionRef.current!.addEventListener(
-          "transitionend",
-          ({ target, currentTarget }) => {
+        setTimeout(() => {
+          uncontRef.current!.sectionRef.current!.style.maxHeight = `0px`;
+        }, 100);
+      } else {
+        uncontRef.current!.sectionRef.current!.style.maxHeight = `${
+          uncontRef.current!.sectionRef.current!.scrollHeight
+        }px`;
+        if (!noEntranceAnimation) {
+          const restoreAutoHeight = ({
+            target,
+            currentTarget,
+          }: TransitionEvent<HTMLDivElement>) => {
             if (target !== currentTarget) return;
             uncontRef.current!.sectionRef.current!.style.maxHeight = "initial";
-          }
-        );
+            uncontRef.current!.sectionRef.current!.removeEventListener(
+              "transitionend",
+              restoreAutoHeight as any
+            );
+          };
+          uncontRef.current!.sectionRef.current!.addEventListener(
+            "transitionend",
+            restoreAutoHeight as any
+          );
+        } else {
+          uncontRef.current!.sectionRef.current!.style.maxHeight = "initial";
+        }
       }
     }, 100);
     return () => {
       clearTimeout(x);
     };
-  }, [screen]);
+  }, [typeof screen === "object" ? screen?.key : screen]);
 
   const className = useMemo(
     () => (!noEntranceAnimation ? Styles.maxHeight : ""),
     [String(children.key).includes("-nullated")]
   );
 
-  return (
+  return screen === null ? null : (
     <UncontrolledTransition
       ref={uncontRef}
       transitionType={TransitionAnimationTypes.CUSTOM}
@@ -102,7 +121,10 @@ export function AnimatedEntranceItem({
       lockTransitionWidth
       key={String(children.key).replace("-nullated", "")}
       onDiscardStep={(k) => {
-        if (k !== "null") onRemoveChildren(k!);
+        if (k !== "null") {
+          onRemoveChildren(k!);
+          setScreen(null);
+        }
       }}
       config={CONFIGS_BY_ENTRANCE_TYPE[entranceType]}
     >

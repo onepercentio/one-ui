@@ -10,16 +10,6 @@ import React, {
   useState,
 } from "react";
 
-type CustomizationProps = {
-  /**
-   * This will define how the pagination indicator calculates start and end
-   *
-   *      "page" - Calculates scrolling over client width as each page
-   *      "scroll" - Calculates scrolling progress over maximum scrollable width
-   */
-  mode?: "page" | "scroll";
-};
-
 const eachBallWidthEm = 1.2;
 const pushToborder = 7 * eachBallWidthEm;
 /**
@@ -146,14 +136,13 @@ function _PaginationIndicator(
     scrollableRef,
     estimatedWidth,
     size,
-    mode = "scroll",
     className = "",
   }: {
     scrollableRef: RefObject<HTMLDivElement>;
     estimatedWidth?: number;
     size: number;
     className?: string;
-  } & CustomizationProps,
+  },
   ref: ForwardedRef<{
     refreshPages: () => void;
   }>
@@ -168,7 +157,7 @@ function _PaginationIndicator(
   const refreshPages = useCallback(() => {
     const maxWidth = estimatedWidth || scrollableRef.current!.scrollWidth;
     setDefs({
-      pages: Math.ceil(maxWidth / scrollableRef.current!.clientWidth) - 1,
+      pages: maxWidth / scrollableRef.current!.clientWidth - 1,
     });
   }, [estimatedWidth]);
 
@@ -176,18 +165,18 @@ function _PaginationIndicator(
 
   const updatePageIndicators = useCallback(
     (target: HTMLDivElement, pages: number) => {
-      if (mode === "page") {
-        const eachPageWidth = scrollableRef.current!.clientWidth;
-        const page = 1 + target.scrollLeft / eachPageWidth;
-        setCurrentPage(page);
-      } else {
-        const maxWidth = estimatedWidth || scrollableRef.current!.scrollWidth;
-        const availableTOScroll = maxWidth - scrollableRef.current!.clientWidth;
-        if (availableTOScroll === 0) return setCurrentPage(1);
-        const page =
-          1 + ((target.scrollLeft * 100) / availableTOScroll / 100) * pages;
-        setCurrentPage(page);
-      }
+      // if (mode === "page") {
+      const eachPageWidth = scrollableRef.current!.clientWidth;
+      const page = 1 + target.scrollLeft / eachPageWidth;
+      const lastPageProgress = Math.floor(pages) + 1;
+      const maximumProgress = pages + 1;
+
+      const diffToMax = maximumProgress - lastPageProgress;
+      const currentProgressOnDiff = page - lastPageProgress;
+
+      if (page > lastPageProgress)
+        setCurrentPage(lastPageProgress + currentProgressOnDiff / diffToMax);
+      else setCurrentPage(page);
     },
     []
   );
@@ -212,9 +201,14 @@ function _PaginationIndicator(
     };
   }, [defs]);
 
-  return !defs ? null : (
+  const pages = useMemo(
+    () => (defs ? Math.ceil(defs.pages) : undefined),
+    [defs]
+  );
+
+  return !pages ? null : (
     <PaginationIndicatorView
-      pages={defs.pages}
+      pages={pages}
       page={currentPage}
       size={size}
       className={className}

@@ -25,7 +25,7 @@ export default function AdaptiveContainer({
   children: ReactElement;
   /**
    * The direction in which the content will be resized
-   * 
+   *
    *     "h" // When the content will change in width
    *     "v" // When the content will change in height
    */
@@ -54,7 +54,8 @@ export default function AdaptiveContainer({
           const lastChild = sectionDiv.lastChild as HTMLDivElement;
           if (lastChild) {
             function resetFactory(param: "height" | "width", target: number) {
-              const instance = () => {
+              const instance = (e: TransitionEvent) => {
+                if (e.propertyName !== param) return;
                 setTimeout(() => {
                   if (sectionDiv?.style[param] === `${target}px`)
                     sectionDiv!.style[param] = "";

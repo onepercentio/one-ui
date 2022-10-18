@@ -94,7 +94,6 @@ it("Should be able to change page based on scroll", () => {
           <h1 style={{ width: "1640px" }}>CONTEUDO</h1>
         </div>
         <PaginationIndicator
-          mode="scroll"
           scrollableRef={ref}
           size={24}
           estimatedWidth={1640}
@@ -109,27 +108,28 @@ it("Should be able to change page based on scroll", () => {
   );
 });
 
-describe.only("Bugfix", () => {
+function Wrapper({ page }: { page: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  return (
+    <>
+      <div style={{ width: "100vw", overflow: "auto" }} ref={ref}>
+        <h1
+          style={{
+            fontSize: "2em",
+            width: `calc(${page * 100 + "vw"} + 20px)`,
+            backgroundColor: "lightcoral",
+          }}
+        >
+          Scrollable content
+        </h1>
+      </div>
+      <PaginationIndicator scrollableRef={ref} size={24} />
+    </>
+  );
+}
+
+describe("Bugfix", () => {
   it("Should not have unwanted dot location when there is a single page", () => {
-    function Wrapper({ page }: { page: number }) {
-      const ref = useRef<HTMLDivElement>(null);
-      return (
-        <>
-          <div style={{ width: "100vw", overflow: "auto" }} ref={ref}>
-            <h1
-              style={{
-                fontSize: "2em",
-                width: `calc(${page * 100 + "vw"} + 20px)`,
-                backgroundColor: "lightcoral",
-              }}
-            >
-              Scrollable content
-            </h1>
-          </div>
-          <PaginationIndicator scrollableRef={ref} size={24} />
-        </>
-      );
-    }
     mount(
       <>
         <Wrapper page={1} />
@@ -137,4 +137,12 @@ describe.only("Bugfix", () => {
       </>
     );
   });
+});
+
+it.only("Should be able to indicate final page scroll correctly", () => {
+  mount(
+    <>
+      <Wrapper page={2.5} />
+    </>
+  );
 });

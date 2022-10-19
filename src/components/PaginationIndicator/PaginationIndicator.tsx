@@ -155,6 +155,8 @@ function _PaginationIndicator(
     }>();
 
   const refreshPages = useCallback(() => {
+    if (process.env.NODE_ENV === "development" && !scrollableRef.current)
+      return;
     const maxWidth = estimatedWidth || scrollableRef.current!.scrollWidth;
     setDefs({
       pages: maxWidth / scrollableRef.current!.clientWidth - 1,
@@ -165,7 +167,8 @@ function _PaginationIndicator(
 
   const updatePageIndicators = useCallback(
     (target: HTMLDivElement, pages: number) => {
-      // if (mode === "page") {
+      if (process.env.NODE_ENV === "development" && !scrollableRef.current)
+        return;
       const eachPageWidth = scrollableRef.current!.clientWidth;
       const page = 1 + target.scrollLeft / eachPageWidth;
       const lastPageProgress = Math.floor(pages) + 1;

@@ -12,7 +12,11 @@ import InputStyles from "../Input/Input.module.scss";
 import Styles from "./Select.module.scss";
 import Input from "../Input";
 import Loader from "../Loader";
-import { useOneUIContext } from "../../context/OneUIProvider";
+import {
+  OneUIContextSpecs,
+  useOneUIConfig,
+  useOneUIContext,
+} from "../../context/OneUIProvider";
 
 export type SelectItem = {
   label: string;
@@ -29,7 +33,7 @@ function Select<I extends SelectItem>({
   onClick,
   loading,
   rootClassName = "",
-  dropdownClassName = "",
+  dropdownClassName: _drop = "",
   ...otherProps
 }: {
   loading?: boolean;
@@ -49,10 +53,18 @@ function Select<I extends SelectItem>({
 ) &
   Omit<ComponentProps<typeof Input>, "selected" | "onClick">) {
   const { StateIndicator } = useOneUIContext().component.select;
+
   const _selected = useMemo(() => {
     return items.find((a) => a.value === selected);
-  }, [selected]);
+  }, [selected, items]);
+
   const [open, setOpen] = useState(false);
+
+  const dropdownClassNames = _drop
+    ? ({
+        dropdown: _drop,
+      } as NonNullable<OneUIContextSpecs["component"]["select"]["className"]>)
+    : useOneUIConfig("component.select.className", {});
 
   useEffect(() => {
     if (open) {
@@ -86,7 +98,7 @@ function Select<I extends SelectItem>({
         if (items.length) setOpen(open);
       }}
       className={`${otherProps.disabled ? "disabled" : ""} ${rootClassName}`}
-      contentClassName={`${Styles.optionsContainer} ${dropdownClassName}`}
+      contentClassName={`${Styles.optionsContainer} ${dropdownClassNames.dropdown}`}
     >
       <div
         className={Styles.items}
@@ -99,7 +111,11 @@ function Select<I extends SelectItem>({
           <Text
             type="caption"
             key={i.value}
-            className={i === _selected ? Styles.selected : ""}
+            className={`${
+              i === _selected
+                ? `${Styles.selected} ${dropdownClassNames.selectedItem}`
+                : ""
+            } ${dropdownClassNames.item || ""}`}
             onClick={() => onClick(i)}
           >
             {i.label}

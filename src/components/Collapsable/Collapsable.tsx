@@ -1,6 +1,7 @@
 import FadeIn from "../FadeIn";
 import React, {
   HTMLAttributes,
+  HTMLProps,
   PropsWithChildren,
   useEffect,
   useLayoutEffect,
@@ -48,7 +49,8 @@ export default function Collapsable({
    * To detect when the user clicks out of the container
    */
   onClickOut?: () => void;
-}>) {
+}> &
+  Omit<HTMLAttributes<HTMLDivElement>, "title">) {
   const contentRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLDivElement>(null);
 
@@ -80,7 +82,11 @@ export default function Collapsable({
           target,
           propertyName,
         }: TransitionEvent) => {
-          if (currentTarget === target && propertyName == "height" && !shouldAnchorToBottom) {
+          if (
+            currentTarget === target &&
+            propertyName == "height" &&
+            !shouldAnchorToBottom
+          ) {
             el.classList.add(Styles.transitionMarginTop);
             el.style.marginTop = "0px";
           }
@@ -120,10 +126,10 @@ export default function Collapsable({
 
   return (
     <div
-      data-testid={props["data-testid"]}
       className={`${Styles.container} ${
         open ? Styles.open : Styles.closed
       } ${className}`}
+      {...props}
     >
       <div
         ref={toggleRef}

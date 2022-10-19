@@ -5,7 +5,6 @@
     box-sizing: border-box;
   }
   position: relative;
-  min-height: 250px;
   display: flex;
   align-items: center;
   > div {
@@ -156,15 +155,20 @@ div.fadeIn {
 }
 @keyframes flipIn {
   0% {
-    transform: rotateX(90deg);
+    transform: rotateX(0deg);
+    opacity: 0;
   }
 
   25% {
-    transform: rotateX(90deg);
+    transform: rotateX(0deg);
   }
 
   50% {
     transform: rotateX(90deg);
+    opacity: 0;
+  }
+  51% {
+    opacity: 1;
   }
 
   75% {

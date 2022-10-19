@@ -1,7 +1,8 @@
-import { CSSProperties } from "react";
+import { CSSProperties, Fragment } from "react";
 import { TransitionAnimationTypes } from "../../../src/components/Transition";
 import UncontrolledTransition from "../../../src/components/UncontrolledTransition";
 import useHero from "../../../src/hooks/useHero";
+import Styles from "./useHero.module.scss";
 
 function HeroExample({ exampleStyle }: { exampleStyle: CSSProperties }) {
   const { heroRef } = useHero(
@@ -155,4 +156,88 @@ it("Should immediatly remove the clone when the hero will not transition", () =>
         cy.byTestId("square").should("have.length", 1);
       });
   }
+});
+
+it.only("Should not animate elements that are out of screen to reduce amount and increase performance", () => {
+  cy.viewport(1000, 1000);
+  const transitionedElements: Set<string> = new Set();
+  window.addEventListener("transitionstart", (e) => {
+    const div = e.target! as HTMLDivElement;
+    if (!!div.id) {
+      transitionedElements.add(div.id);
+    }
+  });
+  function ElementToTransition({
+    id,
+    style,
+  }: {
+    id: string;
+    style: CSSProperties;
+  }) {
+    const { heroRef } = useHero(id);
+    return (
+      <div
+        id={id}
+        ref={heroRef}
+        style={{
+          height: 200,
+          width: 200,
+          backgroundColor: "red",
+          position: "absolute",
+          fontSize: 180,
+          color: "white",
+          ...style,
+        }}
+      >
+        {id}
+      </div>
+    );
+  }
+  const chain = cy.mountChain((transition: boolean) => {
+    return (
+      <UncontrolledTransition
+        transitionType={TransitionAnimationTypes.COIN_FLIP}
+        className={Styles.root}
+      >
+        {!transition ? (
+          <Fragment key="1">
+            <h1 style={{ margin: "auto" }}>First screen</h1>
+            <ElementToTransition id="1" style={{ top: 40, left: 40 }} />
+            <ElementToTransition id="2" style={{ top: 80, left: 900 }} />
+            <ElementToTransition id="3" style={{ top: 1000, left: 50 }} />{" "}
+            {/** This is coming from outside the viewport and should not animate */}
+            <ElementToTransition id="4" style={{ top: 80, left: 1010 }} />{" "}
+            {/** This is coming from outside the viewport and should not animate */}
+            <ElementToTransition id="5" style={{ top: 500, left: 500 }} />
+          </Fragment>
+        ) : (
+          <Fragment key="2">
+            <h1 style={{ margin: "auto" }}>Second screen</h1>
+            <ElementToTransition id="1" style={{ top: -200, left: 20 }} />{" "}
+            {/** This is going outside the viewport and should also not animate */}
+            <ElementToTransition id="2" style={{ top: 280, left: 60 }} />
+            <ElementToTransition id="3" style={{ top: 70, left: 400 }} />
+            <ElementToTransition id="4" style={{ top: 600, left: 600 }} />
+            <ElementToTransition id="5" style={{ top: 700, left: 900 }} />
+          </Fragment>
+        )}
+      </UncontrolledTransition>
+    );
+  });
+
+  chain
+    .remount(false)
+    .wait(1000)
+    .remount(true)
+    .wait(1000)
+    .then(() => {
+      expect(Array.from(transitionedElements)).to.deep.eq(["2", "5"]);
+      transitionedElements.clear();
+    })
+    .remount(false)
+    .wait(1000)
+    .then(() => {
+      expect(Array.from(transitionedElements)).to.deep.eq(["2", "5"]);
+      transitionedElements.clear();
+    });
 });

@@ -32,6 +32,7 @@ export default function useHero(
   }, [id]);
 
   useEffect(() => {
+    const viewport = window.visualViewport!;
     const allPropsToTransition = [
       "width",
       "height",
@@ -42,6 +43,8 @@ export default function useHero(
     const otherElements = getHerosOnScreen().filter(
       events.onHeroDetect || (() => true)
     );
+    const currentElCoordinates = heroRef.current!.getBoundingClientRect();
+
     if (process.env.NODE_ENV === "development" && otherElements.length > 2)
       console.warn(
         "There are too many elements to transition to, I will transition to the first I find",
@@ -52,6 +55,11 @@ export default function useHero(
     ) as HTMLDivElement;
 
     if (otherElement) {
+      if (
+        isElementOutsideViewport(viewport, currentElCoordinates) ||
+        isElementOutsideViewport(viewport, otherElement.getBoundingClientRect())
+      )
+        return;
       const oldClone = document.querySelector(`[data-hero-clone="${ID(id)}"]`);
       const clone = (oldClone ||
         otherElement.cloneNode(true)) as HTMLDivElement;
@@ -84,6 +92,13 @@ export default function useHero(
         clone.style.left = `${coordinates.left}px`;
         clone.style.width = `${coordinates.width}px`;
         clone.style.height = `${coordinates.height}px`;
+
+        console.table([
+          [coordinates.top, currentCoordinates.top],
+          [coordinates.left, currentCoordinates.left],
+          [coordinates.width, currentCoordinates.width],
+          [coordinates.height, currentCoordinates.height],
+        ]);
 
         return !willNotMove;
       }
@@ -126,4 +141,17 @@ export default function useHero(
   }, []);
 
   return { heroRef, getHerosOnScreen };
+}
+
+function isElementOutsideViewport(
+  viewport: VisualViewport,
+  coordinates: DOMRect
+) {
+  const elementOverflowsViewport =
+    coordinates.left >= viewport.width || coordinates.top >= viewport.height;
+  const elementUnderflowsViewport =
+    coordinates.left <= -coordinates.width ||
+    coordinates.top <= -coordinates.height;
+
+  return elementOverflowsViewport || elementUnderflowsViewport;
 }

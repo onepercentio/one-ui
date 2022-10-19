@@ -93,13 +93,6 @@ export default function useHero(
         clone.style.width = `${coordinates.width}px`;
         clone.style.height = `${coordinates.height}px`;
 
-        console.table([
-          [coordinates.top, currentCoordinates.top],
-          [coordinates.left, currentCoordinates.left],
-          [coordinates.width, currentCoordinates.width],
-          [coordinates.height, currentCoordinates.height],
-        ]);
-
         return !willNotMove;
       }
 

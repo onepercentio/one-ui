@@ -1,17 +1,16 @@
-import debounce from "lodash/debounce";
 import get from "lodash/get";
 import merge from "lodash/merge";
 import clone from "lodash/cloneDeep";
 import { Get } from "type-fest";
-import React, { ReactElement } from "react";
+import React, { ReactElement, useMemo } from "react";
 import { createContext, PropsWithChildren, useContext } from "react";
-import { FieldPath } from "../utils";
+import { FieldPath } from "../type-utils";
 
 type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends Function ? T[P] : DeepPartial<T[P]>;
 };
 
-export type ContextSpecs = {
+export type OneUIContextSpecs = {
   component: {
     text?: {
       className?: {
@@ -53,6 +52,11 @@ export type ContextSpecs = {
     };
     select: {
       StateIndicator: (props: { open: boolean }) => JSX.Element;
+      className?: {
+        dropdown?: string;
+        item?: string;
+        selectedItem?: string;
+      };
     };
     header: {
       LogoImage: () => JSX.Element;
@@ -79,7 +83,7 @@ export type ContextSpecs = {
   };
 };
 
-type ContextConfigSpecs = DeepPartial<ContextSpecs>;
+type ContextConfigSpecs = DeepPartial<OneUIContextSpecs>;
 
 const Context = createContext<ContextConfigSpecs>(null as any);
 
@@ -88,11 +92,12 @@ export default function OneUIProvider({
   config,
 }: PropsWithChildren<{ config: ContextConfigSpecs }>) {
   const prevCtx = useContext(Context);
-  return (
-    <Context.Provider value={merge(clone(prevCtx), config)}>
-      {children}
-    </Context.Provider>
-  );
+
+  const mergedConfig = useMemo(() => {
+    return merge(clone(prevCtx), config);
+  }, [prevCtx, config]);
+
+  return <Context.Provider value={mergedConfig}>{children}</Context.Provider>;
 }
 
 function ErrorWrapper(
@@ -143,20 +148,25 @@ export function useOneUIContext() {
   const context = useContext(Context);
 
   if (process.env.NODE_ENV === "development")
-    return ErrorWrapper(context) as unknown as ContextSpecs;
+    return ErrorWrapper(context) as unknown as OneUIContextSpecs;
 
-  return context as ContextSpecs;
+  return context as OneUIContextSpecs;
 }
 
 export function useOneUIConfig<
-  P extends FieldPath<ContextSpecs>,
-  T extends Get<ContextSpecs, P>
->(prop: P, defaultValue?: T): NonNullable<Get<ContextSpecs, P>> {
+  P extends FieldPath<OneUIContextSpecs>,
+  T extends Get<OneUIContextSpecs, P>
+>(prop: P, defaultValue?: T): NonNullable<Get<OneUIContextSpecs, P>> {
   const context = useContext(Context);
   if (process.env.NODE_ENV === "development") {
-    const val = get(context, prop);
+    const val = useMemo(() => {
+      return get(context, prop);
+    }, [context, prop]);
     if (typeof val === "string" || typeof val === "function") return val as any;
     return ErrorWrapper(val || defaultValue) as unknown as NonNullable<T>;
   }
-  return get(context, prop) || defaultValue;
+  const value = useMemo(() => {
+    return get(context, prop);
+  }, [context, prop]);
+  return value || defaultValue;
 }

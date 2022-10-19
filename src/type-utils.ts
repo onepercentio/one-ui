@@ -1,5 +1,5 @@
-import { FieldValues } from './fields';
-import { NestedValue } from './form';
+type FieldValues = any;
+type NestedValue = any;
 export declare type Primitive = null | undefined | string | number | boolean | symbol | bigint;
 export declare type EmptyObject = {
     [K in string | number]: never;

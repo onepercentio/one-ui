@@ -1,13 +1,18 @@
 import React, {
   ComponentProps,
   ElementRef,
+  Fragment,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
 import UncontrolledTransition from ".";
 import Button from "../Button";
+import DiagonalReveal from "../Transition/MasksFactory/DiagonalReveal";
+import PhysicsSquares from "../Transition/MasksFactory/PhysicsSquares";
+import SquareToBalls from "../Transition/MasksFactory/SquareToBalls";
 import { TransitionAnimationTypes } from "../Transition/Transition";
 import StoriesStyles from "./UncontrolledTransition.stories.module.scss";
 
@@ -306,7 +311,7 @@ function CoinFlipItem() {
     </>
   );
 }
-export const CoinFlip = () => {
+export const CoinFlip = ({ coinCount = 100 }: { coinCount?: number }) => {
   return (
     <>
       <h1>
@@ -316,11 +321,133 @@ export const CoinFlip = () => {
       <h2>This is more usefull with square elements</h2>
 
       <div style={{ display: "flex", flexWrap: "wrap", position: "relative" }}>
-        {new Array(100).fill(undefined).map(() => (
+        {new Array(coinCount).fill(undefined).map(() => (
           <CoinFlipItem />
         ))}
       </div>
     </>
+  );
+};
+
+export const MaskBasedTransition = () => {
+  const [example, setExample] = useState<"coin" | "anchor">("coin");
+  const ref = useRef<ElementRef<typeof UncontrolledTransition>>(null);
+  return (
+    <UncontrolledTransition
+      ref={ref}
+      className={StoriesStyles.maskExample}
+      transitionType={TransitionAnimationTypes.MASK}
+      maskFactory={SquareToBalls(5)}
+    >
+      {example === "coin" ? (
+        <div key={example} className={StoriesStyles[example]}>
+          <CoinFlip coinCount={20} />
+          <Button
+            variant="filled"
+            onClick={() => {
+              setExample("anchor");
+            }}
+          >
+            Switch story
+          </Button>
+        </div>
+      ) : (
+        <div key={example} className={StoriesStyles[example]}>
+          <AnchorBasedTransition />
+          <Button
+            variant="filled"
+            onClick={() => {
+              setExample("coin");
+            }}
+          >
+            Back to coin story
+          </Button>
+        </div>
+      )}
+    </UncontrolledTransition>
+  );
+};
+export const MaskBasedTransitionDiagonal = () => {
+  const [example, setExample] = useState<"coin" | "anchor">("coin");
+  const ref = useRef<ElementRef<typeof UncontrolledTransition>>(null);
+  const salt = useMemo(() => Math.random().toString(), [example]);
+  return (
+    <UncontrolledTransition
+      ref={ref}
+      className={StoriesStyles.maskDiagonal}
+      transitionType={TransitionAnimationTypes.MASK}
+      maskFactory={DiagonalReveal}
+    >
+      {example === "coin" ? (
+        <div key={example + salt} className={StoriesStyles[example]}>
+          <CoinFlip coinCount={20} />
+          <Button
+            variant="filled"
+            onClick={() => {
+              setExample("anchor");
+            }}
+          >
+            Switch story
+          </Button>
+        </div>
+      ) : (
+        <div key={example + salt} className={StoriesStyles[example]}>
+          <AnchorBasedTransition />
+          <Button
+            variant="filled"
+            onClick={() => {
+              setExample("coin");
+            }}
+          >
+            Back to coin story
+          </Button>
+        </div>
+      )}
+    </UncontrolledTransition>
+  );
+};
+
+export const MaskBasedTransitionWithPhysics = () => {
+  const [example, setExample] = useState<"coin" | "anchor">("coin");
+  const ref = useRef<ElementRef<typeof UncontrolledTransition>>(null);
+  useEffect(() => {
+    setInterval(() => {
+      setExample((p) => (p === "coin" ? "anchor" : "coin"));
+    }, 10000);
+  }, []);
+  return (
+    <UncontrolledTransition
+      ref={ref}
+      className={StoriesStyles.physicsExample}
+      transitionType={TransitionAnimationTypes.MASK}
+      maskFactory={PhysicsSquares(4)}
+    >
+      {example === "coin" ? (
+        <div key={example} className={StoriesStyles[example]}>
+          {/* <CoinFlip coinCount={20} /> */}
+          <Button
+            variant="filled"
+            onClick={() => {
+              setExample("anchor");
+            }}
+          >
+            Switch story
+          </Button>
+        </div>
+      ) : (
+        <div key={example} className={StoriesStyles[example]}>
+          {/* <AnchorBasedTransition /> */}
+          <Button
+            variant="filled"
+            onClick={() => {
+              setExample("coin");
+            }}
+          >
+            Back to coin story
+          </Button>
+        </div>
+      )}
+    </UncontrolledTransition>
   );
 };
 

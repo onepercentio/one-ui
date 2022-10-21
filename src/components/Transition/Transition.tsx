@@ -1,6 +1,7 @@
 import React, {
   AnimationEvent,
   createRef,
+  CSSProperties,
   ForwardedRef,
   forwardRef,
   Key,
@@ -24,6 +25,13 @@ export type TransitionTypeDefinitions =
   | {
       transitionType?: TransitionAnimationTypes.POP_FROM_ELEMENT_ID;
       elementId: string;
+    }
+  | {
+      transitionType?: TransitionAnimationTypes.MASK;
+      /**
+       * It provides the transition container so you can create a dynamic svg to mask with
+       */
+      maskFactory: (container: HTMLDivElement) => string;
     }
   | {
       transitionType?: TransitionAnimationTypes.CUSTOM;
@@ -106,6 +114,17 @@ function TransitionClasses(
           elementExiting: Styles.fadeOut,
         },
       };
+    case TransitionAnimationTypes.MASK:
+      return {
+        backward: {
+          elementEntering: Styles.stubEntering,
+          elementExiting: Styles.stub,
+        },
+        forward: {
+          elementEntering: Styles.stubEntering,
+          elementExiting: Styles.stub,
+        },
+      };
   }
 }
 
@@ -150,9 +169,7 @@ function Transition(
       (_containerRef as MutableRefObject<HTMLDivElement | null>) || createRef(),
     [_containerRef]
   );
-  const preTransitionDetails = useRef<{
-    transformOrigin: `${number}% ${number}%` | `initial`;
-  }>({
+  const preTransitionDetails = useRef<CSSProperties>({
     transformOrigin: "initial",
   });
   const [childrenWrappers, setChildrenWrappers] = useState<
@@ -204,6 +221,10 @@ function Transition(
       containerRef.current!.style.width = `${
         containerRef.current!.clientWidth
       }px`;
+    const transitionMask =
+      props.transitionType === TransitionAnimationTypes.MASK
+        ? props.maskFactory(containerRef.current!)
+        : "";
 
     /** This runs on backwards */
     if (prevStep.current > step) {
@@ -219,7 +240,7 @@ function Transition(
         if (FirstNextScreen) {
           Object.assign(FirstNextScreen.externalProps, {
             "data-testid": "transition-container",
-            style: contentStyle,
+            style: { ...contentStyle, WebkitMaskImage: transitionMask },
             className: `${transitionClasses.backward.elementExiting}`,
           });
         }
@@ -290,7 +311,7 @@ function Transition(
         if (lastWrapper) {
           Object.assign(lastWrapper.externalProps, {
             "data-testid": "transition-container",
-            style: contentStyle,
+            style: { ...contentStyle, WebkitMaskImage: transitionMask },
             className: `${contentClassName} ${transitionClasses.forward.elementExiting}`,
             onAnimationEnd: (e: AnimationEvent) => {
               if (e.target !== e.currentTarget) return;
@@ -424,6 +445,7 @@ export enum TransitionAnimationTypes {
   POP_FROM_ELEMENT_ID,
   FADE,
   COIN_FLIP,
+  MASK,
   CUSTOM,
 }
 

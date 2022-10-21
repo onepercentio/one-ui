@@ -1,6 +1,7 @@
 import { CSSProperties, useCallback, useEffect, useRef } from "react";
 
 const ID = (id: string) => `${id}-hero`;
+type ShouldSkip = boolean;
 
 /**
  * This hook implements the logic for a hero animation between 2 elements
@@ -12,10 +13,37 @@ export default function useHero(
     "width" | "height" | "top" | "left"
   >[] = [],
   events: {
-    /** Returns if the element should be heroed */
+    /**
+     * Returns if the element should be "heroed"
+     *
+     * Usefull for when the hero has 2 possible origins.
+     * For example, one could hero only the current hovered element with el.matches(":hover")
+     */
     onHeroDetect?: (el: HTMLDivElement) => boolean;
+
+    /**
+     * Do something when the hero ends
+     *
+     * Usefull for triggering secondary animations
+     */
     onHeroEnd?: () => void;
+
+    /**
+     * Do something when the hero starts the transition
+     * Here it's usefull to switch classNames with the target.
+     *
+     * If done correctly, it will transition from state a to b smoothly
+     */
     onHeroStart?: (clone: HTMLDivElement) => void;
+
+    /**
+     * Is called when the hero is coming/going outside the viewport
+     *
+     * By default it's set to skip all heroes that have these conditions
+     *
+     * @returns If the hero should be skipped or not
+     */
+    onHeroSkip?: (origin: HTMLDivElement, target: HTMLDivElement) => ShouldSkip;
   } = {}
 ) {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -55,11 +83,12 @@ export default function useHero(
     ) as HTMLDivElement;
 
     if (otherElement) {
-      if (
+      const shouldSkip =
         isElementOutsideViewport(viewport, currentElCoordinates) ||
         isElementOutsideViewport(viewport, otherElement.getBoundingClientRect())
-      )
-        return;
+          ? (events.onHeroSkip || (() => true))(otherElement, heroRef.current!)
+          : false;
+      if (shouldSkip) return;
       const oldClone = document.querySelector(`[data-hero-clone="${ID(id)}"]`);
       const clone = (oldClone ||
         otherElement.cloneNode(true)) as HTMLDivElement;

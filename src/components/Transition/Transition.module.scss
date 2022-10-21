@@ -19,6 +19,25 @@
   }
 }
 
+div.stub {
+  animation-name: stub;
+  position: absolute;
+  pointer-events: none;
+}
+
+div.stubEntering {
+  animation-name: stub;
+  z-index: -1;
+}
+@keyframes stub {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 div.entranceLeft {
   animation-name: entranceLeft;
 }

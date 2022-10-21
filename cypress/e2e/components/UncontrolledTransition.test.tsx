@@ -242,3 +242,39 @@ describe("BUGFIX", () => {
     chain.remount("Quarto render", 1).wait(1000);
   });
 });
+
+describe.only("Features", () => {
+  it("Should be able to transition using svg mask", () => {
+    cy.viewport(600, 600);
+    const chain = cy.mountChain((screen: number) => {
+      return (
+        <Comp
+          transitionType={TransitionAnimationTypes.MASK}
+          contentStyle={{
+            fontSize: 96,
+            backgroundColor: "red",
+          }}
+          maskFactory={() =>
+            `url('data:image/svg+xml;charset=utf8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50%" cy="50%" fill="white">
+              <animate 
+                  attributeName="r" 
+                  attributeType="XML" 
+                  values="100%;0%" 
+                  dur="5s"
+                  repeatCount="indefinite" />
+          </circle>
+      </svg>`)}')`
+          }
+        >
+          {screen === 0 ? (
+            <React.Fragment key={"first1"}><h1 style={{backgroundColor: "green"}}>First</h1></React.Fragment>
+          ) : (
+            <React.Fragment key={"second1"}><h1 style={{backgroundColor: "blue"}}>Second</h1></React.Fragment>
+          )}
+        </Comp>
+      );
+    });
+    chain.remount(0).wait(1000).remount(1);
+  });
+});

@@ -17,6 +17,8 @@ export default function buildGrid(
         x,
         y,
         ballSize,
+        column: modY,
+        row: modX,
       };
     });
 }

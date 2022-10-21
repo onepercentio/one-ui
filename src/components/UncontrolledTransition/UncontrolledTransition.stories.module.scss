@@ -67,6 +67,7 @@
 
 .maskExample {
   height: 100vh;
+  --animation-speed-transition: 2s;
   > * {
     height: 100%;
     justify-content: center;

@@ -337,7 +337,7 @@ export const MaskBasedTransition = () => {
       ref={ref}
       className={StoriesStyles.maskExample}
       transitionType={TransitionAnimationTypes.MASK}
-      maskFactory={SquareToBalls(5)}
+      maskFactory={SquareToBalls(20)}
     >
       {example === "coin" ? (
         <div key={example} className={StoriesStyles[example]}>

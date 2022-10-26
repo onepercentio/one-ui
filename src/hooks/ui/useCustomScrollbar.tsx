@@ -8,7 +8,6 @@ export default function useCustomScrollBar({
   const elRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
-    console.log(elRef.current);
     elRef.current!.style.setProperty("--scrollbar-color", color);
     elRef.current!.classList.add(Styles.scrollBarRoot);
     if (propagate) {

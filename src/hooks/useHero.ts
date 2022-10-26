@@ -137,15 +137,19 @@ export default function useHero(
         .join(", ")}`;
 
       setTimeout(() => {
+        const el = heroRef.current;
         const cleanup = () => {
           if (events.onHeroEnd) events.onHeroEnd();
           clone.remove();
-          el.style.visibility = "";
+          if (el) el.style.visibility = "";
         };
         if (events.onHeroStart) events.onHeroStart(clone);
-        if (!heroRef.current) return;
-        const el = heroRef.current;
+        if (!el) {
+          cleanup();
+          return;
+        }
         const willMove = setCloneToCoordinates(el);
+        console.log("This hero will movE?", willMove);
         if (!willMove) cleanup();
         else {
           for (let propToTransition of propsToTransition)

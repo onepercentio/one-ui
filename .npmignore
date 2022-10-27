@@ -27,3 +27,5 @@ coverage/**/*
 .storybook
 cypress.config.ts
 scripts/*
+storybook-static/
+.firebase/

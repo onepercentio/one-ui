@@ -11,6 +11,7 @@ import MutableHamburgerButton from "../MutableHamburgerButton";
 import ScrollAndFocusLock from "../utilitary/ScrollAndFocusLock";
 import Styles from "./AdaptiveSidebar.module.scss";
 import useBreakpoint from "../../hooks/ui/useBreakpoint";
+import { createPortal } from "react-dom";
 
 const DefaultVisibilityControl = ({ open }: { open: boolean }) => (
   <MutableHamburgerButton size={48} state={open ? "closed" : "default"} />
@@ -73,22 +74,25 @@ function AdaptiveSidebar(
   }, [_open]);
   const externalControl = externalOpen !== undefined;
 
+  const content = (
+    <div
+      ref={containerRef}
+      className={`${isMobile ? Styles.mobile : Styles.desktop} ${
+        Styles.container
+      } ${
+        !externalControl &&
+        DefaultVisibilityControl === VisibilityControlComponent
+          ? Styles.defaultPadding
+          : ""
+      } ${_open ? Styles.open : Styles.closed} ${className}`}
+      {...props}
+    >
+      <ScrollAndFocusLock open={_open}>{children}</ScrollAndFocusLock>
+    </div>
+  );
+
   return (
     <>
-      <div
-        ref={containerRef}
-        className={`${isMobile ? Styles.mobile : Styles.desktop} ${
-          Styles.container
-        } ${
-          !externalControl &&
-          DefaultVisibilityControl === VisibilityControlComponent
-            ? Styles.defaultPadding
-            : ""
-        } ${_open ? Styles.open : Styles.closed} ${className}`}
-        {...props}
-      >
-        <ScrollAndFocusLock open={_open}>{children}</ScrollAndFocusLock>
-      </div>
       {!externalControl && (
         <div
           className={`${isMobile ? Styles.mobile : Styles.desktop} ${
@@ -99,6 +103,7 @@ function AdaptiveSidebar(
           <VisibilityControlComponent open={_open} />
         </div>
       )}
+      {isMobile ? createPortal(content, document.body) : content}
     </>
   );
 }

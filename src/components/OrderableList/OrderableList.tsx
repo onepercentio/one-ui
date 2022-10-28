@@ -17,10 +17,14 @@ import useHero from "../../hooks/useHero";
 import AnimatedEntrance from "../AnimatedEntrance";
 import { TransitionAnimationTypes } from "../Transition";
 import Styles from "./OrderableList.module.scss";
+import useEvents from "../../hooks/utility/useEvents";
+
+type Events = "order-stop" | "order-start";
 
 const OrderableListContext = createContext<{
   bindAnchor: (bindElement: HTMLDivElement) => void;
   unbindAnchor: (bindElement: HTMLDivElement) => void;
+  on: (eventName: Events, cb: () => void) => () => void;
 }>(null as any);
 
 export enum OrderableListReorderMode {
@@ -49,6 +53,7 @@ export default function OrderableList({
       currentOrder?: string[];
     }
 )) {
+  const eventEmitter = useEvents<Events, { [k in Events]: [] }>();
   const currentClone = useRef<HTMLDivElement | null>(null);
   const currentWorkingKey = useRef<string>();
   const rootRef = useRef<HTMLDivElement>(null as any);
@@ -64,10 +69,10 @@ export default function OrderableList({
 
   const findParentElement = (target: HTMLDivElement) => {
     let parent: HTMLDivElement = target as HTMLDivElement;
-    do {
+    while (parent.parentElement !== rootRef.current) {
       if (parent.parentElement === null) break;
       parent = parent.parentElement as any;
-    } while (parent.parentElement !== rootRef.current);
+    }
     if (process.env.NODE_ENV === "development" && parent === null)
       throw new Error(
         "It seems like we could not find a relation between this element and the root list. Are you using portals maybe?"
@@ -84,7 +89,6 @@ export default function OrderableList({
       const keyOfTheOverElement = currentOrder[indexOfOverKey];
       const isDraggingOwnElement =
         currentWorkingKey.current === keyOfTheOverElement;
-
       if (indexOfOverKey === -1 || keyOfTheOverElement === undefined) return;
       if (!isDraggingOwnElement) {
         const distanceFromTop = e.offsetY;
@@ -187,6 +191,7 @@ export default function OrderableList({
         )!;
         const box = elInvisible.getBoundingClientRect();
         function cleanUp() {
+          eventEmitter.dispatcher("order-stop");
           rootRef.current.classList.remove(Styles.ordering);
           for (let el of els) el.classList.remove(Styles.visible);
           clone.remove();
@@ -213,6 +218,7 @@ export default function OrderableList({
     parent.classList.remove(Styles.visible);
     rootRef.current.classList.add(Styles.ordering);
     currentWorkingKey.current = cleanOrderRef.current[els.indexOf(parent)];
+    eventEmitter.dispatcher("order-start");
     window.document.body.classList.add(Styles.unselectable);
     window.addEventListener("mouseup", deleteClone);
     window.addEventListener("mousemove", movementControl);
@@ -245,6 +251,7 @@ export default function OrderableList({
         unbindAnchor: (el) => {
           el.removeEventListener("mousedown", onAnchorClick);
         },
+        on: eventEmitter.subscriber,
       }}
     >
       <div ref={rootRef} className={`${Styles.root} ${className}`}>
@@ -306,4 +313,21 @@ export function useOrderableListAnchor() {
   return {
     anchorRef: ctx ? anchorRef : undefined,
   };
+}
+
+export function useOrderableEvents(
+  events: {
+    [k in Events]: () => void;
+  }
+) {
+  const { on } = useContext(OrderableListContext);
+  useEffect(() => {
+    const unsubscribers: any[] = [];
+    for (let eventName in events) {
+      unsubscribers.push(on(eventName as Events, events[eventName as Events]));
+    }
+    return () => {
+      unsubscribers.forEach((u) => u());
+    };
+  }, [events]);
 }

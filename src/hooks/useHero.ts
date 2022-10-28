@@ -149,7 +149,6 @@ export default function useHero(
           return;
         }
         const willMove = setCloneToCoordinates(el);
-        console.log("This hero will movE?", willMove);
         if (!willMove) cleanup();
         else {
           for (let propToTransition of propsToTransition)

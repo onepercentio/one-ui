@@ -155,8 +155,7 @@ function _PaginationIndicator(
     }>();
 
   const refreshPages = useCallback(() => {
-    if (process.env.NODE_ENV === "development" && !scrollableRef.current)
-      return;
+    if (!scrollableRef.current) return;
     const maxWidth =
       estimatedWidth === undefined
         ? scrollableRef.current!.scrollWidth

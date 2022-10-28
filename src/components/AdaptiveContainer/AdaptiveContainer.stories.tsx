@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import Button from "../Button";
 import Loader from "../Loader";
 import MutableHamburgerButton from "../MutableHamburgerButton";
 import Tabs from "../Tabs";
@@ -53,7 +54,9 @@ export const TargetUsage = () => {
         onSelect={ss as any}
         selected={s as any}
       />
-      <AdaptiveContainer variant="outline">{child}</AdaptiveContainer>
+      <AdaptiveContainer containerElement={Button} variant="outline">
+        {child}
+      </AdaptiveContainer>
     </>
   );
 };

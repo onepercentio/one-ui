@@ -2,6 +2,8 @@ import React, {
   ComponentProps,
   ElementRef,
   FunctionComponent,
+  HTMLAttributes,
+  HTMLProps,
   ReactElement,
   useEffect,
   useRef,
@@ -14,14 +16,16 @@ import Styles from "./AdaptiveContainer.module.scss";
 /**
  * A container that animates width changes across content updates
  **/
-export default function AdaptiveContainer({
+export default function AdaptiveContainer<
+  E extends keyof JSX.IntrinsicElements | FunctionComponent
+>({
   children,
   className = "",
-  containerElement: _Wrapper = "div",
+  containerElement: _Wrapper = "div" as any,
   direction = "h",
   ...otherProps
 }: {
-  containerElement?: keyof JSX.IntrinsicElements | FunctionComponent;
+  containerElement?: E;
   children: ReactElement;
   /**
    * The direction in which the content will be resized
@@ -30,9 +34,8 @@ export default function AdaptiveContainer({
    *     "v" // When the content will change in height
    */
   direction?: "h" | "v";
-} & {
-  [k: string]: any;
-}) {
+  className?: string;
+} & ComponentProps<E>) {
   const uncontrolledRef =
     useRef<ElementRef<typeof UncontrolledTransition>>(null);
   const buttonRef = useRef<HTMLElement>(null);
@@ -54,7 +57,7 @@ export default function AdaptiveContainer({
           const lastChild = sectionDiv.lastChild as HTMLDivElement;
           if (lastChild) {
             function resetFactory(param: "height" | "width", target: number) {
-              const instance = (e: TransitionEvent) => {
+              const instance = (e: Pick<TransitionEvent, "propertyName">) => {
                 if (e.propertyName !== param) return;
                 setTimeout(() => {
                   if (sectionDiv?.style[param] === `${target}px`)
@@ -71,13 +74,17 @@ export default function AdaptiveContainer({
               const targetWidth = `${contentWidth}px`;
               sectionDiv.style.width = targetWidth;
               const func = resetFactory("width", contentWidth);
-              sectionDiv.addEventListener("transitionend", func);
+              if (targetWidth === sectionDiv.style.width)
+                func({ propertyName: "width" });
+              else sectionDiv.addEventListener("transitionend", func);
             } else {
               const contentHeight = lastChild.scrollHeight;
               const targetHeight = `${contentHeight}px`;
               sectionDiv.style.height = targetHeight;
               const func = resetFactory("height", contentHeight);
-              sectionDiv.addEventListener("transitionend", func);
+              if (targetHeight === sectionDiv.style.height)
+                func({ propertyName: "height" });
+              else sectionDiv.addEventListener("transitionend", func);
             }
           }
         }
@@ -108,7 +115,7 @@ export default function AdaptiveContainer({
               elementEntering: Styles.fadeInDelayed,
             },
           }}
-          className={Styles.resetSection}
+          className={`${Styles.resetSection} ${Styles[direction]}`}
         >
           {children}
         </UncontrolledTransition>

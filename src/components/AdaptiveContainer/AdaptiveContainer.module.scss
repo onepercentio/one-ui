@@ -1,10 +1,12 @@
 .resetSection {
   min-height: 0px;
-  transition: width 400ms, height 400ms;
+  transition: width var(--adaptive-container-transition-time, 400ms), height var(--adaptive-container-transition-time, 400ms);
   transition-timing-function: linear;
   overflow: hidden;
-  > * {
-    min-width: auto !important;
+  &.h {
+    > * {
+      min-width: auto !important;
+    }
   }
 }
 

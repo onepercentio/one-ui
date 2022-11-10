@@ -5,7 +5,7 @@ import React, {
   useImperativeHandle,
   useState,
 } from "react";
-import { useOneUIConfig, useOneUIContext } from "../../context/OneUIProvider";
+import { useOneUIConfig } from "../../context/OneUIProvider";
 import Input from "../Input";
 import Text from "../Text";
 import Styles from "./PasswordInput.module.scss";
@@ -107,7 +107,7 @@ function PasswordInput(
   }
 
   return (
-    <div className={`${Styles.inputContainer} ${Styles[props.mode]}`}>
+    <div className={`${Styles.inputContainer} ${Styles[props.mode]} ${Styles.icon}`}>
       <Input
         value={props.value}
         onChange={_onChange}

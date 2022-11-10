@@ -59,15 +59,14 @@ it.each([
 );
 
 it.each([
-  [200, 0, 100, 200, 1],
-  [0, 0, 100, 200, -1],
-  [100, 0, 100, 200, 0], // This happens when the change on page is executed
+  [200, 0, 200, 1],
+  [0, 0, 200, -1],
+  [100, 0, 200, 0], // This happens when the change on page is executed
 ])(
   "Should be able to decide when to go to another page",
   (
     howMuchTheParentScrolled,
     prevSectionPosition,
-    currSectionPosition,
     nextSectionPosition,
     expectationForPageIncrease
   ) => {
@@ -75,7 +74,6 @@ it.each([
       shouldIncrementPage(
         howMuchTheParentScrolled,
         prevSectionPosition,
-        currSectionPosition,
         nextSectionPosition
       )
     ).toEqual(expectationForPageIncrease);

@@ -14,7 +14,6 @@ import Styles from "./InfinityScroll.module.scss";
 export function shouldIncrementPage(
   howMuchTheParentScrolled: number,
   prevSectionPosition: number,
-  currSectionPosition: number,
   nextSectionPosition: number
 ): -1 | 0 | 1 {
   if (howMuchTheParentScrolled === nextSectionPosition) return 1;
@@ -114,9 +113,8 @@ function InfinityScroll(
         !isCountTheSameOrLowerThanPage
           ? () => {
               const pageToIncrement = shouldIncrementPage(
-                parentDiv.current!.scrollLeft,
+                Math.round(parentDiv.current!.scrollLeft),
                 prevDiv.current!.offsetLeft,
-                currDiv.current!.offsetLeft,
                 nextDiv.current!.offsetLeft
               );
 

@@ -45,7 +45,7 @@ export default function HSForms({
           css: ' ',
           cssClass: '#',
           onFormReady: ${idx},
-          onFormSubmitted: ${idx2},
+          onFormSubmit: ${idx2},
           formInstanceId: ${funcId}
         });`;
         container.current!.appendChild(createFormScript);

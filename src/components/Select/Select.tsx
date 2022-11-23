@@ -8,7 +8,6 @@ import React, {
 } from "react";
 import Collapsable from "../Collapsable";
 import Text from "../Text";
-import InputStyles from "../Input/Input.module.scss";
 import Styles from "./Select.module.scss";
 import Input from "../Input";
 import Loader from "../Loader";

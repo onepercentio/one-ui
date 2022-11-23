@@ -2,7 +2,9 @@ import { throttle } from "lodash";
 import UncontrolledTransition from "../UncontrolledTransition";
 import React, {
   createContext,
+  DetailedHTMLProps,
   Fragment,
+  HTMLAttributes,
   PropsWithChildren,
   ReactElement,
   useCallback,
@@ -52,7 +54,8 @@ export default function OrderableList({
   | {
       currentOrder?: string[];
     }
-)) {
+) &
+  DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>) {
   const eventEmitter = useEvents<Events, { [k in Events]: [] }>();
   const currentClone = useRef<HTMLDivElement | null>(null);
   const currentWorkingKey = useRef<string>();
@@ -254,7 +257,7 @@ export default function OrderableList({
         on: eventEmitter.subscriber,
       }}
     >
-      <div ref={rootRef} className={`${Styles.root} ${className}`}>
+      <div ref={rootRef} className={`${Styles.root} ${className}`} {...props}>
         {mode === OrderableListReorderMode.VERTICAL ? (
           <AnimatedEntrance>
             {[...children]
@@ -264,7 +267,7 @@ export default function OrderableList({
                   cleanOrder.indexOf(a.key as string) -
                   cleanOrder.indexOf(b.key as string)
               )
-              .map((a, i) => ({
+              .map((a: ReactElement, i) => ({
                 ...a,
                 key: order[i],
               }))}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useMemo, useState } from "react";
 
 export type TimeObject = {
   hours: number;
@@ -21,15 +21,24 @@ const IntegerFormatter = new Intl.NumberFormat(undefined, {
   minimumIntegerDigits: 2,
 });
 
+export enum CountdownTextModel {
+  /** This shows the countdown on the format 00:00:00 */
+  CLOCK,
+  /** This shows the countdown on the format 00h 00m 00s */
+  SHORT,
+}
+
 /**
  * You five it some time, and a countdown is shown
  **/
 export default function Countdown({
   timeRemaining,
   onFinish,
+  model = CountdownTextModel.CLOCK,
 }: {
   timeRemaining: number;
   onFinish?: () => void;
+  model?: CountdownTextModel;
 }) {
   const [t, setT] = useState<TimeObject>(() =>
     calculateTimeFromTimespan(timeRemaining)
@@ -68,11 +77,29 @@ export default function Countdown({
     };
   }, [timeRemaining]);
 
-  return (
-    <span>
-      {`${IntegerFormatter.format(t!.hours)}:${IntegerFormatter.format(
-        t!.minutes
-      )}:${IntegerFormatter.format(t!.seconds)}`}
-    </span>
-  );
+  const txt = useMemo(() => {
+    switch (model) {
+      case CountdownTextModel.CLOCK:
+        return (
+          <Fragment>
+            {`${IntegerFormatter.format(t!.hours)}:${IntegerFormatter.format(
+              t!.minutes
+            )}:${IntegerFormatter.format(t!.seconds)}`}
+          </Fragment>
+        );
+      case CountdownTextModel.SHORT:
+        return (
+          <Fragment>
+            {IntegerFormatter.format(t!.hours)}
+            <span>h</span>&nbsp;
+            {IntegerFormatter.format(t!.minutes)}
+            <span>m</span>&nbsp;
+            {IntegerFormatter.format(t!.seconds)}
+            <span>s</span>
+          </Fragment>
+        );
+    }
+  }, [t, model]);
+
+  return <span>{txt}</span>;
 }

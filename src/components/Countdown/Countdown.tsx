@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useMemo, useState } from "react";
+import React, { Fragment, useEffect, useLayoutEffect, useMemo, useState } from "react";
 
 export type TimeObject = {
   hours: number;
@@ -43,6 +43,10 @@ export default function Countdown({
   const [t, setT] = useState<TimeObject>(() =>
     calculateTimeFromTimespan(timeRemaining)
   );
+
+  useLayoutEffect(() => {
+    setT(calculateTimeFromTimespan(timeRemaining));
+  }, [timeRemaining]);
 
   useEffect(() => {
     const cl = setInterval(() => {

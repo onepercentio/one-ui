@@ -176,4 +176,36 @@ $slice: math.div(1, 7);
       top: (-#{$slice * 4.5}em);
     }
   }
+  &.pencil {
+      perspective: 600px;
+
+    > :nth-child(1) {
+      height: #{$slice}em;
+      width: 0.15em;
+      transform: translateX(0.3em) rotate(-45deg);
+      border-bottom-left-radius: 0;
+      border-top-left-radius: 0;
+    }
+
+    > :nth-child(2) {
+      width: 0.6em;
+      transform: rotate(-45deg);
+      border-radius: 0;
+    }
+    
+    > :nth-child(3) {
+      $slice: $slice * 0.6;
+
+      height: 0em;
+      width: 0em;
+      border-radius: 0;
+      transform: translateX(-0.27em) translateY(0.027em) rotate(-80deg) rotateY(45deg) skew(12deg, 12deg);
+
+      border-left: #{$slice}em solid transparent;
+      border-right: #{$slice}em solid transparent;
+      border-bottom: 0em solid transparent;
+      border-top: #{$slice}em solid;
+      background-color: transparent;
+    }
+  }
 }

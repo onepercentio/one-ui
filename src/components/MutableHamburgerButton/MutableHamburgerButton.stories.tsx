@@ -7,7 +7,14 @@ export default {
 };
 
 export const InitialImplementation = (args: any) => (
-  <div style={{transformOrigin: '0px 0px',transform: "scale(10)", backgroundColor: "#00f5", display: "inline-block"}}>
+  <div
+    style={{
+      transformOrigin: "0px 0px",
+      transform: "scale(10)",
+      backgroundColor: "#00f5",
+      display: "inline-block",
+    }}
+  >
     <MutableHamburgerButton {...args} />
   </div>
 );
@@ -19,20 +26,22 @@ export const TransitionToLoader = (args: any) => {
   const [s, ss] =
     useState<ComponentProps<typeof MutableHamburgerButton>["state"]>("closed");
 
-    function randomState(): typeof s {
-        const r = Math.random();
-        if (r < 0.2) {
-            return "default"
-        } else if (r < 0.4) {
-            return "arrow-down"
-        } else if (r < 0.6) {
-            return "arrow-up"
-        } else if (r < 0.8) {
-            return "closed";
-        } else {
-            return "search"
-        }
+  function randomState(): typeof s {
+    const r = Math.random();
+    if (r < 0.2) {
+      return "default";
+    } else if (r < 0.4) {
+      return "arrow-down";
+    } else if (r < 0.6) {
+      return "arrow-up";
+    } else if (r < 0.8) {
+      return "closed";
+    } else if (r < 0.99) {
+      return "pencil";
+    } else {
+      return "search";
     }
+  }
 
   useEffect(() => {
     const o = setInterval(() => {

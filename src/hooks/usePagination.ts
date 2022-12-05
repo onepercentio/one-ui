@@ -41,6 +41,7 @@ export default function usePagination<I extends any, A extends any[]>(
     function (page: number, ...args: A) {
       const id = paginationId(...args);
       process(async () => {
+        if (paginationData[id]?.finished) return;
         const result = await request(
           page,
           items?.[0] === id && page !== 0 ? items?.[1] : undefined,

@@ -5,6 +5,8 @@ import { Get } from "type-fest";
 import React, { ReactElement, useMemo } from "react";
 import { createContext, PropsWithChildren, useContext } from "react";
 import { FieldPath } from "../type-utils";
+import useAdaptiveImage from "../hooks/ui/useAdaptiveImage";
+import { ImageScales } from "@muritavo/webpack-microfrontend-scripts/bin/types/ImageScales";
 
 type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends Function ? T[P] : DeepPartial<T[P]>;
@@ -81,6 +83,9 @@ export type OneUIContextSpecs = {
       };
     };
   };
+  state: {
+    imageScale: ImageScales;
+  };
 };
 
 type ContextConfigSpecs = DeepPartial<OneUIContextSpecs>;
@@ -92,10 +97,14 @@ export default function OneUIProvider({
   config,
 }: PropsWithChildren<{ config: ContextConfigSpecs }>) {
   const prevCtx = useContext(Context);
-
+  const scale = useAdaptiveImage();
   const mergedConfig = useMemo(() => {
-    return merge(clone(prevCtx), config);
-  }, [prevCtx, config]);
+    return merge(clone(prevCtx), config, {
+      state: {
+        imageScale: scale,
+      },
+    });
+  }, [prevCtx, config, scale]);
 
   return <Context.Provider value={mergedConfig}>{children}</Context.Provider>;
 }
@@ -169,4 +178,10 @@ export function useOneUIConfig<
     return get(context, prop);
   }, [context, prop]);
   return value || defaultValue;
+}
+
+export function useCurrentImageScale() {
+  const context = useContext(Context);
+
+  return context.state!.imageScale!;
 }

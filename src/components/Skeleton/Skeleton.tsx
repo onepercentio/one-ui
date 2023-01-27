@@ -15,7 +15,7 @@ export default function Skeleton({
   height?: number;
 }) {
   return (
-    <div
+    <span
       className={Styles.root}
       style={
         {

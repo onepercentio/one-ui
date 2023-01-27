@@ -73,6 +73,10 @@ export type OneUIContextSpecs = {
     tooltip: {
       className?: string;
     };
+    adaptiveDialog: {
+      dialogClassName: string,
+      backdropClassName: string
+    }
   };
   hook: {
     ui: {

@@ -3,6 +3,7 @@ import Styles from "./AdaptiveDialog.module.scss";
 import MutableHamburgerButton from "../MutableHamburgerButton";
 import ScrollAndFocusLock from "../utilitary/ScrollAndFocusLock";
 import ReactDOM from "react-dom";
+import { useOneUIConfig } from "../../context/OneUIProvider";
 
 /**
  * This component implements a generic drawer that displays it as a drawer on mobile and as a modal on desktop
@@ -39,6 +40,11 @@ export default function AdaptiveDialog({
     }
   }, [open]);
 
+  const globalClassName = {
+    backdrop: useOneUIConfig("component.adaptiveDialog.backdropClassName", ""),
+    dialog: useOneUIConfig("component.adaptiveDialog.dialogClassName", ""),
+  };
+
   return isVisible || open ? (
     <>
       {ReactDOM.createPortal(
@@ -46,11 +52,11 @@ export default function AdaptiveDialog({
           ref={rootDivRef}
           className={`${Styles.backdrop} ${open ? Styles.open : Styles.close} ${
             expanded ? Styles.expanded : ""
-          }`}
+          } ${globalClassName.backdrop}`}
           onClick={onClickOut}
         >
           <div
-            className={`${Styles.container} ${className}`}
+            className={`${Styles.container} ${className} ${globalClassName.dialog}`}
             onClick={(e) => e.stopPropagation()}
           >
             <ScrollAndFocusLock open={open}>

@@ -17,6 +17,7 @@ type FadeInProps = PropsWithChildren<{
   onClick?: (e: SyntheticEvent<HTMLDivElement>) => void;
   onHidden?: () => void;
   "data-testid"?: string;
+  style?: any
 }>;
 
 /**

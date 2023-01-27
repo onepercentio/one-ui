@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
-export default function useIsMounting(id: string) {
+export default function useIsMounting(tag: string) {
     useEffect(() => {
-        console.log(id + " is mounting")
+        console.log(tag + " is mounting")
     }, []);
 }

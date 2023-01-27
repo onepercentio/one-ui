@@ -1,12 +1,16 @@
 import { IntlFormatters, IntlShape, useIntl } from "react-intl";
 import { BigNumber } from "bignumber.js";
+import { useEffect, useState } from "react";
 
 export default function useShortIntl(): IntlShape & {
   txt: (
     id: OnepercentUtility.IntlIds,
     params?: Parameters<IntlFormatters["formatMessage"]>[1]
   ) => ReturnType<IntlFormatters["formatMessage"]>;
-  formatToDoubleDecimal(number: number, options?: Parameters<IntlFormatters["formatNumber"]>[1]): string
+  formatToDoubleDecimal(
+    number: number,
+    options?: Parameters<IntlFormatters["formatNumber"]>[1]
+  ): string;
   formatBigNumber(
     number: BigNumber,
     options?: Parameters<IntlFormatters["formatNumber"]>[1]
@@ -14,17 +18,36 @@ export default function useShortIntl(): IntlShape & {
 } {
   const intl = useIntl();
   const { formatMessage, formatNumber } = intl;
+  const [devMode, setDevMode] = useState(false);
+
+  useEffect(() => {
+    if (process.env.NODE_ENV === "development") {
+      const keyDownDetect = (ev: KeyboardEvent) => {
+        if (ev.key === "i" && ev.ctrlKey) {
+          const keyUpDetect = (ev: KeyboardEvent) => {
+            if (ev.key === "i") {
+              setDevMode(false);
+            }
+          };
+          setDevMode(true);
+          window.addEventListener("keyup", keyUpDetect);
+        }
+      };
+      window.addEventListener("keydown", keyDownDetect);
+    }
+  });
+
   return {
     ...intl,
     txt: (id, params) => {
-      return formatMessage({ id }, params);
+      return devMode ? id : formatMessage({ id }, params);
     },
     formatToDoubleDecimal(val: number, options = {}) {
       return formatNumber(val, {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-        ...options
-      })
+        ...options,
+      });
     },
     formatBigNumber(bigNumber, options) {
       const { decimalSeparator } = intl
@@ -45,8 +68,9 @@ export default function useShortIntl(): IntlShape & {
         )
         .toString()
         .replace("0.", "");
-      return `${integer}${decimals !== "0" ? `${decimalSeparator}${decimals}` : ""
-        }`;
+      return `${integer}${
+        decimals !== "0" ? `${decimalSeparator}${decimals}` : ""
+      }`;
     },
   };
 }

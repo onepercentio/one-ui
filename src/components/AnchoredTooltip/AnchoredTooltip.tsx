@@ -1,19 +1,32 @@
 import React, {
+  ForwardedRef,
+  forwardRef,
   ReactNode,
   RefObject,
   useEffect,
+  useImperativeHandle,
   useRef,
   useState,
 } from "react";
-import { useOneUIConfig, useOneUIContext } from "../../context/OneUIProvider";
+import { useOneUIConfig } from "../../context/OneUIProvider";
 import FadeIn from "../FadeIn";
 import Styles from "./AnchoredTooltip.module.scss";
+import ReactDOM from "react-dom";
+import useFreeze from "../../hooks/useFreeze";
 
 type Props = {
   children: JSX.Element;
   anchorRef: RefObject<HTMLElement>;
   open: boolean;
   className?: string;
+  /**
+   * Indicates the tooltip should be always visible on viewport
+   *
+   * @default true
+   */
+  containInViewport?: boolean;
+
+  style?: any;
 };
 
 function getPositionOnViewport(element: HTMLElement) {
@@ -22,7 +35,8 @@ function getPositionOnViewport(element: HTMLElement) {
 
 function calculateTooltipFromAnchor(
   anchorRef: HTMLElement,
-  tooltipRef: HTMLDivElement
+  tooltipRef: HTMLDivElement,
+  containInViewport: boolean
 ) {
   const anchorPosition = getPositionOnViewport(anchorRef);
 
@@ -36,16 +50,16 @@ function calculateTooltipFromAnchor(
   if (shouldAnchorToBottom)
     top += tooltipRef.clientHeight + anchorRef.clientHeight;
 
-  if (top < 0) top = 0;
+  if (containInViewport && top < 0) top = 0;
   const offset = top + tooltipRef.clientHeight - window.innerHeight;
-  if (offset > 0) {
+  if (containInViewport && offset > 0) {
     top -= offset;
   }
   const offsetLeft = left + tooltipRef.clientWidth - window.innerWidth;
-  if (offsetLeft > 0) {
+  if (containInViewport && offsetLeft > 0) {
     left -= offsetLeft;
   }
-  if (left < 0) {
+  if (containInViewport && left < 0) {
     left = 0;
   }
 
@@ -79,10 +93,10 @@ function calculateTooltipFromAnchor(
 export function updateTooltipPosition(
   tooltipRef: HTMLDivElement,
   anchorRef: HTMLElement,
-  limitToViewport?: boolean
+  limitToViewport: boolean = true
 ) {
   const { top, left, shouldAnchorToBottom, offsetIndicatorLeft } =
-    calculateTooltipFromAnchor(anchorRef, tooltipRef);
+    calculateTooltipFromAnchor(anchorRef, tooltipRef, limitToViewport);
   if (limitToViewport) {
     const maxHeight = window.innerHeight - top;
     tooltipRef.style.maxHeight = `${maxHeight - 32}px`;
@@ -107,18 +121,43 @@ export function updateTooltipPosition(
 /**
  * This tooltip anchors itself to an element and handles positioning relative to the anchored element
  **/
-export default function AnchoredTooltip(props: Props) {
+function AnchoredTooltip(
+  { containInViewport = true, ...props }: Props,
+  ref: ForwardedRef<{ updatePosition: () => void }>
+) {
   const { open, children, anchorRef } = props;
   const tooltipRef = useRef<HTMLDivElement>(null);
   const className = useOneUIConfig("component.tooltip.className");
 
+  useImperativeHandle(
+    ref,
+    () => ({
+      updatePosition: () => {
+        updateTooltipPosition(
+          tooltipRef.current!,
+          anchorRef.current!,
+          containInViewport
+        );
+      },
+    }),
+    [containInViewport]
+  );
+
   useEffect(() => {
     if (open) {
       if (anchorRef.current && tooltipRef.current)
-        updateTooltipPosition(tooltipRef.current, anchorRef.current);
+        updateTooltipPosition(
+          tooltipRef.current,
+          anchorRef.current,
+          containInViewport
+        );
       const scrollHandler = () => {
         if (anchorRef.current && tooltipRef.current)
-          updateTooltipPosition(tooltipRef.current, anchorRef.current);
+          updateTooltipPosition(
+            tooltipRef.current,
+            anchorRef.current,
+            containInViewport
+          );
       };
       window.addEventListener("scroll", scrollHandler);
       return () => {
@@ -127,86 +166,25 @@ export default function AnchoredTooltip(props: Props) {
     }
   }, [open, anchorRef]);
 
-  return (
+  const openedSomeTime = useFreeze(open);
+
+  return openedSomeTime ? (
     <>
-      <FadeIn
-        onClick={(e) => e.stopPropagation()}
-        ref={tooltipRef}
-        className={`${Styles.tooltipContainer} ${open ? Styles.open : ""} ${
-          props.className || ""
-        } ${className}`}
-      >
-        {open ? <div>{children}</div> : undefined}
-      </FadeIn>
-      {/* {process.env.NODE_ENV === "development" && open ? (
-        <DebuggingHelper tooltipRef={tooltipRef} {...props} />
-      ) : null} */}
+      {ReactDOM.createPortal(
+        <FadeIn
+          onClick={(e) => e.stopPropagation()}
+          ref={tooltipRef}
+          className={`${Styles.tooltipContainer} ${open ? Styles.open : ""} ${
+            props.className || ""
+          } ${className}`}
+          style={props.style}
+        >
+          {open ? <div>{children}</div> : undefined}
+        </FadeIn>,
+        document.body
+      )}
     </>
-  );
+  ) : null;
 }
 
-function DebuggingHelper(
-  props: Props & { tooltipRef: RefObject<HTMLDivElement> }
-) {
-  const [anchorInfo, setAnchorInfo] = useState({});
-
-  function update() {
-    return getPositionOnViewport(props.anchorRef.current!).toJSON();
-  }
-  useEffect(() => {
-    setAnchorInfo(update());
-    setInterval(() => {
-      setAnchorInfo(update());
-    }, 500);
-  }, []);
-  return (
-    <div
-      style={{
-        backgroundColor: "black",
-        position: "fixed",
-        color: "green",
-        fontFamily: "monospace",
-        padding: "1em",
-        fontSize: "16px",
-        lineHeight: "1.5em",
-        opacity: 0.75,
-        bottom: 0,
-        right: 0,
-        maxHeight: "50vh",
-        overflow: "auto",
-        pointerEvents: "none",
-      }}
-    >
-      Calculated info:
-      <br />
-      {props.anchorRef.current &&
-        props.tooltipRef.current &&
-        Object.entries(
-          calculateTooltipFromAnchor(
-            props.anchorRef.current,
-            props.tooltipRef.current
-          )
-        ).map(([k, v]) => {
-          return (
-            <p>
-              <b>{k}</b>: {typeof v !== "boolean" ? v : v ? "true" : "false"}
-            </p>
-          );
-        })}
-      Window info:
-      <br />
-      <p>
-        <b>Height:</b> {window.innerHeight}
-      </p>
-      <br />
-      Anchor info:
-      {Object.entries(anchorInfo).map(([name, value]) => {
-        return (
-          <p>
-            <b>{name}</b>: {value as string}
-          </p>
-        );
-      })}
-    </div>
-  );
-}
+export default forwardRef(AnchoredTooltip);

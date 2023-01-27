@@ -1,5 +1,7 @@
 @import "../../assets/styles/index.scss";
 
+$arrowDim: 1em;
+
 /**
 * Some notions to take into account
 */
@@ -32,10 +34,10 @@
     content: " ";
     width: 0px;
     height: 0px;
-    border: 16px solid $tooltipBackgroudColor;
+    border: $arrowDim solid $tooltipBackgroudColor;
     border-top-color: transparent;
     border-right-color: transparent;
-    transform: translateY(-16px) rotate(-45deg);
+    transform: translateY(-$arrowDim) rotate(-45deg);
     display: block;
     margin: auto;
     position: relative;
@@ -45,7 +47,7 @@
 
   &::before {
     display: none;
-    transform: translateY(16px) rotate(135deg);
+    transform: translateY($arrowDim) rotate(135deg);
   }
   &.anchoredTop {
     transform: translateY(4px);

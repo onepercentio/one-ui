@@ -61,9 +61,18 @@ export default function OrderableList({
   const currentWorkingKey = useRef<string>();
   const rootRef = useRef<HTMLDivElement>(null as any);
   const [_order, setOrder] = useState(() => {
+    const availableKeys = children.map((a) => a.key as string);
+    const missingOrderKeys =
+      "keyOrder" in props && props.keyOrder
+        ? availableKeys.filter((a) => !props.keyOrder!.includes(a))
+        : [];
+
+
+    console.log(missingOrderKeys, availableKeys, (props as any).keyOrder)
     return (
-      ("keyOrder" in props ? props.keyOrder : undefined) ||
-      children.map((a) => a.key as string)
+      ("keyOrder" in props && props.keyOrder
+        ? [...props.keyOrder, ...missingOrderKeys]
+        : undefined) || availableKeys
     );
   });
   const order = "currentOrder" in props ? props.currentOrder || _order : _order;

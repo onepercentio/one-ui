@@ -228,3 +228,18 @@ it("Should be able to transition grid elements", () => {
     .wait(1000)
     .remount(all);
 });
+
+describe.only("BUGFIX", () => {
+  it("Should not hide unlisted elements", () => {
+    function c(key: string) {
+      return <p key={key}>{key}</p>;
+    }
+    cy.mount(
+      <Comp keyOrder={["1", "2", "3"].reverse()}>
+        {[c("1"), c("2"), c("3"), c("4"), c("5")]}
+      </Comp>
+    );
+
+    cy.get("div").contains("32145");
+  });
+});

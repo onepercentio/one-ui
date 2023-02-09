@@ -10,8 +10,12 @@ import React, {
   useState,
 } from "react";
 
+const MAX_BALLS = 7;
 const eachBallWidthEm = 1.2;
-const pushToborder = 7 * eachBallWidthEm;
+const pushToborder = MAX_BALLS * eachBallWidthEm;
+
+const CENTER_GUIDE_BALL = 1;
+
 /**
  * A cool component to indicate how many pages are
  **/
@@ -20,58 +24,71 @@ export function PaginationIndicatorView({
   page,
   pages,
   className,
+  onClickPage,
 }: {
   size: number;
   page: number;
   pages: number;
   className: string;
+  onClickPage?: (page: number) => void;
 }) {
   const rand = useMemo(() => Math.random().toString(), []);
   const pageIndex = page - 1;
   const numBalls = useMemo(() => {
-    const numBalls = pages >= 7 ? 7 : Math.ceil(pages) + 1;
+    const numBalls = pages >= MAX_BALLS ? MAX_BALLS : Math.ceil(pages);
 
     return numBalls;
   }, [pages]);
 
-  const maxBallsOffset = useMemo(() => (numBalls - 1) / 2, [numBalls]);
-  const prevVal = useRef(0);
+  const indexForTheBallsCenter = useMemo(() => (numBalls - 1) / 2, [numBalls]);
   const balls = useMemo(() => {
-    const lastPages = pages + 1 - maxBallsOffset;
+    const indexForLastPages = pages + 1 - indexForTheBallsCenter;
+    /**
+     * Is the page index (position of the center)
+     * after the first pages and
+     * before the last pages */
     const isCenterPage =
-      numBalls >= 7 && pageIndex > maxBallsOffset && pageIndex < lastPages;
+      numBalls >= MAX_BALLS &&
+      pageIndex > indexForTheBallsCenter &&
+      pageIndex < indexForLastPages - 1;
     let modulus =
-      pageIndex % (1 + (maxBallsOffset - Math.floor(maxBallsOffset)));
+      pageIndex %
+      (1 + (indexForTheBallsCenter - Math.floor(indexForTheBallsCenter)));
     const resetPageIndex = isCenterPage
-      ? maxBallsOffset + modulus
-      : pageIndex > lastPages - 1
-      ? numBalls - 1 - (pages - pageIndex)
+      ? indexForTheBallsCenter + modulus
+      : pages < MAX_BALLS
+      ? pageIndex
+      : pageIndex >= indexForLastPages - 1
+      ? numBalls - (pages - pageIndex)
       : pageIndex;
-    prevVal.current = modulus;
-    const left = 1.2 * resetPageIndex;
-    return new Array(
-      numBalls + 1 + (isCenterPage && pages >= 7 && page < lastPages ? 1 : 0)
-    )
+    const left = eachBallWidthEm * resetPageIndex;
+    return new Array(CENTER_GUIDE_BALL + numBalls)
       .fill(undefined)
       .map((_, i) => {
-        const isLastBall = i === numBalls + 1;
+        const isLastBall = i === numBalls;
         const isFirstBall = i === 1;
 
-        if (i === 0)
+        if (i === 0) {
+          const diameter = 0.45 * 2;
+          const padding = (eachBallWidthEm - diameter) / 2;
           return (
-            <circle
+            <rect
               fill="#fff"
-              r={`${0.45}em`}
-              cx={`${pushToborder}em`}
-              cy={"0.5em"}
+              width={`${diameter}em`}
+              height={`${diameter}em`}
+              x={`${pushToborder - padding}em`}
+              y={`${padding}em`}
+              rx={`${diameter / 2}em`}
             />
           );
+        }
+
         const ballSize =
-          numBalls < 7 || pages === 6
+          numBalls < MAX_BALLS
             ? 0.5
-            : page <= maxBallsOffset + 1 && isLastBall
+            : page <= indexForTheBallsCenter + 1 && isLastBall
             ? 0
-            : page >= lastPages + 1 && isFirstBall
+            : pageIndex >= indexForLastPages - 1 && isFirstBall
             ? 0
             : isCenterPage
             ? isFirstBall
@@ -81,15 +98,30 @@ export function PaginationIndicatorView({
               : 0.5
             : 0.5;
         return (
-          <circle
-            fill="#fff"
-            r={`${ballSize * 0.6}em`}
-            cx={`${pushToborder + (i - 1) * eachBallWidthEm - left}em`}
-            cy={"0.5em"}
+          <rect
+            width={`${ballSize * 1.2}em`}
+            height={`${ballSize * 1.2}em`}
+            x={`${pushToborder + (i - 1) * eachBallWidthEm - left}em`}
+            y={`${(eachBallWidthEm - ballSize * 1.2) / 2}em`}
+            rx={`${(ballSize * 1.2) / 2}em`}
+            onClick={() => {
+              if (onClickPage) {
+                const pageClicked =
+                  (!isCenterPage
+                    ? pageIndex >= indexForLastPages - 1
+                      ? Math.floor(page) - resetPageIndex - 1
+                      : 0
+                    : Math.floor(page) - (indexForTheBallsCenter + 1)) +
+                  1 +
+                  i -
+                  1;
+                onClickPage(pageClicked);
+              }
+            }}
           />
         );
       });
-  }, [maxBallsOffset, pageIndex, pages]);
+  }, [indexForTheBallsCenter, pageIndex, pages]);
   const [guideBall, ...pageBalls] = balls;
   return (
     <svg
@@ -97,9 +129,9 @@ export function PaginationIndicatorView({
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       style={{
-        width: `${eachBallWidthEm * 7 * 2}em`,
-        minWidth: `${eachBallWidthEm * 7 * 2}em`,
-        height: "1em",
+        width: `${eachBallWidthEm * (pages - 1) * 2}em`,
+        minWidth: `${eachBallWidthEm * (pages - 1) * 2}em`,
+        height: "1.2em",
         fontSize: `${size}px`,
       }}
     >
@@ -114,7 +146,7 @@ export function PaginationIndicatorView({
         <feBlend in2="goo" in="SourceGraphic" result="mix" />
       </filter>
       <mask id={`mask-${rand}`}>
-        <g filter={`url(#${`goo-${rand}`})`}>
+        <g filter={`url(#${`goo-${rand}`})`} fill="#fff">
           {[pageBalls]}
           {guideBall}
         </g>
@@ -127,6 +159,11 @@ export function PaginationIndicatorView({
         height="100%"
         style={{ fill: "var(--digital-blue)" }}
       ></rect>
+      {onClickPage && (
+        <g opacity={0} style={{ cursor: "pointer" }}>
+          {pageBalls}
+        </g>
+      )}
     </svg>
   );
 }
@@ -137,11 +174,13 @@ function _PaginationIndicator(
     estimatedWidth,
     size,
     className = "",
+    onClickPage,
   }: {
     scrollableRef: RefObject<HTMLDivElement>;
     estimatedWidth?: number;
     size: number;
     className?: string;
+    onClickPage?: (page: number) => void;
   },
   ref: ForwardedRef<{
     refreshPages: () => void;
@@ -216,6 +255,7 @@ function _PaginationIndicator(
       page={currentPage}
       size={size}
       className={className}
+      onClickPage={onClickPage}
     />
   );
 }

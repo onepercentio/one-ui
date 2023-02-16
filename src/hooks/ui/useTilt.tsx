@@ -1,5 +1,5 @@
 import throttle from "lodash/throttle";
-import { useEffect, useRef, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import {
   flattenMatrix,
   generateMatrixFromOperations,
@@ -12,34 +12,24 @@ const MAX_TILT = {
   y: 100,
 };
 
-/**
- * This hook binds to two methods for calculating tilt
- *
- * When available: The device sensors
- * When on desktop: The mouse position relative to a ref
- */
-export default function useTilt(
+type Options = {
+  round?: boolean;
+  gyroEnabled?: boolean;
+};
+
+export function useTiltUpdates(
   active: boolean,
-  /**
-   * A scale to increase the values from the sensors
-   *
-   * @hack You can set this value to 0 as a way to disable the tilt calc on mobile
-   */
+  relativeToEl: RefObject<HTMLDivElement>,
+  onTilt: (p: { x: number; y: number }) => void,
+  onInverseMatrix?: (updateFunc: (matrix: number[]) => number[]) => void,
   sensorScale: number = 1,
-  maxTilt: { x: number; y: number } = MAX_TILT
+  tiltLimit: { x: number; y: number } = MAX_TILT,
+  options?: Options
 ) {
-  const [tilt, setTilt] = useState<{ x: number; y: number }>({
-    x: 0,
-    y: 0,
-  });
-  const [tiltResetMatrix, setTiltResetMatrix] = useState<number[]>(() =>
-    flattenMatrix(IDENTITY_MATRIX())
-  );
-  const relativeTo = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (active) {
       const updatePositions = (relativeToX: number, relativeToY: number) => {
-        const el = relativeTo.current!;
+        const el = relativeToEl.current!;
         const rect = el.getBoundingClientRect();
         const {
           width: [x0, xW],
@@ -51,23 +41,25 @@ export default function useTilt(
         const distanceOffRight = calculateDistanceRelativeToBounds(
           relativeToX,
           x0,
-          xW
+          xW,
+          options?.round ?? true
         );
         const distanceOffBottom = calculateDistanceRelativeToBounds(
           relativeToY,
           y0,
-          yH
+          yH,
+          options?.round ?? true
         );
         const howMuchToRotateY = givenTheRelativePositionHowMuchToRotate(
           distanceOffRight,
-          maxTilt.y
+          tiltLimit.y
         );
         const howMuchToRotateX = givenTheRelativePositionHowMuchToRotate(
           distanceOffBottom,
-          maxTilt.x
+          tiltLimit.x
         );
 
-        setTilt({
+        onTilt({
           y: howMuchToRotateX * 2,
           x: howMuchToRotateY * 2,
         });
@@ -109,8 +101,8 @@ export default function useTilt(
           _limits.gamma![1],
           Math.max(_limits.gamma![0], gamma!)
         );
-        if (!_inverseMatrix) {
-          setTiltResetMatrix(() => {
+        if (!_inverseMatrix && onInverseMatrix) {
+          onInverseMatrix(() => {
             return (_inverseMatrix = flattenMatrix(
               invertMatrix(
                 generateMatrixFromOperations(
@@ -127,16 +119,64 @@ export default function useTilt(
             ));
           });
         }
-        setTilt({
+        onTilt({
           y: -_beta * sensorScale,
           x: _gamma * sensorScale,
         });
       };
-      window.addEventListener("deviceorientation", orientationListener);
-      return () =>
-        window.removeEventListener("deviceorientation", orientationListener);
+      function removeListeners() {
+        window.removeEventListener("mousemove", handler);
+        window.removeEventListener("touchmove", touchHandler);
+      }
+      if (options?.gyroEnabled ?? true) {
+        window.addEventListener("deviceorientation", orientationListener);
+        return () => {
+          window.removeEventListener("deviceorientation", orientationListener);
+          removeListeners();
+        };
+      } else {
+        return () => removeListeners();
+      }
     }
-  }, [active]);
+  }, [active, onInverseMatrix, onTilt]);
+}
+
+/**
+ * This hook binds to two methods for calculating tilt
+ *
+ * When available: The device sensors
+ * When on desktop: The mouse position relative to a ref
+ */
+export default function useTilt(
+  active: boolean,
+  /**
+   * A scale to increase the values from the sensors
+   *
+   * @hack You can set this value to 0 as a way to disable the tilt calc on mobile
+   */
+  sensorScale: number = 1,
+  maxTilt: { x: number; y: number } = MAX_TILT,
+  options?: Options
+) {
+  const [tilt, setTilt] = useState<{ x: number; y: number }>({
+    x: 0,
+    y: 0,
+  });
+  const [tiltResetMatrix, setTiltResetMatrix] = useState<number[]>(() =>
+    flattenMatrix(IDENTITY_MATRIX())
+  );
+  const relativeTo = useRef<HTMLDivElement>(null);
+
+  useTiltUpdates(
+    active,
+    relativeTo,
+    setTilt,
+    setTiltResetMatrix,
+    sensorScale,
+    maxTilt,
+    options
+  );
+
   return {
     /** The element to monitor mouse hover relative to */
     relativeTo,
@@ -156,7 +196,8 @@ export default function useTilt(
 export function calculateDistanceRelativeToBounds(
   mousePosition: number,
   elementInitialPosition: number,
-  elementSizeDimension: number
+  elementSizeDimension: number,
+  shouldRound: boolean
 ) {
   const normalizeInitialPosition = mousePosition - elementInitialPosition;
   const doNotAllowGoingBeyondLowerLimit = Math.max(normalizeInitialPosition, 0);
@@ -166,7 +207,7 @@ export function calculateDistanceRelativeToBounds(
   );
   const threeRule =
     (doNotAllowHoingBeyondHigherLimit * 100) / elementSizeDimension;
-  const result = Math.round(threeRule) / 100;
+  const result = (shouldRound ? Math.round(threeRule) : threeRule) / 100;
   return result;
 }
 

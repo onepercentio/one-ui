@@ -68,7 +68,6 @@ export default function OrderableList({
         : [];
 
 
-    console.log(missingOrderKeys, availableKeys, (props as any).keyOrder)
     return (
       ("keyOrder" in props && props.keyOrder
         ? [...props.keyOrder, ...missingOrderKeys]

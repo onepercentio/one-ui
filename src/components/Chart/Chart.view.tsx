@@ -109,7 +109,6 @@ export default function ChartView({
 }: ChartViewProps) {
   const [dim, setDIm] = useState<{ width: number; height: number }>();
   const chartRef = useRef<HTMLDivElement>(null);
-  console.log(dim);
   useLayoutEffect(() => {
     setDIm({
       width: chartRef.current!.clientWidth,
@@ -133,7 +132,6 @@ export default function ChartView({
     [endX, startX, stepsX]
   );
   const xAxis = useMemo(() => {
-    console.log(howMuchStepsX)
     return new Array(howMuchStepsX).fill(undefined).map((_, i) => {
       return <span>{label.x(startX + i * stepsX)}</span>;
     });

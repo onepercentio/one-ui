@@ -9,12 +9,6 @@ function Wrapper() {
     let r = 0;
     let i = 0;
     setInterval(() => {
-      el.current!.addEventListener("animationiteration", () => {
-        console.log("This calls?");
-      });
-      el.current!.addEventListener("animationstart", () => {
-        console.log("This calls too");
-      });
       el.current!.style.webkitMaskImage = `url('data:image/svg+xml;charset=utf8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg">
     <circle cx="50%" cy="50%" fill="white">
         <animate 

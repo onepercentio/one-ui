@@ -46,6 +46,7 @@ export type TransitionProps = {
   children: (React.ReactElement | undefined)[];
   onDiscardStep?: (discardedKey: React.Key) => void;
   lockTransitionWidth?: boolean;
+  lockTransitionHeight?: boolean;
 } & TransitionTypeDefinitions;
 
 function TransitionClasses(
@@ -160,6 +161,7 @@ function Transition(
     className,
     onDiscardStep,
     lockTransitionWidth = false,
+    lockTransitionHeight = false,
     ...props
   }: TransitionProps,
   _containerRef: ForwardedRef<HTMLDivElement | null>
@@ -220,6 +222,11 @@ function Transition(
     if (prevStep.current !== step && lockTransitionWidth)
       containerRef.current!.style.width = `${
         containerRef.current!.clientWidth
+      }px`;
+
+    if (prevStep.current !== step && lockTransitionHeight)
+      containerRef.current!.style.height = `${
+        containerRef.current!.clientHeight
       }px`;
     const transitionMask =
       props.transitionType === TransitionAnimationTypes.MASK
@@ -365,6 +372,8 @@ function Transition(
   useEffect(() => {
     if (childrenWrappers.length === 1 && lockTransitionWidth)
       containerRef.current!.style.width = "";
+    if (childrenWrappers.length === 1 && lockTransitionHeight)
+      containerRef.current!.style.height = "";
   }, [childrenWrappers.length !== 1]);
 
   useEffect(() => {

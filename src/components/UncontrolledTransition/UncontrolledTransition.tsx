@@ -1,13 +1,10 @@
 import React, {
-  ComponentProps,
   ForwardedRef,
   forwardRef,
   Key,
-  MutableRefObject,
   RefObject,
   useEffect,
   useImperativeHandle,
-  useLayoutEffect,
   useRef,
   useState,
 } from "react";
@@ -26,6 +23,7 @@ function UncontrolledTransition(
     contentClassName,
     children = <React.Fragment key="default"></React.Fragment>,
     lockTransitionWidth = true,
+    lockTransitionHeight = false,
     contentStyle,
     onDiscardStep,
     ...props
@@ -34,6 +32,7 @@ function UncontrolledTransition(
     contentClassName?: string;
     children?: React.ReactElement;
     lockTransitionWidth?: boolean;
+    lockTransitionHeight?: boolean;
     onDiscardStep?: (key: Key) => void;
   } & Pick<TransitionProps, "contentStyle"> &
     TransitionTypeDefinitions,
@@ -118,6 +117,7 @@ function UncontrolledTransition(
             });
           }}
           lockTransitionWidth={lockTransitionWidth}
+          lockTransitionHeight={lockTransitionHeight}
           contentClassName={contentClassName}
           {...props}
         >

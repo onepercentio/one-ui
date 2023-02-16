@@ -29,11 +29,13 @@ export default function LavaLamp({
 
   const { relativeTo, d, circlesConfig } = useLavaLampSetup(
     (cx, cy) => {
-      circleRef.current!.style.cx = cx;
-      circleRef.current!.style.cy = cy;
+      const style: any = circleRef.current!.style;
+      style.cx = cx;
+      style.cy = cy;
     },
     (size) => {
-      circleRef.current!.style.r = size;
+      const style: any = circleRef.current!.style;
+      style.r = size;
     }
   );
 

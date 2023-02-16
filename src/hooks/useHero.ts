@@ -1,4 +1,4 @@
-import { CSSProperties, useCallback, useEffect, useRef } from "react";
+import { CSSProperties, useCallback, useEffect, useLayoutEffect, useRef } from "react";
 
 const ID = (id: string) => `${id}-hero`;
 type ShouldSkip = boolean;
@@ -48,7 +48,7 @@ export default function useHero(
 ) {
   const heroRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     heroRef.current!.setAttribute("data-hero", id);
   }, [id]);
 

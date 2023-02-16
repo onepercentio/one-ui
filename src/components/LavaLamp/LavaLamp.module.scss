@@ -1,0 +1,26 @@
+@use 'sass:math';
+
+$transitionMs: math.div(1000, 5);
+$transitionPositionMs: math.div($transitionMs, 2);
+@value transitionMs #{$transitionMs};
+@value transitionPositionMs #{$transitionPositionMs};
+
+.root {
+  position: relative;
+  svg.effect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    circle {
+      will-change: r, cx, cy;
+      transition: r #{$transitionMs}ms linear,
+        cx #{$transitionPositionMs}ms linear,
+        cy #{$transitionPositionMs}ms linear;
+    }
+  }
+  > div {
+    z-index: 1;
+  }
+}

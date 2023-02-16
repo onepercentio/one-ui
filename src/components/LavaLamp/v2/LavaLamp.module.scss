@@ -1,0 +1,23 @@
+@use 'sass:math';
+
+$transitionMs: math.div(1000, 5);
+$transitionPositionMs: math.div($transitionMs, 2);
+@value transitionMs #{$transitionMs};
+@value transitionPositionMs #{$transitionPositionMs};
+
+.root {
+  position: relative;
+  > canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+  }
+  > div {
+    position: relative;
+    z-index: 1;
+  }
+}

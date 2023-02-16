@@ -2,12 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { mount } from "cypress/react";
 
 import PaginationIndicator, {
+  PaginationIndicatorMode,
   PaginationIndicatorView as Component,
 } from "../../../../src/components/PaginationIndicator/PaginationIndicator";
 
 it.only("Should indicate pagination for a long number of pages", () => {
   cy.viewport(1920, 1080 * 2.5);
-  const Interactive = function ({ size }: { size: number }) {
+  const Interactive = function ({ size, mode = PaginationIndicatorMode.CENTERED }: { size: number, mode?: PaginationIndicatorMode }) {
     const [p, sp] = useState(1);
     useEffect(() => {
       setInterval(() => {
@@ -18,7 +19,7 @@ it.only("Should indicate pagination for a long number of pages", () => {
     return (
       <>
         <h1>Animated {size}</h1>
-        <Component size={120} pages={size} page={p} />
+        <Component size={120} pages={size} page={p} mode={mode}/>
         <h1>{p}</h1>
       </>
     );
@@ -53,6 +54,8 @@ it.only("Should indicate pagination for a long number of pages", () => {
   const chain = cy.mountChain(() => {
     return (
       <>
+        <Interactive size={14} mode={PaginationIndicatorMode.CENTERED}/>
+        <Interactive size={14} mode={PaginationIndicatorMode.START}/>
         {/* <Scroll pages={2} />
         <Scroll pages={3} />
         <Scroll pages={4} />
@@ -72,12 +75,12 @@ it.only("Should indicate pagination for a long number of pages", () => {
         <Interactive size={4} />
         <Interactive size={3} />
         <Interactive size={2} /> */}
-        {new Array(15).fill(undefined).map((_, i) => (
+        {/* {new Array(15).fill(undefined).map((_, i) => (
           <>
             <h1>Page {i + 1}/15</h1>
             <Component size={120} pages={15} page={i + 1} onClickPage={alert} />
           </>
-        ))}
+        ))} */}
         {/* {new Array(7).fill(undefined).map((_, i) => (
           <>
             <h1>Page {i + 1}/7</h1>

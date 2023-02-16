@@ -12,28 +12,51 @@ import React, {
 
 const MAX_BALLS = 7;
 const eachBallWidthEm = 1.2;
-const pushToborder = MAX_BALLS * eachBallWidthEm;
 
 const CENTER_GUIDE_BALL = 1;
+
+export enum PaginationIndicatorMode {
+  /** This will make the guide ball be kept on center  */
+  CENTERED,
+
+  /** This will make the guide ball move, while the indicator balls keep in place */
+  START,
+}
 
 /**
  * A cool component to indicate how many pages are
  **/
 export function PaginationIndicatorView({
   size,
-  page,
-  pages,
+  page: currentPage,
+  pages: decimalPages,
   className,
   onClickPage,
+  mode = PaginationIndicatorMode.CENTERED,
 }: {
   size: number;
   page: number;
   pages: number;
   className: string;
   onClickPage?: (page: number) => void;
+  mode?: PaginationIndicatorMode;
 }) {
+  const page = useMemo(() => {
+    const floor = Math.floor(decimalPages);
+    const modulus = decimalPages % floor;
+
+    if (currentPage > floor) {
+      const currentFloorModulus = currentPage % floor;
+      const equivalent = (currentFloorModulus * 100) / modulus;
+
+      return floor + equivalent / 100;
+    } else {
+      return currentPage;
+    }
+  }, [currentPage, decimalPages]);
   const rand = useMemo(() => Math.random().toString(), []);
   const pageIndex = page - 1;
+  const pages = useMemo(() => Math.ceil(decimalPages), [decimalPages]);
   const numBalls = useMemo(() => {
     const numBalls = pages >= MAX_BALLS ? MAX_BALLS : Math.ceil(pages);
 
@@ -62,13 +85,26 @@ export function PaginationIndicatorView({
       ? numBalls - (pages - pageIndex)
       : pageIndex;
     const left = eachBallWidthEm * resetPageIndex;
+    const { pushBallsToRightBy, pushBallsToLeftBy, pushGuideToRightBy } =
+      mode === PaginationIndicatorMode.CENTERED
+        ? {
+            pushBallsToRightBy: Math.min(pages, MAX_BALLS) * eachBallWidthEm,
+            pushBallsToLeftBy: left,
+            pushGuideToRightBy: 0,
+          }
+        : {
+            pushBallsToRightBy: (eachBallWidthEm - 0.5) / 2,
+            pushBallsToLeftBy: 0,
+            pushGuideToRightBy: left,
+          };
+    let pushToLeft: number = 0;
     return new Array(CENTER_GUIDE_BALL + numBalls)
       .fill(undefined)
       .map((_, i) => {
-        const isLastBall = i === numBalls;
-        const isFirstBall = i === 1;
+        const isLastBall = i === numBalls - 1;
+        const isFirstBall = i === 0;
 
-        if (i === 0) {
+        if (i === numBalls) {
           const diameter = 0.45 * 2;
           const padding = (eachBallWidthEm - diameter) / 2;
           return (
@@ -76,7 +112,9 @@ export function PaginationIndicatorView({
               fill="#fff"
               width={`${diameter}em`}
               height={`${diameter}em`}
-              x={`${pushToborder - padding}em`}
+              x={`${
+                pushBallsToRightBy - padding + pushGuideToRightBy - pushToLeft
+              }em`}
               y={`${padding}em`}
               rx={`${diameter / 2}em`}
             />
@@ -97,11 +135,20 @@ export function PaginationIndicatorView({
               ? modulus * 0.5
               : 0.5
             : 0.5;
+
+        if (i === 0 && mode === PaginationIndicatorMode.START)
+          pushToLeft = (0.5 - ballSize) * 2.4;
+
         return (
           <rect
             width={`${ballSize * 1.2}em`}
             height={`${ballSize * 1.2}em`}
-            x={`${pushToborder + (i - 1) * eachBallWidthEm - left}em`}
+            x={`${
+              pushBallsToRightBy +
+              i * eachBallWidthEm -
+              pushBallsToLeftBy -
+              pushToLeft
+            }em`}
             y={`${(eachBallWidthEm - ballSize * 1.2) / 2}em`}
             rx={`${(ballSize * 1.2) / 2}em`}
             onClick={() => {
@@ -113,8 +160,7 @@ export function PaginationIndicatorView({
                       : 0
                     : Math.floor(page) - (indexForTheBallsCenter + 1)) +
                   1 +
-                  i -
-                  1;
+                  i;
                 onClickPage(pageClicked);
               }
             }}
@@ -122,15 +168,16 @@ export function PaginationIndicatorView({
         );
       });
   }, [indexForTheBallsCenter, pageIndex, pages]);
-  const [guideBall, ...pageBalls] = balls;
+  const [guideBall, ...pageBalls] = balls.reverse();
+
   return (
     <svg
       version="1.1"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       style={{
-        width: `${eachBallWidthEm * (pages - 1) * 2}em`,
-        minWidth: `${eachBallWidthEm * (pages - 1) * 2}em`,
+        width: `${eachBallWidthEm * Math.min(pages, MAX_BALLS) * 2}em`,
+        minWidth: `${eachBallWidthEm * Math.min(pages, MAX_BALLS) * 2}em`,
         height: "1.2em",
         fontSize: `${size}px`,
       }}
@@ -199,9 +246,12 @@ function _PaginationIndicator(
       estimatedWidth === undefined
         ? scrollableRef.current!.scrollWidth
         : estimatedWidth;
-    setDefs({
-      pages: maxWidth / scrollableRef.current!.clientWidth - 1,
-    });
+
+    const pages = maxWidth / scrollableRef.current!.clientWidth;
+    if (pages > 1)
+      setDefs({
+        pages,
+      });
   }, [estimatedWidth]);
 
   useEffect(() => refreshPages(), [refreshPages]);
@@ -244,10 +294,7 @@ function _PaginationIndicator(
     };
   }, [defs]);
 
-  const pages = useMemo(
-    () => (defs ? Math.ceil(defs.pages) : undefined),
-    [defs]
-  );
+  const pages = useMemo(() => (defs ? defs.pages : undefined), [defs]);
 
   return !pages ? null : (
     <PaginationIndicatorView

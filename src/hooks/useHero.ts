@@ -1,4 +1,10 @@
-import { CSSProperties, useCallback, useEffect, useLayoutEffect, useRef } from "react";
+import {
+  CSSProperties,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+} from "react";
 
 const ID = (id: string) => `${id}-hero`;
 type ShouldSkip = boolean;
@@ -14,7 +20,7 @@ export default function useHero(
   >[] = [],
   events: {
     /**
-     * Returns if the element should be "heroed"
+     * Should return if the detected element should be "heroed"
      *
      * Usefull for when the hero has 2 possible origins.
      * For example, one could hero only the current hovered element with el.matches(":hover")
@@ -53,9 +59,11 @@ export default function useHero(
   }, [id]);
 
   const getHerosOnScreen = useCallback(() => {
-    const otherElements = Array.from(
-      document.querySelectorAll(`[data-hero="${id}"]`)
-    ) as HTMLDivElement[];
+    const otherElements = (
+      Array.from(
+        document.querySelectorAll(`[data-hero="${id}"]`)
+      ) as HTMLDivElement[]
+    ).filter((el) => el !== heroRef.current);
     return otherElements;
   }, [id]);
 

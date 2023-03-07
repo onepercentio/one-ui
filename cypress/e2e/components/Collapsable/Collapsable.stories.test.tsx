@@ -4,7 +4,7 @@ import * as AllExamples from "../../../../src/components/Collapsable/Collapsable
 import AdaptiveDialog from "../../../../src/components/AdaptiveDialog";
 import Button from "../../../../src/components/Button";
 import Collapsable from "../../../../src/components/Collapsable";
-import { updateTooltipPosition } from "../../../../src/components/AnchoredTooltip/AnchoredTooltip";
+import { AnchoredTooltipAlignment, updateTooltipPosition } from "../../../../src/components/AnchoredTooltip/AnchoredTooltip";
 import Styles from "./Collapsable.test.module.scss";
 
 it("All examples mount at least", () => {
@@ -36,7 +36,66 @@ function Wrapper() {
   );
 }
 
-describe.only("BUGFIX", () => {
+describe("BUGFIX", () => {
+  it.only("Should be able to align to the sides", () => {
+    function Wrapper() {
+      const [o2, so2] = useState(false);
+      return (
+        <>
+        <div style={{display: "flex", justifyContent: "flex-end", marginBottom: "250px"}}>
+          <Collapsable
+            mode="float"
+            alignTo={AnchoredTooltipAlignment.LEFT}
+            onToggleOpen={(o) => so2(o)}
+            open={o2}
+            title={<Button style={{width: "500px"}} variant={"filled"}>Open collapsable left</Button>}
+          >
+            <div style={{ backgroundColor: "red", width: "200px" }}>
+              <h1>h1</h1>
+              <h2>h2</h2>
+              <h3>h3</h3>
+            </div>
+          </Collapsable>
+        </div>
+          <div style={{display: "flex", justifyContent: "flex-end", marginBottom: "250px"}}>
+            <Collapsable
+              mode="float"
+              alignTo={AnchoredTooltipAlignment.CENTER}
+              onToggleOpen={(o) => so2(o)}
+              open={o2}
+              title={<Button style={{width: "500px"}} variant={"filled"}>Open collapsable center</Button>}
+            >
+              <div style={{ backgroundColor: "red", width: "200px" }}>
+                <h1>h1</h1>
+                <h2>h2</h2>
+                <h3>h3</h3>
+              </div>
+            </Collapsable>
+          </div>
+          <div style={{display: "flex", justifyContent: "flex-end", marginBottom: "250px"}}>
+            <Collapsable
+              mode="float"
+              alignTo={AnchoredTooltipAlignment.RIGHT}
+              onToggleOpen={(o) => so2(o)}
+              open={o2}
+              title={<Button style={{width: "500px"}} variant={"filled"}>Open collapsable right</Button>}
+            >
+              <div style={{ backgroundColor: "red", width: "200px" }}>
+                <h1>h1</h1>
+                <h2>h2</h2>
+                <h3>h3</h3>
+              </div>
+            </Collapsable>
+          </div>
+        </>
+      );
+    }
+    mount(
+      <>
+        <Wrapper />
+      </>
+    );
+  });
   it("Should not have conflict with adaptive dialog?", () => {
     mount(
       <>
@@ -45,7 +104,7 @@ describe.only("BUGFIX", () => {
     );
   });
 
-  it.only("Should be able to open the toolitp on bottom", () => {
+  it("Should be able to open the toolitp on bottom", () => {
     cy.viewport(460, 800);
     function Wrapper(css: CSSProperties) {
       const [showTooltip, setShowTooltip] = useState(false);

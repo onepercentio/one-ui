@@ -9,7 +9,10 @@ import React, {
   useState,
 } from "react";
 import Styles from "./Collapsable.module.scss";
-import { updateTooltipPosition } from "../AnchoredTooltip/AnchoredTooltip";
+import {
+  AnchoredTooltipAlignment,
+  updateTooltipPosition,
+} from "../AnchoredTooltip/AnchoredTooltip";
 
 /**
  * Wrapps some content on a collapsable header
@@ -27,29 +30,38 @@ export default function Collapsable({
   keepUnderlayingElement,
   onClickOut,
   ...props
-}: PropsWithChildren<{
-  title: React.ReactNode;
-  className?: string;
-  contentClassName?: string;
-  onToggleOpen: (isOpen: boolean) => void;
-  open: boolean;
-  id?: string | undefined;
-  /** This will define if the content will be floating under the title or will expand all the container as one */
-  mode?: "block" | "float";
-  "data-testid"?: string;
-  onContentClick?: HTMLAttributes<HTMLInputElement>["onClick"];
-  /**
-   * This flag indicates if the collapsable content should be kept in HTML while it's collapsed
-   *
-   * Usefull for responsive layouts where the collapsable should not "behave" as a collapsable content
-   */
-  keepUnderlayingElement?: boolean;
+}: PropsWithChildren<
+  {
+    title: React.ReactNode;
+    className?: string;
+    contentClassName?: string;
+    onToggleOpen: (isOpen: boolean) => void;
+    open: boolean;
+    id?: string | undefined;
+    "data-testid"?: string;
+    onContentClick?: HTMLAttributes<HTMLInputElement>["onClick"];
+    /**
+     * This flag indicates if the collapsable content should be kept in HTML while it's collapsed
+     *
+     * Usefull for responsive layouts where the collapsable should not "behave" as a collapsable content
+     */
+    keepUnderlayingElement?: boolean;
 
-  /**
-   * To detect when the user clicks out of the container
-   */
-  onClickOut?: () => void;
-}> &
+    /**
+     * To detect when the user clicks out of the container
+     */
+    onClickOut?: () => void;
+  } & (
+    | {
+        /** This will define if the content will be floating under the title or will expand all the container as one */
+        mode?: "block";
+      }
+    | {
+        mode: "float";
+        alignTo: AnchoredTooltipAlignment;
+      }
+  )
+> &
   Omit<HTMLAttributes<HTMLDivElement>, "title">) {
   const contentRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLDivElement>(null);
@@ -71,7 +83,8 @@ export default function Collapsable({
         const { shouldAnchorToBottom } = updateTooltipPosition(
           el,
           toggleRef.current!,
-          true
+          true,
+          "alignTo" in props ? props.alignTo : AnchoredTooltipAlignment.CENTER
         );
         el.style.minHeight = "";
         if (!shouldAnchorToBottom) {

@@ -33,10 +33,17 @@ function getPositionOnViewport(element: HTMLElement) {
   return element.getBoundingClientRect();
 }
 
+export enum AnchoredTooltipAlignment {
+  LEFT,
+  CENTER,
+  RIGHT,
+}
+
 function calculateTooltipFromAnchor(
   anchorRef: HTMLElement,
   tooltipRef: HTMLDivElement,
-  containInViewport: boolean
+  containInViewport: boolean,
+  alignTo: AnchoredTooltipAlignment = AnchoredTooltipAlignment.CENTER
 ) {
   const anchorPosition = getPositionOnViewport(anchorRef);
 
@@ -44,8 +51,28 @@ function calculateTooltipFromAnchor(
 
   let top = anchorPosition.top - tooltipRef.clientHeight;
 
-  let left =
-    anchorPosition.left + anchorPosition.width / 2 - tooltipRef.clientWidth / 2;
+  /**
+   * The terms mean:
+   * anchorPosition.left    = The left to get to the left border of the anchor (visible element)
+   * anchorPosition.width   = The width of the anchor (visible element)
+   * tooltipRef.clientWidth = The width of the content
+   */
+  let left = (() => {
+    switch (alignTo) {
+      case AnchoredTooltipAlignment.CENTER:
+        return (
+          anchorPosition.left +
+          anchorPosition.width / 2 -
+          tooltipRef.clientWidth / 2
+        );
+      case AnchoredTooltipAlignment.LEFT:
+        return anchorPosition.left;
+      case AnchoredTooltipAlignment.RIGHT:
+        return (
+          anchorPosition.left + anchorPosition.width - tooltipRef.clientWidth
+        );
+    }
+  })();
 
   if (shouldAnchorToBottom)
     top += tooltipRef.clientHeight + anchorRef.clientHeight;
@@ -93,10 +120,16 @@ function calculateTooltipFromAnchor(
 export function updateTooltipPosition(
   tooltipRef: HTMLDivElement,
   anchorRef: HTMLElement,
-  limitToViewport: boolean = true
+  limitToViewport: boolean = true,
+  alignment: AnchoredTooltipAlignment = AnchoredTooltipAlignment.CENTER
 ) {
   const { top, left, shouldAnchorToBottom, offsetIndicatorLeft } =
-    calculateTooltipFromAnchor(anchorRef, tooltipRef, limitToViewport);
+    calculateTooltipFromAnchor(
+      anchorRef,
+      tooltipRef,
+      limitToViewport,
+      alignment
+    );
   if (limitToViewport) {
     const maxHeight = window.innerHeight - top;
     tooltipRef.style.maxHeight = `${maxHeight - 32}px`;

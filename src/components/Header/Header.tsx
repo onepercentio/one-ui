@@ -1,5 +1,6 @@
 import React, { PropsWithChildren, useEffect, useState } from "react";
 import { useOneUIContext } from "../../context/OneUIProvider";
+import { AnchoredTooltipAlignment } from "../AnchoredTooltip/AnchoredTooltip";
 import Collapsable from "../Collapsable";
 import Text from "../Text";
 import Styles from "./Header.module.scss";
@@ -86,6 +87,7 @@ export default function Header(props: Props) {
           onToggleOpen={setShowMoreOptions}
           mode="float"
           contentClassName={Styles.headerOptions}
+          alignTo={AnchoredTooltipAlignment.CENTER}
         >
           <Controls {...props} mode="mobile" />
           {moreOptions

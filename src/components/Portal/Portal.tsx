@@ -1,5 +1,12 @@
 import ReactDOM from "react-dom";
-import React, { PropsWithChildren, useMemo } from "react";
+import React, {
+  DetailedHTMLProps,
+  ForwardedRef,
+  forwardRef,
+  HTMLAttributes,
+  PropsWithChildren,
+  useMemo,
+} from "react";
 import { useRef } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
@@ -32,21 +39,30 @@ export default function Portal({
   );
 }
 
-export function PortalReceiver({
-  name,
-  className = "",
-}: {
-  name: string;
-  className?: string;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
+function _PortalReceiver(
+  {
+    name,
+    className = "",
+    ...props
+  }: {
+    name: string;
+    className?: string;
+  } & Omit<
+    DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>,
+    "ref"
+  >,
+  _ref: ForwardedRef<HTMLDivElement>
+) {
   const timestamp = useMemo(() => Date.now(), []);
   return (
     <div
       className={`${Styles.portal} ${className}`}
       data-one-portal={name}
-      ref={ref}
+      ref={_ref}
       data-timestamp={timestamp}
+      {...props}
     />
   );
 }
+
+export const PortalReceiver = forwardRef(_PortalReceiver);

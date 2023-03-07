@@ -16,6 +16,7 @@ import {
   useOneUIConfig,
   useOneUIContext,
 } from "../../context/OneUIProvider";
+import { AnchoredTooltipAlignment } from "../AnchoredTooltip/AnchoredTooltip";
 
 export type SelectItem = {
   label: string;
@@ -98,6 +99,7 @@ function Select<I extends SelectItem>({
       }}
       className={`${otherProps.disabled ? "disabled" : ""} ${rootClassName}`}
       contentClassName={`${Styles.optionsContainer} ${dropdownClassNames.dropdown}`}
+      alignTo={AnchoredTooltipAlignment.CENTER}
     >
       <div
         className={Styles.items}

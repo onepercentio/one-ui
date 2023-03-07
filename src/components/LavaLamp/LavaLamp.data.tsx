@@ -8,8 +8,7 @@ export const transitionPositionMs = Number(Styles.transitionPositionMs);
 
 export default function useLavaLampSetup(
   onUpdatePosition: (x: number, y: number) => void,
-  onUpdateSize: (size: number) => void,
-  scaleResolution: number = 1
+  onUpdateSize: (size: number) => void
 ) {
   const [d, setDim] = useState<{ width: number; height: number }>();
   const relativeTo = useRef<HTMLDivElement>(null);
@@ -17,9 +16,12 @@ export default function useLavaLampSetup(
   const prevTilt = useRef<{ x: number; y: number }>();
 
   useEffect(() => {
+    const baseWidth = Math.min(relativeTo.current!.clientWidth, 1440);
     setDim({
-      width: relativeTo.current!.clientWidth * scaleResolution,
-      height: relativeTo.current!.clientHeight * scaleResolution,
+      width: baseWidth,
+      height:
+        baseWidth *
+        (relativeTo.current!.clientHeight / relativeTo.current!.clientWidth),
     });
   }, []);
 

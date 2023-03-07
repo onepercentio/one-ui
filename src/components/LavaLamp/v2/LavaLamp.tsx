@@ -8,10 +8,6 @@ export default function LavaLamp({
   className,
   children,
 }: PropsWithChildren<{ className: string }>) {
-  const under800Px = useBreakpoint(800);
-  const scale = useMemo(() => {
-    return under800Px ? 1.5 : 1.8;
-  }, [under800Px]);
   const guideConfig = useRef<{
     x: number;
     y: number;
@@ -46,8 +42,7 @@ export default function LavaLamp({
         guideConfig.current.size === 0 ? 0 : size - guideConfig.current.size;
       guideConfig.current.size = size;
       guideConfig.current.sizeTimestamp = Date.now();
-    },
-    scale
+    }
   );
   const _canvasRef = useRef<HTMLCanvasElement>(null);
   const canvasRef = useMergeRefs(
@@ -70,8 +65,8 @@ export default function LavaLamp({
       fctx = fc.getContext("2d")!, // f means final
       opts = {
         orbCount: circlesConfig.length,
-        baseVel: 1,
-        addedVel: 1,
+        baseVel: d.width * 0.0025,
+        addedVel: (d.width * 0.001) / 2,
 
         alphaThreshold: 200,
       },
@@ -96,18 +91,34 @@ export default function LavaLamp({
       fctx.putImageData(image, 0, 0);
     }
 
-    class Orb {
+    class BaseOrb {
+      protected gradient!: CanvasGradient;
+
+      private oldDrawCircle(x: number, y: number, radius: number) {
+        ctx.fillStyle = this.gradient;
+        ctx.translate(x | 0, y | 0);
+        ctx.beginPath();
+        ctx.arc(0, 0, radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.translate(-x | 0, -y | 0);
+      }
+      drawCircle(x: number, y: number, radius: number) {
+        this.oldDrawCircle(x, y, radius);
+      }
+    }
+
+    class Orb extends BaseOrb {
       x: number;
       y: number;
       vx: number;
       vy: number;
       radius: number;
-      gradient: CanvasGradient;
 
       constructor(radius: number) {
+        super();
         this.x = (Math.random() * w) | 0;
         this.y = (Math.random() * h) | 0;
-        this.radius = (radius + (radius / 2) * Math.random()) | 0;
+        this.radius = radius;
 
         var color = baseColor;
         this.gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, this.radius);
@@ -133,16 +144,14 @@ export default function LavaLamp({
 
         if (this.y < -radius || this.y > h + radius) this.vy *= -1;
 
-        ctx.fillStyle = this.gradient;
-        ctx.translate(this.x | 0, this.y | 0);
-        ctx.beginPath();
-        ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.translate(-this.x | 0, -this.y | 0);
+        this.drawCircle(this.x | 0, this.y | 0, this.radius);
       }
     }
 
-    class GuideOrb {
+    class GuideOrb extends BaseOrb {
+      lastRadius!: number;
+      lastX!: number;
+      lastY!: number;
       step() {
         const deltaTime = Date.now() - guideConfig.current.sizeTimestamp;
         const deltaTimePercent =
@@ -153,12 +162,15 @@ export default function LavaLamp({
           (guideConfig.current.sizeIncrement -
             guideConfig.current.sizeIncrement * deltaTimePercent);
 
+        this.lastRadius = radius;
+
         var color = baseColor;
 
         const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, radius);
         gradient.addColorStop(0, `${color}ff`);
         gradient.addColorStop(0.8, `${color}cc`);
         gradient.addColorStop(1, `${color}00`);
+        this.gradient = gradient;
 
         const deltaTimePos = Date.now() - guideConfig.current.posTimestamp;
         const deltaTimePosPercent =
@@ -170,24 +182,43 @@ export default function LavaLamp({
           guideConfig.current.x -
           (guideConfig.current.posIncrement[0] -
             guideConfig.current.posIncrement[0] * deltaTimePosPercent);
-
+        this.lastX = translateX;
         const translateY =
           guideConfig.current.y -
           (guideConfig.current.posIncrement[1] -
             guideConfig.current.posIncrement[1] * deltaTimePosPercent);
+        this.lastY = translateY;
 
-        ctx.fillStyle = gradient;
-        ctx.translate(translateX | 0, translateY | 0);
-        ctx.beginPath();
-        ctx.arc(0, 0, radius, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.translate(-translateX | 0, -translateY | 0);
+        this.drawCircle(translateX | 0, translateY | 0, radius);
       }
     }
 
-    for (let circleConfig of circlesConfig)
-      orbs.push(new Orb(circleConfig.baseSize * 1.5));
-    orbs.push(new GuideOrb());
+    for (let circleConfig of circlesConfig) {
+      const radius = circleConfig.baseSize * 1.5;
+      const randomRadius = (radius + (radius / 2) * Math.random()) | 0;
+      orbs.push(new Orb(randomRadius));
+    }
+    const guideOrbInstance = new GuideOrb();
+    let guideOrbAutoInstance: Orb;
+    orbs.push(guideOrbInstance);
+
+    canvasRef.current!.onmouseleave = () => {
+      const indexOfGuide = orbs.indexOf(guideOrbInstance);
+      if (indexOfGuide !== -1) {
+        guideOrbAutoInstance = new Orb(guideOrbInstance.lastRadius);
+        guideOrbAutoInstance.radius = guideOrbInstance.lastRadius;
+        guideOrbAutoInstance.x = guideOrbInstance.lastX;
+        guideOrbAutoInstance.y = guideOrbInstance.lastY;
+        orbs.splice(indexOfGuide, 1);
+        orbs.push(guideOrbAutoInstance);
+      }
+    };
+    canvasRef.current!.onmouseenter = () => {
+      if (orbs.indexOf(guideOrbInstance) === -1) {
+        orbs.push(guideOrbInstance);
+        orbs.splice(orbs.indexOf(guideOrbAutoInstance), 1);
+      }
+    };
 
     anim();
 

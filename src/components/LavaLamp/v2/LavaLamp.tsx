@@ -129,7 +129,7 @@ export default function LavaLamp({
         var radiant = Math.random() * Math.PI * 2,
           vel = (opts.baseVel + opts.addedVel * Math.random()) | 0;
 
-        vel *= 0.5;
+        vel *= 0.2;
 
         this.vx = Math.cos(radiant) * vel;
         this.vy = Math.sin(radiant) * vel;

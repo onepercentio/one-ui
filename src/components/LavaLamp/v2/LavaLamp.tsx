@@ -65,8 +65,8 @@ export default function LavaLamp({
       fctx = fc.getContext("2d")!, // f means final
       opts = {
         orbCount: circlesConfig.length,
-        baseVel: d.width * 0.0025,
-        addedVel: (d.width * 0.001) / 2,
+        baseVel: Math.max(d.width * 0.0010, 1),
+        addedVel: Math.max(d.width * 0.0010, 1),
 
         alphaThreshold: 200,
       },
@@ -202,7 +202,7 @@ export default function LavaLamp({
     let guideOrbAutoInstance: Orb;
     orbs.push(guideOrbInstance);
 
-    canvasRef.current!.onmouseleave = () => {
+    canvasRef.current!.parentElement!.onmouseleave = () => {
       const indexOfGuide = orbs.indexOf(guideOrbInstance);
       if (indexOfGuide !== -1) {
         guideOrbAutoInstance = new Orb(guideOrbInstance.lastRadius);
@@ -213,7 +213,7 @@ export default function LavaLamp({
         orbs.push(guideOrbAutoInstance);
       }
     };
-    canvasRef.current!.onmouseenter = () => {
+    canvasRef.current!.parentElement!.onmouseenter = () => {
       if (orbs.indexOf(guideOrbInstance) === -1) {
         orbs.push(guideOrbInstance);
         orbs.splice(orbs.indexOf(guideOrbAutoInstance), 1);

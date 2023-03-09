@@ -2,6 +2,7 @@ import React, {
   AnimationEvent,
   createRef,
   CSSProperties,
+  DetailedHTMLProps,
   ForwardedRef,
   forwardRef,
   Key,
@@ -47,7 +48,11 @@ export type TransitionProps = {
   onDiscardStep?: (discardedKey: React.Key) => void;
   lockTransitionWidth?: boolean;
   lockTransitionHeight?: boolean;
-} & TransitionTypeDefinitions;
+} & TransitionTypeDefinitions &
+  Omit<
+    DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, any>,
+    "className" | "children"
+  >;
 
 function TransitionClasses(
   type: NonNullable<
@@ -411,11 +416,13 @@ function Transition(
   return (
     <>
       <section
-        onClick={({
-          currentTarget: { offsetTop, offsetLeft, clientWidth, clientHeight },
-          clientX,
-          clientY,
-        }) => {
+        {...props}
+        onClick={(e) => {
+          const {
+            currentTarget: { offsetTop, offsetLeft, clientWidth, clientHeight },
+            clientX,
+            clientY,
+          } = e;
           const offsetX = clientX - offsetLeft;
           const offsetY = clientY - offsetTop;
           const percentX = (offsetX * 100) / clientWidth;
@@ -428,6 +435,7 @@ function Transition(
               TransitionAnimationTypes.POP_FROM_CLICK_ORIGIN
           )
             preTransitionDetails.current.transformOrigin = `${percentX}% ${percentY}%`;
+          if (props.onClick) props.onClick(e as any);
         }}
         data-testid="transition-controller"
         ref={containerRef}

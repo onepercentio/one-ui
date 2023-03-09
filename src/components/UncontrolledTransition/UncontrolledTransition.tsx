@@ -1,4 +1,5 @@
 import React, {
+  DetailedHTMLProps,
   ForwardedRef,
   forwardRef,
   Key,
@@ -35,7 +36,11 @@ function UncontrolledTransition(
     lockTransitionHeight?: boolean;
     onDiscardStep?: (key: Key) => void;
   } & Pick<TransitionProps, "contentStyle"> &
-    TransitionTypeDefinitions,
+    TransitionTypeDefinitions &
+    Omit<
+      DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, any>,
+      "className" | "children" | "ref"
+    >,
   ref: ForwardedRef<{
     setOrientation: (orientation: "forward" | "backward") => void;
     sectionRef: RefObject<HTMLDivElement>;

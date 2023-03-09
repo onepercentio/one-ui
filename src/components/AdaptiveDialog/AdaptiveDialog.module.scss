@@ -12,7 +12,8 @@
   z-index: 1000;
   transition: backdrop-filter $veryFast linear;
   backdrop-filter: var(--adaptive-dialog-backdrop-backdrop, initial);
-
+  pointer-events: none;
+  
   @media screen and (orientation: "portrait") {
     align-items: flex-end;
   }

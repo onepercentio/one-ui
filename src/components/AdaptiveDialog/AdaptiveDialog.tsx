@@ -14,11 +14,13 @@ export default function AdaptiveDialog({
   className = "",
   onClickOut,
   children,
+  onClosed,
 }: PropsWithChildren<{
   className?: string;
   open: boolean;
   onClose?: () => void;
   onClickOut?: () => void;
+  onClosed?: () => void;
 }>) {
   const rootDivRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(open);
@@ -29,6 +31,7 @@ export default function AdaptiveDialog({
       setIsVisible(true);
       const toggleVisbility = (e: AnimationEvent) => {
         if (e.animationName === Styles.backdropDismiss) {
+          onClosed?.();
           setIsVisible(false);
           (e.target! as HTMLDivElement).removeEventListener(
             "animationend",
@@ -54,6 +57,10 @@ export default function AdaptiveDialog({
             expanded ? Styles.expanded : ""
           } ${globalClassName.backdrop}`}
           onClick={onClickOut}
+          onAnimationEnd={({ target, currentTarget }) => {
+            if (target === currentTarget)
+              (target as HTMLDivElement).style.pointerEvents = "initial";
+          }}
         >
           <div
             className={`${Styles.container} ${className} ${globalClassName.dialog}`}

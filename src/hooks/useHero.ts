@@ -25,7 +25,7 @@ export default function useHero(
      * Usefull for when the hero has 2 possible origins.
      * For example, one could hero only the current hovered element with el.matches(":hover")
      */
-    onHeroDetect?: (el: HTMLDivElement) => boolean;
+    onHeroDetect?: (origin: HTMLDivElement, target: HTMLDivElement) => boolean;
 
     /**
      * Do something when the hero ends
@@ -40,7 +40,11 @@ export default function useHero(
      *
      * If done correctly, it will transition from state a to b smoothly
      */
-    onHeroStart?: (clone: HTMLDivElement) => void;
+    onHeroStart?: (
+      clone: HTMLDivElement,
+      origin: HTMLDivElement,
+      target: HTMLDivElement
+    ) => void;
 
     /**
      * Is called when the hero is coming/going outside the viewport
@@ -76,8 +80,9 @@ export default function useHero(
       "left",
       ...propsToTransition,
     ];
-    const otherElements = getHerosOnScreen().filter(
-      events.onHeroDetect || (() => true)
+    const shouldHeroFn = events.onHeroDetect || ((...a: any[]) => true);
+    const otherElements = getHerosOnScreen().filter((el) =>
+      shouldHeroFn(el, heroRef.current!)
     );
     const currentElCoordinates = heroRef.current!.getBoundingClientRect();
 
@@ -151,7 +156,8 @@ export default function useHero(
           clone.remove();
           if (el) el.style.visibility = "";
         };
-        if (events.onHeroStart) events.onHeroStart(clone);
+        if (events.onHeroStart)
+          events.onHeroStart(clone, otherElement, heroRef.current!);
         if (!el) {
           cleanup();
           return;

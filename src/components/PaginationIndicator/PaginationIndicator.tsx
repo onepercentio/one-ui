@@ -140,6 +140,7 @@ export function PaginationIndicatorView({
 
         return (
           <rect
+            key={`guide-${i}`}
             width={`${ballSize * 1.2}em`}
             height={`${ballSize * 1.2}em`}
             x={`${

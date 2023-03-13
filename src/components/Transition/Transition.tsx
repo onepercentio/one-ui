@@ -413,10 +413,11 @@ function Transition(
       containerRef.current!.style.overflow = "";
     }
   }, [childrenWrappers.length]);
+  const { transitionType: _transitionType, ...propsToSpread } = props;
   return (
     <>
       <section
-        {...props}
+        {...propsToSpread}
         onClick={(e) => {
           const {
             currentTarget: { offsetTop, offsetLeft, clientWidth, clientHeight },

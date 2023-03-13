@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
  */
 export default function useAdaptiveImage(): ImageScales {
   function ScaleFromCurrentWidth() {
+    if ((window as any).PRERENDER) return ImageScales.LARGE;
     const width = window.visualViewport!.width;
     if (width < 480) return ImageScales.SMALL;
     if (width < 800) return ImageScales.NORMAL;

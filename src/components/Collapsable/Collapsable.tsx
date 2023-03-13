@@ -137,12 +137,14 @@ export default function Collapsable({
     }
   }, [open]);
 
+  const { alignTo, ...propsToSpread } = props as any;
+
   return (
     <div
       className={`${Styles.container} ${
         open ? Styles.open : Styles.closed
       } ${className}`}
-      {...props}
+      {...propsToSpread}
     >
       <div
         ref={toggleRef}

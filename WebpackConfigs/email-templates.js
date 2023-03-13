@@ -9,7 +9,7 @@ function resolveFromMainContext(module) {
 }
 const { join, relative, resolve } = require("path");
 const HTMLPlugin = require.main.require("html-webpack-plugin");
-const { writeFileSync, readdirSync, lstat, lstatSync, rmSync } = require("fs");
+const { writeFileSync, readdirSync, lstatSync, rmSync } = require("fs");
 const lodash = require("lodash");
 const { findPathDeep } = require("deepdash")(lodash);
 const chalk = require("chalk");
@@ -55,10 +55,10 @@ async function loadGenerator() {
               "./webpack-email-config-factory.js",
               `module.exports = function webpackConfigFactory(pathToRoot, environment) {
   const config = /** Here you place the function that will create the base webpack config */;
-  const baseHtml = /** Here you place the path to the base html file */
+  const mainHtml = /** Here you place the path to the base html file or an array in the format [HTML_PATH, NAME_TO_SAVE_AS][] */
   return {
     config,
-    baseHtml
+    mainHtml
   }
 }`
             );
@@ -104,6 +104,7 @@ function createConfig(
   mainHtml = join(__dirname, "templates", "index.html"),
   features = {
     inlineCSS: true,
+    replaceCSSRules: true,
   },
   outputDir = join(resolve("."), "templates")
 ) {
@@ -114,12 +115,15 @@ function createConfig(
   let resourcesPath = join(resolve("."), "build", "templates");
   if (process.env.NODE_ENV === "production") {
     const outputFolderFiles = readdirSync(outputDir);
-    const onlyHTMLs = !outputFolderFiles
-    .some(file => lstatSync(join(outputDir, file)).isDirectory() || !file.endsWith(".html"));
+    const onlyHTMLs = !outputFolderFiles.some(
+      (file) =>
+        lstatSync(join(outputDir, file)).isDirectory() ||
+        !file.endsWith(".html")
+    );
     if (onlyHTMLs) {
       rmSync(outputDir, {
-        recursive: true
-      })
+        recursive: true,
+      });
     }
     baseConfig.output.path = resourcesPath;
     baseConfig.output.publicPath =
@@ -140,20 +144,22 @@ function createConfig(
     apply(compiler) {
       let warned = {};
       compiler.hooks.afterEmit.tap("Logger", (compilation) => {
-        console.log(chalk.green("Output successfull"))
-        const htmls = Object.keys(compilation.assets).filter(a => a.endsWith(".html"))
-        const lazyFindPort = process.argv.find(a => a === "--port");
+        console.log(chalk.green("Output successfull"));
+        const htmls = Object.keys(compilation.assets).filter((a) =>
+          a.endsWith(".html")
+        );
+        const lazyFindPort = process.argv.find((a) => a === "--port");
         const port = process.argv[process.argv.indexOf(lazyFindPort) + 1];
         for (let htmlPath of htmls) {
           if (warned[htmlPath]) return;
           warned[htmlPath] = true;
-          console.log(`Template ${htmlPath.replace(".html", "")}:`)
-          console.log(chalk.green(`\thttp://localhost:${port}/${htmlPath}\n`))
+          console.log(`Template ${htmlPath.replace(".html", "")}:`);
+          console.log(chalk.green(`\thttp://localhost:${port}/${htmlPath}\n`));
         }
-      })
-    }
-  }
-  baseConfig.plugins.push(LogPlugin)
+      });
+    },
+  };
+  baseConfig.plugins.push(LogPlugin);
   const babelLoaderPath = findFirstBabelLoaderConfigPath(baseConfig);
   const babelLoader = lodash.get(baseConfig.module.rules, babelLoaderPath);
   const indexOfOneOf = babelLoaderPath.indexOf("oneOf");
@@ -192,54 +198,63 @@ function createConfig(
         options: {
           features: {
             ...features,
-            inlineCSS: true
+            inlineCSS: true,
           },
         },
       },
     ],
   });
   const entryKeys = Object.keys(baseConfig.entry);
-  baseConfig.module.rules.unshift({
-    test: /\.svg$/,
-    use: [
-      {
-        loader: require.resolve(join(__dirname, "loaders", "svg-to-png.js")),
-        options: {
-          name: "static/media/[name].png",
-          resizeFactor: 10,
+  if (features.replaceCSSRules)
+    baseConfig.module.rules.unshift({
+      test: /\.svg$/,
+      use: [
+        {
+          loader: require.resolve(join(__dirname, "loaders", "svg-to-png.js")),
+          options: {
+            name: "static/media/[name].png",
+            resizeFactor: 10,
+          },
         },
-      },
-    ],
-  });
+      ],
+    });
   entryKeys.map((i) => {
-    baseConfig.plugins.push(
-      new HTMLPlugin({
+    const htmlEntries = [];
+    function HTMLPluginEntry(htmlFilePath, suffix) {
+      return new HTMLPlugin({
         minify: false,
         template:
           process.env.NODE_ENV === "development"
-            ? mainHtml
+            ? htmlFilePath
             : `!!${prerenderRequire()}?${JSON.stringify({
                 string: true,
                 documentUrl: `http://localhost/${i}.html`,
                 entry: relative(resolve("."), baseConfig.entry[i]),
-              })}!${mainHtml}`,
+              })}!${htmlFilePath}`,
         inject: process.env.NODE_ENV === "development",
         filename:
           process.env.NODE_ENV === "development"
-            ? `${i}.html`
-            : `${relative(resourcesPath, outputDir)}/${i}.html`,
+            ? `${i}${suffix}.html`
+            : `${relative(resourcesPath, outputDir)}/${i}${suffix}.html`,
         excludeChunks: entryKeys
           .filter((a) => a !== i)
           .map((a) => {
             return `${a}`;
           }),
         version: 5,
-      })
-    );
+      });
+    }
+    if (typeof mainHtml === "string")
+      htmlEntries.push(HTMLPluginEntry(mainHtml, ""));
+    else
+      for (let [htmlFilePath, subfileName] of mainHtml)
+        htmlEntries.push(HTMLPluginEntry(htmlFilePath, `/${subfileName}`));
+
+    baseConfig.plugins.push(...htmlEntries);
   });
 
-  if (process.env.NODE_ENV === "production") {
-    const allLoadersThatContainMiniCSS = baseConfig.module.rules.filter((a) => {
+  function replaceMiniCSSLoaders(rulesSet) {
+    const allLoadersThatContainMiniCSS = rulesSet.filter((a) => {
       return (
         Array.isArray(a.use) &&
         a.use.find((a) => (a.loader || a).includes("mini-css"))
@@ -247,9 +262,21 @@ function createConfig(
     });
 
     allLoadersThatContainMiniCSS.forEach((l) => {
-      l.use[0] = require.resolve("style-loader");
+      l.use[0] = {
+        loader: require.resolve("style-loader"),
+        options: {},
+      };
       l.use.splice(1, 0, join(__dirname, "loaders", "css-var-removal.js"));
     });
+  }
+  if (process.env.NODE_ENV === "production") {
+    const baseRules = baseConfig.module.rules;
+    replaceMiniCSSLoaders(baseRules);
+    for (let rule of baseRules) {
+      if ("oneOf" in rule) {
+        replaceMiniCSSLoaders(rule.oneOf);
+      }
+    }
   }
 
   if (!baseConfig.resolve.alias) baseConfig.resolve.alias = {};
@@ -263,11 +290,14 @@ function createConfig(
   baseConfig.optimization.runtimeChunk = false;
 
   baseConfig.plugins = baseConfig.plugins.filter(
-    (a) => !["ModuleFederationPlugin", "SourceMapDevToolPlugin"].includes(a.constructor.name)
+    (a) =>
+      !["ModuleFederationPlugin", "SourceMapDevToolPlugin"].includes(
+        a.constructor.name
+      )
   );
 
   const providePlugin = baseConfig.plugins.find(
-    (a) => (a.constructor.name) === "ProvidePlugin"
+    (a) => a.constructor.name === "ProvidePlugin"
   );
 
   if (providePlugin) delete providePlugin.definitions.process;

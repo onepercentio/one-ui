@@ -1,6 +1,6 @@
 {
   "name": "@onepercentio/one-ui",
-  "version": "0.13.4",
+  "version": "0.13.5",
   "description": "A set of reusable components created through the development of Onepercent projects",
   "repository": "git@github.com:onepercentio/one-ui.git",
   "author": "Murilo Oliveira de Araujo <murilo.araujo@onepercent.io>",
@@ -35,7 +35,7 @@
     "cpy-cli": "^3.1.1",
     "crypto-browserify": "^3.12.0",
     "css-loader": "^5",
-    "cypress": "^10.9.0",
+    "cypress": "^12.7.0",
     "firebase": "^9.8.1",
     "firebase-admin": "^10.2.0",
     "https-browserify": "^1.0.0",

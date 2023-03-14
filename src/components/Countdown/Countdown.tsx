@@ -1,4 +1,10 @@
-import React, { Fragment, useEffect, useLayoutEffect, useMemo, useState } from "react";
+import React, {
+  Fragment,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from "react";
 
 export type TimeObject = {
   hours: number;
@@ -35,10 +41,15 @@ export default function Countdown({
   timeRemaining,
   onFinish,
   model = CountdownTextModel.CLOCK,
+  options,
 }: {
   timeRemaining: number;
   onFinish?: () => void;
   model?: CountdownTextModel;
+  options?: {
+    /** Controls if the hours fragment should be shown */
+    hours: boolean;
+  };
 }) {
   const [t, setT] = useState<TimeObject>(() =>
     calculateTimeFromTimespan(timeRemaining)
@@ -84,18 +95,28 @@ export default function Countdown({
   const txt = useMemo(() => {
     switch (model) {
       case CountdownTextModel.CLOCK:
+        const hourFragment =
+          options?.hours ?? true ? `${IntegerFormatter.format(t!.hours)}:` : "";
         return (
           <Fragment>
-            {`${IntegerFormatter.format(t!.hours)}:${IntegerFormatter.format(
+            {`${hourFragment}${IntegerFormatter.format(
               t!.minutes
             )}:${IntegerFormatter.format(t!.seconds)}`}
           </Fragment>
         );
       case CountdownTextModel.SHORT:
+        const hourFragmentS =
+          options?.hours ?? true ? (
+            <>
+              {IntegerFormatter.format(t!.hours)}
+              <span>h</span>&nbsp;
+            </>
+          ) : (
+            ""
+          );
         return (
           <Fragment>
-            {IntegerFormatter.format(t!.hours)}
-            <span>h</span>&nbsp;
+            {hourFragmentS}
             {IntegerFormatter.format(t!.minutes)}
             <span>m</span>&nbsp;
             {IntegerFormatter.format(t!.seconds)}

@@ -12,7 +12,9 @@ export default {
   title: "Countdown",
 };
 
-export const InitialImplementation = (args: any) => (
+export const InitialImplementation = (
+  args: React.ComponentProps<typeof Countdown>
+) => (
   <IntlProvider locale="pt-br">
     <Countdown {...args} />
   </IntlProvider>

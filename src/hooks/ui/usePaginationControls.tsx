@@ -11,8 +11,13 @@ export default function usePaginationControls(
   containerRef: RefObject<HTMLDivElement>,
   {
     snapToPage,
+    baseWidth,
+    snapToCutElement,
   }: {
     snapToPage?: boolean;
+    baseWidth?: number;
+    /** This will scroll only until the partially visible element is at the border, instead of scrolling all the container */
+    snapToCutElement?: boolean;
   } = {}
 ) {
   const [[leftControl, rightControl], setControls] = useState<
@@ -30,21 +35,56 @@ export default function usePaginationControls(
   );
   function move(direction: "l" | "r") {
     return () => {
-      const rest =
-        containerRef.current!.scrollLeft % containerRef.current!.clientWidth;
-      const snapOffset = snapToPage
-        ? direction === "l"
-          ? rest
-            ? containerRef.current!.clientWidth - rest
-            : 0
-          : rest
-        : 0;
-      containerRef.current!.scrollBy({
-        left:
-          (containerRef.current!.clientWidth - snapOffset) *
-          (direction === "l" ? -1 : 1),
-        behavior: "smooth",
-      });
+      if (snapToCutElement ?? false) {
+        const childBaseWidth =
+          baseWidth! || containerRef.current!.firstElementChild!.clientWidth;
+        const howMuchDoesTheScrollAddsUpTo =
+          containerRef.current!.scrollLeft / childBaseWidth -
+          Math.floor(containerRef.current!.scrollLeft / childBaseWidth);
+
+        const howMuchElementsFitOnAPage =
+          containerRef.current!.clientWidth / childBaseWidth;
+
+        const howMuchElementsFullyFitOnAPage = Math.floor(
+          howMuchElementsFitOnAPage
+        );
+
+        const directionScale =
+          direction === "l"
+            ? 1 - howMuchDoesTheScrollAddsUpTo
+            : howMuchDoesTheScrollAddsUpTo;
+
+        const howMuchOfTheRemainingElementIsShown =
+          howMuchElementsFitOnAPage +
+          directionScale -
+          howMuchElementsFullyFitOnAPage;
+
+        const howMuchToScroll =
+          (containerRef.current!.clientWidth -
+            childBaseWidth * howMuchOfTheRemainingElementIsShown) *
+          (direction === "l" ? -1 : 1);
+
+        containerRef.current!.scrollBy({
+          left: howMuchToScroll,
+          behavior: "smooth",
+        });
+      } else {
+        const rest =
+          containerRef.current!.scrollLeft % containerRef.current!.clientWidth;
+        const snapOffset = snapToPage
+          ? direction === "l"
+            ? rest
+              ? containerRef.current!.clientWidth - rest
+              : 0
+            : rest
+          : 0;
+        containerRef.current!.scrollBy({
+          left:
+            (containerRef.current!.clientWidth - snapOffset) *
+            (direction === "l" ? -1 : 1),
+          behavior: "smooth",
+        });
+      }
     };
   }
 

@@ -19,7 +19,7 @@
     background: var(--progress-bar-bar, var(--digital-blue));
     transition: width var(--animation-speed-transition, $fast) ease-out;
   }
-  > :last-child {
+  & > :last-child {
     position: absolute;
     margin-top: math.div(-0.5em, 1.25);
     margin-left: -0.5em;

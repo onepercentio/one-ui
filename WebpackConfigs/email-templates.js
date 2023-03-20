@@ -9,7 +9,14 @@ function resolveFromMainContext(module) {
 }
 const { join, relative, resolve } = require("path");
 const HTMLPlugin = require.main.require("html-webpack-plugin");
-const { writeFileSync, readdirSync, lstatSync, rmSync } = require("fs");
+const {
+  writeFileSync,
+  readdirSync,
+  lstatSync,
+  rmSync,
+  existsSync,
+  mkdirSync,
+} = require("fs");
 const lodash = require("lodash");
 const { findPathDeep } = require("deepdash")(lodash);
 const chalk = require("chalk");
@@ -108,6 +115,7 @@ function createConfig(
   },
   outputDir = join(resolve("."), "templates")
 ) {
+  if (!existsSync(outputDir)) mkdirSync(outputDir, { recursive: true });
   const results = findAllStaticGeneration();
   const entries = parseResultsrToEntries(results);
 
@@ -186,6 +194,7 @@ function createConfig(
       },
     ],
   });
+
   whereToPlaceTheNewLoaderPath.splice(1, 0, {
     test: /\.email\.tsx/,
     use: [

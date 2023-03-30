@@ -27,6 +27,7 @@ type Props = {
   containInViewport?: boolean;
 
   style?: any;
+  alignment?: AnchoredTooltipAlignment;
 };
 
 function getPositionOnViewport(element: HTMLElement) {
@@ -155,7 +156,7 @@ export function updateTooltipPosition(
  * This tooltip anchors itself to an element and handles positioning relative to the anchored element
  **/
 function AnchoredTooltip(
-  { containInViewport = true, ...props }: Props,
+  { containInViewport = true, alignment, ...props }: Props,
   ref: ForwardedRef<{ updatePosition: () => void }>
 ) {
   const { open, children, anchorRef } = props;
@@ -169,7 +170,8 @@ function AnchoredTooltip(
         updateTooltipPosition(
           tooltipRef.current!,
           anchorRef.current!,
-          containInViewport
+          containInViewport,
+          alignment
         );
       },
     }),
@@ -182,14 +184,16 @@ function AnchoredTooltip(
         updateTooltipPosition(
           tooltipRef.current,
           anchorRef.current,
-          containInViewport
+          containInViewport,
+          alignment
         );
       const scrollHandler = () => {
         if (anchorRef.current && tooltipRef.current)
           updateTooltipPosition(
             tooltipRef.current,
             anchorRef.current,
-            containInViewport
+            containInViewport,
+            alignment
           );
       };
       window.addEventListener("scroll", scrollHandler);

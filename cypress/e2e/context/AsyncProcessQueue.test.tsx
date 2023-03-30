@@ -14,6 +14,7 @@ import Button from "../../../src/components/Button";
 import LoaderDotsIndicator from "../../../src/components/LoaderDotsIndicator";
 import Loader from "../../../src/components/LoaderDotsIndicator";
 import UncontrolledTransition from "../../../src/components/UncontrolledTransition";
+import { useAsyncProcess } from "../../../src/context/AsyncProcess";
 import {
   AsyncProcessQueueProvider,
   AsyncQueueErrors,
@@ -27,14 +28,14 @@ import useAsyncControl from "../../../src/hooks/useAsyncControl";
 import TestStyles from "./AsyncProcessQueue.module.scss";
 
 const MockUIFactory: () => UIStateFactory = () => {
-  const date = Math.random()
+  const date = Math.random();
 
-  return (status) => <h1 key={date}>{status}</h1>
-}
+  return (status) => <h1 key={date}>{status}</h1>;
+};
 
 beforeEach(() => {
-  resetRegistrationCounter()
-})
+  resetRegistrationCounter();
+});
 
 it.each(
   [
@@ -103,7 +104,7 @@ it.each(
     }
     function DoSomeAsyncStuff({ exit }: { exit: () => void }) {
       const refNum = useRef(Math.random());
-      const {test} = useRecoveries()
+      const { test } = useRecoveries();
       const {
         doStuff: __doStuff,
         elToTransitionToQueue,
@@ -112,10 +113,10 @@ it.each(
         {
           doStuff: () => {
             test.write();
-            return _doStuff()
+            return _doStuff();
           },
         },
-        () =>  ["exampleUI"]
+        () => ["exampleUI"]
       );
       const { loading, doStuff } = useAsyncControl({ doStuff: __doStuff });
 
@@ -168,22 +169,43 @@ it.each(
     cy.on("uncaught:exception", () => false);
     cy.viewport(resolution.width, resolution.height).then(() => {
       mount(
-        <AsyncProcessQueueProvider recoveries={{
-          test: {
-            clear: () => {},
-            write: () => {},
-            recover: () => []
-          }
-        }} uiFactory={(ui) => (state, e, dismiss, retry) => {
-          switch(state) {
-            case "loading":
-              return <UncontrolledTransition key={ui as string}><h1 style={{color: "white", fontSize: 74}} key={state}>Cargando <LoaderDotsIndicator dotsCount={5}/></h1></UncontrolledTransition>
-            case "failed":
-              return <UncontrolledTransition key={ui as string}><h1 style={{color: "white", fontSize: 74}} key={state}><Button onClick={retry}>Tentar denovo</Button></h1></UncontrolledTransition>
-            case "succeded":
-              return <UncontrolledTransition key={ui as string}><h1 style={{color: "white", fontSize: 74}} key={state}>Funcionou</h1></UncontrolledTransition>
-          }
-        }}>
+        <AsyncProcessQueueProvider
+          recoveries={{
+            test: {
+              clear: () => {},
+              write: () => {},
+              recover: () => [],
+            },
+          }}
+          uiFactory={(ui) => (state, e, dismiss, retry) => {
+            switch (state) {
+              case "loading":
+                return (
+                  <UncontrolledTransition key={ui as string}>
+                    <h1 style={{ color: "white", fontSize: 74 }} key={state}>
+                      Cargando <LoaderDotsIndicator dotsCount={5} />
+                    </h1>
+                  </UncontrolledTransition>
+                );
+              case "failed":
+                return (
+                  <UncontrolledTransition key={ui as string}>
+                    <h1 style={{ color: "white", fontSize: 74 }} key={state}>
+                      <Button onClick={retry}>Tentar denovo</Button>
+                    </h1>
+                  </UncontrolledTransition>
+                );
+              case "succeded":
+                return (
+                  <UncontrolledTransition key={ui as string}>
+                    <h1 style={{ color: "white", fontSize: 74 }} key={state}>
+                      Funcionou
+                    </h1>
+                  </UncontrolledTransition>
+                );
+            }
+          }}
+        >
           <Wrapper />
         </AsyncProcessQueueProvider>
       ).wait(1000);
@@ -228,206 +250,36 @@ it.each(
 );
 
 describe("Business Rules", () => {
-  function Child() {
-    const [show, off] = useState(true);
-    const { elToTransitionToQueue, wrapQueue, test } = useAsyncProcessQueue(
-      {
-        test: () => new Promise<void>(() => {}),
-      },
-      () => ["exampleUI"]
-    );
-    const { targetElRef } = useAsyncProcessQueueContext();
+  it("Should provide a way to trigger self recovering async processes", () => {
+    /**
+     * Suppose we have the following cenario
+     *
+     * A user clicks a button to build something on the blockchain
+     *
+     * Here are the steps:
+     * 1 - The user clicks the button
+     * 2 - We call the contract
+     * 3 - The operation is scheduled for mining
+     * 4 - After mined we update the UI
+     *
+     * 1 - If the user reloads during this, nothing happens
+     * 2 - If the user reloads while the contract is called we can't do anything because the contract didn't return yet
+     * 3 - When the user reloads here, we could restore the process by recovering the thash
+     * 4 - If the user reloaded before, the 3 ended, the ui will be outdated
+     */
+    function BaseUI() {
+      const { on } = useAsyncProcess();
 
-    useLayoutEffect(() => {
-      test();
-    }, []);
+      useEffect(() => {
+        on("waitForBuild", () => alert("Wait for build"));
+      }, []);
+    }
+    /** This is the function that schedules the Async ui */
+    waitForCrafting();
+    /** This is the generic function */
+    waitForMining();
 
-    useEffect(() => {
-      wrapQueue();
-      off(false);
-    }, []);
-
-    return (
-      <>
-        <span
-          ref={targetElRef}
-          style={{
-            backgroundColor: "green",
-            position: "fixed",
-            top: 0,
-            right: 0,
-            fontSize: 72,
-            padding: "24px",
-          }}
-        >
-          Target
-        </span>
-
-        {show && (
-          <div
-            ref={elToTransitionToQueue}
-            style={{
-              backgroundColor: "blue",
-              position: "absolute",
-              bottom: 0,
-              fontSize: 72,
-              padding: "24px",
-            }}
-          >
-            Child
-          </div>
-        )}
-      </>
-    );
-  }
-  function Wrapper() {
-    return (
-      <>
-        <AsyncProcessQueueProvider recoveries={{}} uiFactory={MockUIFactory}>
-          <Child />
-        </AsyncProcessQueueProvider>
-      </>
-    );
-  }
-  function bindTransition() {
-    const transitionStartCb = cy.spy();
-    const transitionEndCb = cy.spy();
-
-    window.addEventListener("transitionstart", transitionStartCb);
-    window.addEventListener("transitionend", transitionEndCb);
-
-    return {
-      end: transitionEndCb,
-      start: transitionStartCb,
-    };
-  }
-  it("Should animate element to the target element", () => {
-    const { end, start } = bindTransition();
-    mount(<Wrapper />);
-    cy.waitUntil(
-      () => {
-        return start.getCalls().length > 0;
-      },
-      {
-        customMessage: "Wait until started",
-      }
-    )
-      .waitUntil(() => end.getCalls().length > 0, {
-        customMessage: "Wait until ended",
-      })
-      .wait(100)
-      .then(() => {
-        expect(start).to.be.calledTwice;
-        expect(end).to.be.calledOnce;
-      });
-  });
-  describe("Async process recovery", () => {
-    describe("Developer experience", () => {
-      type BlockchainTransactionId = "0x007";
-      type ExampleDescription = "description";
-      type ExampleTitle = "title";
-      type ExampleRecoveryModel = {
-        metamaskExample: [
-          BlockchainTransactionId,
-          ExampleTitle,
-          ExampleDescription
-        ];
-      };
-      function TargetWrapper() {
-        const { targetElRef } = useAsyncProcessQueueContext();
-        return <div ref={targetElRef} />;
-      }
-      type Base = typeof AsyncProcessQueueProvider;
-      function Wrapper({
-        children,
-        recoveries,
-      }: PropsWithChildren<{
-        recoveries: ComponentProps<Base>["recoveries"];
-      }>) {
-        return (
-          <AsyncProcessQueueProvider recoveries={recoveries} uiFactory={MockUIFactory}>
-            {children}
-            <TargetWrapper />
-          </AsyncProcessQueueProvider>
-        );
-      }
-      it("Should be able to warn the user that the async operation is not recoverable", () => {
-        const writeCb = cy.spy();
-        const clearCb = cy.spy();
-
-        cy.mountHookWrap(
-          () => {
-            const { metamaskExample } = useRecoveries<ExampleRecoveryModel>();
-            return useAsyncProcessQueue({
-              aFunctionWithoutRecovery() {
-                return Promise.resolve();
-              },
-              aFunctionWithRecoveryAndClear() {
-                metamaskExample.write("0x007", "title", "description");
-                metamaskExample.clear("0x007", "title", "description");
-                return Promise.resolve();
-              },
-              aFunctionWithRecovery() {
-                metamaskExample.write("0x007", "title", "description");
-                return Promise.resolve();
-              },
-            }, () => ["exampleUI"]);
-          },
-          ({ children }: any) => (
-            <Wrapper
-              recoveries={{
-                metamaskExample: {
-                  clear: clearCb,
-                  write: writeCb,
-                  recover: () => [],
-                },
-              }}
-            >
-              {children}
-            </Wrapper>
-          )
-        )
-          .then((ctx) => {
-            cy.expectRejection(
-              ctx.current!.aFunctionWithoutRecovery,
-              AsyncQueueErrors.RECOVERY_IS_NOT_BEING_CALLED
-            )
-              .then(() => {
-                ctx.current!.aFunctionWithRecovery();
-                expect(writeCb).to.be.calledOnce;
-              })
-              .then(() => writeCb.resetHistory())
-              .then(() => {
-                ctx.current!.aFunctionWithRecoveryAndClear();
-                expect(writeCb).to.be.calledOnce;
-                expect(clearCb).to.be.calledOnce;
-              })
-              .expectRejection(
-                ctx.current!.aFunctionWithoutRecovery,
-                AsyncQueueErrors.RECOVERY_IS_NOT_BEING_CALLED
-              );
-          })
-          .wait(100);
-      });
-
-      it("Should be able to recover async processes", () => {
-        cy.mountHookWrap(useAsyncProcessQueueContext, ({ children }: any) => (
-          <Wrapper
-            recoveries={{
-              metamaskExample: {
-                clear: () => {},
-                write: () => {},
-                recover: () => [
-                  [Promise.resolve(), () => Promise.resolve(), "exampleUI"],
-                  [Promise.reject(), () => Promise.resolve(), "exampleUI"],
-                ],
-              },
-            }}
-          >
-            {children}
-          </Wrapper>
-        )).waitUntil((ctx) => ctx!.current!.UIs.length === 2)
-      });
-    });
+    /** This should be a callback */
+    onCrafted();
   });
 });

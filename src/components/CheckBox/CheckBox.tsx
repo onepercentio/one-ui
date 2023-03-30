@@ -31,7 +31,12 @@ export default function CheckBox({
         e.preventDefault();
       }}
     >
-      <span {...props} className={checked ? Styles.checked : ""} />
+      <span
+        {...props}
+        className={`${checked ? Styles.checked : ""} ${
+          label ? Styles.wContent : ""
+        }`}
+      />
       {label}
     </label>
   );

@@ -4,5 +4,6 @@
     "strict": true,
     "esModuleInterop": true,
     "types": ["cypress", "@muritavo/cypress-toolkit", "react-scripts"]
-  }
+  },
+  "include": ["./", "../src"]
 }

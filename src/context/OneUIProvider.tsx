@@ -2,14 +2,15 @@ import get from "lodash/get";
 import merge from "lodash/merge";
 import clone from "lodash/cloneDeep";
 import { Get } from "type-fest";
-import React, { ReactElement, useMemo } from "react";
+import React, { ComponentProps, ReactElement, useMemo } from "react";
 import { createContext, PropsWithChildren, useContext } from "react";
 import { FieldPath } from "../type-utils";
 import useAdaptiveImage from "../hooks/ui/useAdaptiveImage";
 import { ImageScales } from "@muritavo/webpack-microfrontend-scripts/bin/types/ImageScales";
+import Button from "../components/Button";
 
 type DeepPartial<T> = {
-  [P in keyof T]?: T[P] extends Function ? T[P] : DeepPartial<T[P]>;
+  [P in keyof T]?: NonNullable<T[P]> extends Function ? T[P] : DeepPartial<T[P]>;
 };
 
 export type OneUIContextSpecs = {
@@ -29,6 +30,7 @@ export type OneUIContextSpecs = {
           >["variant"]
         >]?: string;
       };
+      Component?: (props: ComponentProps<typeof Button>) => ReactElement;
     };
     input: {
       className: string;
@@ -74,9 +76,9 @@ export type OneUIContextSpecs = {
       className?: string;
     };
     adaptiveDialog: {
-      dialogClassName: string,
-      backdropClassName: string
-    }
+      dialogClassName: string;
+      backdropClassName: string;
+    };
   };
   hook: {
     ui: {
@@ -175,7 +177,12 @@ export function useOneUIConfig<
     const val = useMemo(() => {
       return get(context, prop);
     }, [context, prop]);
-    if (typeof val === "string" || typeof val === "function") return val as any;
+    if (
+      typeof val === "string" ||
+      typeof val === "function" ||
+      prop.endsWith(".Component")
+    )
+      return (val as any) || defaultValue;
     return ErrorWrapper(val || defaultValue) as unknown as NonNullable<T>;
   }
   const value = useMemo(() => {

@@ -2,6 +2,7 @@ import React, {
   ComponentProps,
   ForwardedRef,
   forwardRef,
+  ReactElement,
   useEffect,
   useMemo,
   useState,
@@ -18,10 +19,16 @@ import {
 } from "../../context/OneUIProvider";
 import { AnchoredTooltipAlignment } from "../AnchoredTooltip/AnchoredTooltip";
 
-export type SelectItem = {
-  label: string;
-  value: string;
-};
+export type SelectItem =
+  | {
+      label: string;
+      value: string;
+    }
+  | {
+      label: ReactElement;
+      labelStr: string;
+      value: string;
+    };
 
 /**
  * A dropdown select
@@ -34,6 +41,7 @@ function Select<I extends SelectItem>({
   loading,
   rootClassName = "",
   dropdownClassName: _drop = "",
+  alignTo = AnchoredTooltipAlignment.CENTER,
   ...otherProps
 }: {
   loading?: boolean;
@@ -41,6 +49,7 @@ function Select<I extends SelectItem>({
   onClick: (i: I) => void;
   rootClassName?: string;
   dropdownClassName?: string;
+  alignTo?: AnchoredTooltipAlignment;
 } & (
   | {
       selected?: I["value"];
@@ -82,7 +91,13 @@ function Select<I extends SelectItem>({
         <Input
           {...otherProps}
           className={`${Styles.input} ${!items.length ? Styles.empty : ""}`}
-          value={_selected?.label || label}
+          value={
+            _selected
+              ? "labelStr" in _selected
+                ? _selected.labelStr
+                : _selected.label
+              : label
+          }
           disabled
           Icon={
             <div className={`${Styles.indicator}`}>
@@ -99,7 +114,7 @@ function Select<I extends SelectItem>({
       }}
       className={`${otherProps.disabled ? "disabled" : ""} ${rootClassName}`}
       contentClassName={`${Styles.optionsContainer} ${dropdownClassNames.dropdown}`}
-      alignTo={AnchoredTooltipAlignment.CENTER}
+      alignTo={alignTo}
     >
       <div
         className={Styles.items}

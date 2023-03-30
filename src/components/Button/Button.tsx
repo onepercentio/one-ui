@@ -18,16 +18,21 @@ export function _Button({
   ...otherProps
 }: ButtonProps) {
   const classNameType = useOneUIConfig("component.button.className", {});
+  const Component = useOneUIConfig(
+    "component.button.Component",
+    "button" as any
+  );
   return (
-    <button
+    <Component
       ref={arguments[1]}
       className={`${Styles.button} ${Styles[variant]} ${className} ${
         classNameType[variant] || ""
       }`}
+      variant={variant}
       {...otherProps}
     >
       {children}
-    </button>
+    </Component>
   );
 }
 

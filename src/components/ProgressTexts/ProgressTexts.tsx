@@ -1,4 +1,4 @@
-import React, { MouseEvent } from "react";
+import React, { ComponentProps, MouseEvent, ReactElement } from "react";
 import Spacing from "../Spacing";
 import Text from "../Text";
 import Styles from "./ProgressTexts.module.scss";
@@ -9,8 +9,10 @@ type Step = {
   title?: string;
   description?: string | React.ReactElement;
   action?: {
-    label: string;
+    label: string | ReactElement;
     onClick: (e: MouseEvent<HTMLButtonElement>) => void;
+    disabled?: boolean;
+    variant?: ComponentProps<typeof Button>["variant"];
   };
 };
 
@@ -70,7 +72,9 @@ export default function ProgressTexts({
             {s.title && <h1>{s.title}</h1>}
             {s.description && <p>{s.description}</p>}
             {s.action && (
-              <Button onClick={s.action.onClick}>{s.action.label}</Button>
+              <Button variant={s.action.variant} onClick={s.action.onClick} disabled={s.action.disabled}>
+                {s.action.label}
+              </Button>
             )}
             {spacingOnEachStep !== false ? <Spacing size="large" /> : null}
           </div>

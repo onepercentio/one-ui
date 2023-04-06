@@ -8,9 +8,12 @@ import { FieldPath } from "../type-utils";
 import useAdaptiveImage from "../hooks/ui/useAdaptiveImage";
 import { ImageScales } from "@muritavo/webpack-microfrontend-scripts/bin/types/ImageScales";
 import Button from "../components/Button";
+import CheckBox from "../components/CheckBox";
 
 type DeepPartial<T> = {
-  [P in keyof T]?: NonNullable<T[P]> extends Function ? T[P] : DeepPartial<T[P]>;
+  [P in keyof T]?: NonNullable<T[P]> extends Function
+    ? T[P]
+    : DeepPartial<T[P]>;
 };
 
 export type OneUIContextSpecs = {
@@ -78,6 +81,9 @@ export type OneUIContextSpecs = {
     adaptiveDialog: {
       dialogClassName: string;
       backdropClassName: string;
+    };
+    checkbox: {
+      Component?: (props: ComponentProps<typeof CheckBox>) => ReactElement;
     };
   };
   hook: {

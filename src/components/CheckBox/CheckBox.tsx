@@ -1,4 +1,5 @@
 import React, { PropsWithChildren } from "react";
+import { useOneUIConfig } from "../../context/OneUIProvider";
 import Styles from "./CheckBox.module.scss";
 
 /**
@@ -22,6 +23,10 @@ export default function CheckBox({
     React.HTMLAttributes<HTMLSpanElement>,
     HTMLSpanElement
   >) {
+  const Checkbox = useOneUIConfig(
+    "component.checkbox.Component",
+    "span" as any
+  ) as any;
   return (
     <label
       className={`${Styles.container} ${className}`}
@@ -31,7 +36,7 @@ export default function CheckBox({
         e.preventDefault();
       }}
     >
-      <span
+      <Checkbox
         {...props}
         className={`${checked ? Styles.checked : ""} ${
           label ? Styles.wContent : ""

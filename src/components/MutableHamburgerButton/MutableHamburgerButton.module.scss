@@ -177,7 +177,7 @@ $slice: math.div(1, 7);
     }
   }
   &.pencil {
-      perspective: 600px;
+    perspective: 600px;
 
     > :nth-child(1) {
       height: #{$slice}em;
@@ -192,20 +192,29 @@ $slice: math.div(1, 7);
       transform: rotate(-45deg);
       border-radius: 0;
     }
-    
+
     > :nth-child(3) {
       $slice: $slice * 0.6;
 
       height: 0em;
       width: 0em;
       border-radius: 0;
-      transform: translateX(-0.27em) translateY(0.027em) rotate(-80deg) rotateY(45deg) skew(12deg, 12deg);
+      transform: translateX(-0.27em) translateY(0.027em) rotate(-80deg)
+        rotateY(45deg) skew(12deg, 12deg);
 
       border-left: #{$slice}em solid transparent;
       border-right: #{$slice}em solid transparent;
       border-bottom: 0em solid transparent;
       border-top: #{$slice}em solid;
       background-color: transparent;
+    }
+  }
+  &.hamburger {
+    > :nth-child(1) {
+      width: 0.7em;
+    }
+    > :nth-child(3) {
+      width: 0.7em;
     }
   }
 }

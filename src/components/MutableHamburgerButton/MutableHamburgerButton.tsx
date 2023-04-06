@@ -18,7 +18,8 @@ export default function MutableHamburgerButton({
     | "search"
     | "loading"
     | "checkmark"
-    | "pencil";
+    | "pencil"
+    | "hamburger";
   size: number;
 } & React.HTMLProps<HTMLDivElement>) {
   return (

@@ -11,6 +11,6 @@ it("All examples mount at least", () => {
   }
 });
 it.only("Mutable and Firefox", () => {
-    cy.viewport(48, 48)
-  mount(<AllExamples.InitialImplementation size={16} state={'loading'}/>);
+  cy.viewport(400, 400);
+  mount(<AllExamples.InitialImplementation size={16} state={"hamburger"} />);
 });

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ComponentProps, useMemo } from "react";
 import Styles from "./ProgressBar.module.scss";
 
 /**
@@ -7,6 +7,7 @@ import Styles from "./ProgressBar.module.scss";
 export default function ProgressBar({
   size,
   progress,
+  style = "guide",
 }: {
   /**
    * Given as css font size
@@ -16,11 +17,39 @@ export default function ProgressBar({
    * Given in percent
    */
   progress: number;
+
+  style?: "gauge" | "guide";
 }) {
   return (
-    <div className={Styles.container} style={{ fontSize: size }}>
+    <div
+      className={`${Styles.container} ${Styles[style]}`}
+      style={{ fontSize: size }}
+    >
       <span style={{ width: `${progress}%` }} />
-      <span style={{ left: `${progress}%` }} />
+      {style === "guide" && <span style={{ left: `${progress}%` }} />}
     </div>
   );
+}
+
+export function BalancedProgressBar({
+  min,
+  max,
+  current,
+  size,
+  style,
+}: {
+  min: number;
+  max: number;
+  current: number;
+} & Pick<ComponentProps<typeof ProgressBar>, "size" | "style">) {
+  const progress = useMemo(() => {
+    const progressVal = current - min;
+    const maxVal = max - min;
+
+    const currProgress = (progressVal * 100) / maxVal;
+
+    return currProgress;
+  }, [min, max, current]);
+
+  return <ProgressBar size={size} progress={progress} style={style} />;
 }

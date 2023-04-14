@@ -2,7 +2,12 @@
 @import "../../assets/styles/index.scss";
 
 .container {
-  margin: 0.375em;
+  &.guide {
+    margin: 0.375em;
+  }
+  &.gauge {
+    margin: 0em;
+  }
   height: 0.25em;
   background-color: red;
   position: relative;
@@ -19,7 +24,7 @@
     background: var(--progress-bar-bar, var(--digital-blue));
     transition: width var(--animation-speed-transition, $fast) ease-out;
   }
-  & > :last-child {
+  &.guide > :last-child {
     position: absolute;
     margin-top: math.div(-0.5em, 1.25);
     margin-left: -0.5em;

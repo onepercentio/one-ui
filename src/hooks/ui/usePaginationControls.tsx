@@ -3,6 +3,7 @@ import React, { RefObject, useEffect, useState } from "react";
 import Fade from "../../components/FadeIn";
 import { useOneUIConfig } from "../../context/OneUIProvider";
 import Styles from "./usePaginationControls.module.scss";
+import { isSameTarget } from "../../utils/html.utils";
 
 /**
  * This hook handles the display of pagination controls for the user to move to another page
@@ -12,7 +13,7 @@ export default function usePaginationControls(
   {
     snapToPage,
     baseWidth,
-    snapToCutElement,
+    snapToCutElement: _snapToCutElement,
   }: {
     snapToPage?: boolean;
     baseWidth?: number;
@@ -33,7 +34,7 @@ export default function usePaginationControls(
     "hook.ui.usePaginationControls.className",
     ""
   );
-  function move(direction: "l" | "r") {
+  function move(direction: "l" | "r", snapToCutElement = _snapToCutElement) {
     return () => {
       if (snapToCutElement ?? false) {
         const childBaseWidth =
@@ -41,13 +42,12 @@ export default function usePaginationControls(
         const howMuchDoesTheScrollAddsUpTo =
           containerRef.current!.scrollLeft / childBaseWidth -
           Math.floor(containerRef.current!.scrollLeft / childBaseWidth);
-
         const howMuchElementsFitOnAPage =
           containerRef.current!.clientWidth / childBaseWidth;
 
         const howMuchElementsFullyFitOnAPage = Math.floor(
           howMuchElementsFitOnAPage
-        );
+        ) || 1;
 
         const directionScale =
           direction === "l"
@@ -64,6 +64,7 @@ export default function usePaginationControls(
             childBaseWidth * howMuchOfTheRemainingElementIsShown) *
           (direction === "l" ? -1 : 1);
 
+        console.log("Scrolling", containerRef.current, "to", howMuchToScroll);
         containerRef.current!.scrollBy({
           left: howMuchToScroll,
           behavior: "smooth",
@@ -104,8 +105,39 @@ export default function usePaginationControls(
     const el = containerRef.current!;
     const throttledCheck = throttle(checkControlsRequirement, 1000 / 4);
     checkControlsRequirement();
+    let startingX: number | undefined;
+    let lastX: number | undefined;
+
+    const onTouchStart = ({ touches, ...e }: TouchEvent) => {
+      if (!isSameTarget(e)) return;
+      const { pageX } = touches.item(0)!;
+      startingX = pageX;
+      console.log(startingX);
+    };
+    const onTouchMove = ({ touches, ...e }: TouchEvent) => {
+      if (!isSameTarget(e)) return;
+      const touch = touches.item(0);
+
+      lastX = touch!.pageX;
+      console.log(lastX.toFixed(0), startingX?.toFixed(0));
+    };
+    const onTouchEnd = (e: Event) => {
+      if (!lastX) return;
+      const dir = lastX > startingX! ? "l" : "r";
+      console.log("Moving to", dir);
+      move(dir, true)();
+      startingX = undefined;
+    };
     el.addEventListener("scroll", throttledCheck);
-    return () => el.removeEventListener("scroll", throttledCheck);
+    el.addEventListener("touchstart", onTouchStart);
+    el.addEventListener("touchend", onTouchEnd);
+    el.addEventListener("touchmove", onTouchMove);
+    return () => {
+      el.removeEventListener("scroll", throttledCheck);
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchend", onTouchEnd);
+      el.removeEventListener("touchend", onTouchEnd);
+    };
   }, []);
 
   return {

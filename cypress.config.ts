@@ -22,6 +22,6 @@ export default defineConfig({
     },
     viewportHeight: 1080,
     viewportWidth: 1920,
-    specPattern: './cypress/**/AsyncProcess.test.tsx',
+    specPattern: './cypress/**/MutableHamburgerButton.stories.test.tsx',
   },
 });

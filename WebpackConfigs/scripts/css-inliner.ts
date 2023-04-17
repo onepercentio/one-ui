@@ -1,12 +1,12 @@
 function getTextNodesIn(elem: HTMLElement): ChildNode[] {
   var textNodes: ChildNode[] = [];
   if (elem) {
-    for (var nodes = elem.childNodes, i = nodes.length; i--;) {
-      var node = nodes[i], nodeType = node.nodeType;
+    for (var nodes = elem.childNodes, i = nodes.length; i--; ) {
+      var node = nodes[i],
+        nodeType = node.nodeType;
       if (nodeType == 3) {
-          textNodes.push(node);
-      }
-      else if (nodeType == 1 || nodeType == 9 || nodeType == 11) {
+        textNodes.push(node);
+      } else if (nodeType == 1 || nodeType == 9 || nodeType == 11) {
         textNodes = textNodes.concat(getTextNodesIn(node as HTMLElement));
       }
     }
@@ -23,6 +23,8 @@ export default function inlineCSS() {
   allEls.forEach((el) => {
     const styles = window.getComputedStyle(el);
 
+    if (el.getAttribute("data-debug")) console.log(styles);
+
     const inlined = Array.from(styles)
       .map((k) => `${k}: ${styles.getPropertyValue(k)}`)
       .join("; ")
@@ -35,16 +37,19 @@ export default function inlineCSS() {
     el.setAttribute("style", s);
   });
 
-  getTextNodesIn(document.body).forEach(n => {
-    n.replaceWith(...n.textContent
-      .split(/\n/g)
-      .reduce((r, txt, i, arr) => 
-        (arr.length - 1 === i )
-          ? [...r, txt] 
-          : [...r, txt, document.createElement("br")], 
-      [] as (Node | string)[])
+  getTextNodesIn(document.body).forEach((n) => {
+    n.replaceWith(
+      ...n.textContent
+        .split(/\n/g)
+        .reduce(
+          (r, txt, i, arr) =>
+            arr.length - 1 === i
+              ? [...r, txt]
+              : [...r, txt, document.createElement("br")],
+          [] as (Node | string)[]
+        )
     );
-  })
+  });
 
   if (process.env.NODE_ENV !== "test")
     document.querySelectorAll("style").forEach((e) => e.remove());

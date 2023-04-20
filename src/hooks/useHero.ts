@@ -115,19 +115,24 @@ export default function useHero(
       // Since a transition is now triggering from the old element, he cannot be considered for other transitions
       otherElement.removeAttribute("data-hero");
 
+      function willTheHeroMove(origin: DOMRect, target: DOMRect) {
+        return !(
+          origin.top === target.top &&
+          origin.left === target.left &&
+          origin.width === target.width &&
+          origin.height === target.height
+        );
+      }
+
       /**
        *
        * @param el
        * @returns Returns if it will move
        */
-      function setCloneToCoordinates(el: HTMLDivElement) {
+      function setCloneToCoordinatesOf(el: HTMLDivElement) {
         const coordinates = el.getBoundingClientRect();
         const currentCoordinates = clone.getBoundingClientRect();
-        const willNotMove =
-          coordinates.top === currentCoordinates.top &&
-          coordinates.left === currentCoordinates.left &&
-          coordinates.width === currentCoordinates.width &&
-          coordinates.height === currentCoordinates.height;
+        const willMove = willTheHeroMove(coordinates, currentCoordinates);
 
         clone.style.position = "fixed";
         clone.style.top = `${coordinates.top}px`;
@@ -135,11 +140,16 @@ export default function useHero(
         clone.style.width = `${coordinates.width}px`;
         clone.style.height = `${coordinates.height}px`;
 
-        return !willNotMove;
+        return willMove;
       }
 
+      const coordinates = otherElement.getBoundingClientRect();
+      const currentCoordinates = heroRef.current!.getBoundingClientRect();
+      if (!willTheHeroMove(coordinates, currentCoordinates)) return;
+
       if (!oldClone) {
-        setCloneToCoordinates(otherElement);
+        /** Set the clone over the starting element */
+        setCloneToCoordinatesOf(otherElement);
         document.body.appendChild(clone);
       }
       heroRef.current!.style.visibility = "hidden";
@@ -162,7 +172,8 @@ export default function useHero(
           cleanup();
           return;
         }
-        const willMove = setCloneToCoordinates(el);
+        /** Set the clone over the new position */
+        const willMove = setCloneToCoordinatesOf(el);
         if (!willMove) cleanup();
         else {
           for (let propToTransition of propsToTransition)

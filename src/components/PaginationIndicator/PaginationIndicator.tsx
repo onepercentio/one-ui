@@ -161,7 +161,7 @@ export function PaginationIndicatorView({
                     : Math.floor(page) - (indexForTheBallsCenter + 1)) +
                   1 +
                   i;
-                onClickPage(pageClicked);
+                onClickPage(Math.round(pageClicked));
               }
             }}
           />
@@ -169,6 +169,8 @@ export function PaginationIndicatorView({
       });
   }, [indexForTheBallsCenter, pageIndex, pages]);
   const [guideBall, ...pageBalls] = balls.reverse();
+  let width = eachBallWidthEm * Math.min(pages, MAX_BALLS) * 2;
+  if (mode === PaginationIndicatorMode.START) width /= 2;
 
   return (
     <svg
@@ -176,8 +178,8 @@ export function PaginationIndicatorView({
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       style={{
-        width: `${eachBallWidthEm * Math.min(pages, MAX_BALLS) * 2}em`,
-        minWidth: `${eachBallWidthEm * Math.min(pages, MAX_BALLS) * 2}em`,
+        width: `${width}em`,
+        minWidth: `${width}em`,
         height: "1.2em",
         fontSize: `${size}px`,
       }}

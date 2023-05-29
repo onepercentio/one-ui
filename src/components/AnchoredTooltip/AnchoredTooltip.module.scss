@@ -20,7 +20,7 @@ $arrowDim: 1em;
 
   // The position will be calculated via the javascript and the context
 
-  transition: top $almostInstant, left $almostInstant;
+  transition: top $almostInstant, left $almostInstant, opacity $normal;
   z-index: 1000;
 
   pointer-events: none;

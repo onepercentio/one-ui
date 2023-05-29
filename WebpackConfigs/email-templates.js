@@ -115,6 +115,10 @@ function createConfig(
   },
   outputDir = join(resolve("."), "templates")
 ) {
+  if (!process.env.EMAIL_TEMPLATES_BASE_DOMAIN)
+    throw new Error(
+      `The env variable "EMAIL_TEMPLATES_BASE_DOMAIN" is not set (ex: https://localhost:3000). It's required for pointing to the image resources correctly`
+    );
   if (!existsSync(outputDir)) mkdirSync(outputDir, { recursive: true });
   const results = findAllStaticGeneration();
   const entries = parseResultsrToEntries(results);
@@ -207,7 +211,7 @@ function createConfig(
         options: {
           features: {
             ...features,
-            inlineCSS: true,
+            inlineCSS: features.inlineCSS,
           },
         },
       },

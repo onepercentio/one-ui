@@ -21,6 +21,7 @@ export default function FileInput({
   file,
   onFile,
   footer,
+  className,
   ...props
 }: {
   reason: string;
@@ -47,7 +48,7 @@ export default function FileInput({
   );
 
   return (
-    <div className={Styles.container}>
+    <div className={`${Styles.container} ${className ?? ""}`}>
       <Icon />
       <Spacing size="small" />
       <Text type="description">{file ? fileProvided : reason}</Text>

@@ -1,8 +1,9 @@
-import { CSSProperties, Fragment } from "react";
+import { CSSProperties, Fragment, PropsWithChildren } from "react";
 import { TransitionAnimationTypes } from "../../../src/components/Transition";
 import UncontrolledTransition from "../../../src/components/UncontrolledTransition";
 import useHero from "../../../src/hooks/useHero";
 import Styles from "./useHero.module.scss";
+import chroma from "chroma-js";
 
 function HeroExample({ exampleStyle }: { exampleStyle: CSSProperties }) {
   const { heroRef } = useHero(
@@ -158,6 +159,44 @@ it("Should immediatly remove the clone when the hero will not transition", () =>
   }
 });
 
+function ElementToTransition({
+  id,
+  style,
+}: {
+  id: string;
+  style?: CSSProperties;
+}) {
+  const { heroRef } = useHero(id, ["background-color"], {
+    onHeroStart: (clone) => {
+      clone.style.marginLeft = "0px";
+    },
+    onBeforeTransition: (el) => {
+      return {
+        container: el.parentElement!,
+      };
+    },
+  });
+  return (
+    <div
+      id={id}
+      ref={heroRef}
+      style={{
+        height: 200,
+        width: 200,
+        minHeight: 200,
+        minWidth: 200,
+        backgroundColor: style ? "red" : chroma.random().hex(),
+        position: style ? "absolute" : undefined,
+        fontSize: style ? 180 : 20,
+        color: "white",
+        ...style,
+      }}
+    >
+      {id}
+    </div>
+  );
+}
+
 it.only("Should not animate elements that are out of screen to reduce amount and increase performance", () => {
   cy.viewport(1000, 1000);
   const transitionedElements: Set<string> = new Set();
@@ -167,32 +206,6 @@ it.only("Should not animate elements that are out of screen to reduce amount and
       transitionedElements.add(div.id);
     }
   });
-  function ElementToTransition({
-    id,
-    style,
-  }: {
-    id: string;
-    style: CSSProperties;
-  }) {
-    const { heroRef } = useHero(id);
-    return (
-      <div
-        id={id}
-        ref={heroRef}
-        style={{
-          height: 200,
-          width: 200,
-          backgroundColor: "red",
-          position: "absolute",
-          fontSize: 180,
-          color: "white",
-          ...style,
-        }}
-      >
-        {id}
-      </div>
-    );
-  }
   const chain = cy.mountChain((transition: boolean) => {
     return (
       <UncontrolledTransition
@@ -239,5 +252,92 @@ it.only("Should not animate elements that are out of screen to reduce amount and
     .then(() => {
       expect(Array.from(transitionedElements)).to.deep.eq(["2", "5"]);
       transitionedElements.clear();
+    });
+});
+
+it("Should be able to bounds container for transition optimization", () => {
+  cy.viewport(1000, 1000);
+  cy.window().then((w) => {
+    w.document.body.style.setProperty("--animation--speed-fast", "5s");
+  });
+
+  const Row = ({
+    children,
+    style,
+  }: PropsWithChildren<{ style?: CSSProperties }>) => {
+    return (
+      <div
+        style={{
+          ...style,
+          backgroundColor: chroma.random().hex(),
+          display: "flex",
+          overflow: "auto",
+        }}
+        data-testid="row"
+      >
+        {children}
+      </div>
+    );
+  };
+
+  const chain = cy.mountChain((transition: boolean) => {
+    const def = (
+      <>
+        <ElementToTransition id="def_1" />
+        <ElementToTransition id="def_2" />
+        <ElementToTransition id="def_3" />
+        <ElementToTransition id="def_4" />
+        <ElementToTransition id="def_5" />
+      </>
+    );
+    const small = (
+      <>
+        <ElementToTransition
+          id="small_1"
+          style={{
+            marginLeft: -200,
+            backgroundColor: chroma.random().hex(),
+            position: "initial",
+            fontSize: 20,
+          }}
+        />
+        <ElementToTransition id="small_2" />
+        <ElementToTransition id="small_3" />
+        <ElementToTransition id="small_4" />
+        <ElementToTransition id="small_5" />
+      </>
+    );
+    return (
+      <UncontrolledTransition
+        transitionType={TransitionAnimationTypes.FADE}
+      >
+        {!transition ? (
+          <Fragment key="1">
+            <h1 style={{ margin: "auto" }}>First screen</h1>
+            <Row>{def}</Row>
+            <Row style={{ margin: "0px 20vw" }}>{small}</Row>
+          </Fragment>
+        ) : (
+          <Fragment key="2">
+            <h1 style={{ margin: "auto" }}>Second screen</h1>
+            <br />
+            <Row>{def}</Row>
+            <Row style={{ margin: "0px 20vw" }}>{small}</Row>
+          </Fragment>
+        )}
+      </UncontrolledTransition>
+    );
+  });
+  chain
+    .remount(false)
+    .wait(2000)
+    .remount(true)
+    .wait(250)
+    .then(() => {
+      cy.window().then((w) => {
+        expect(w.document.querySelectorAll("[data-hero-clone]").length).to.eq(
+          8
+        );
+      });
     });
 });

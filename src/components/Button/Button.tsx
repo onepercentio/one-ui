@@ -11,12 +11,15 @@ type ButtonProps = React.PropsWithChildren<
 /**
  * A simple button with the new design
  **/
-export function _Button({
-  children,
-  variant = "transparent",
-  className = "",
-  ...otherProps
-}: ButtonProps) {
+export function _Button(
+  {
+    children,
+    variant = "transparent",
+    className = "",
+    ...otherProps
+  }: ButtonProps,
+  ref: ForwardedRef<HTMLButtonElement>
+) {
   const classNameType = useOneUIConfig("component.button.className", {});
   const Component = useOneUIConfig(
     "component.button.Component",
@@ -24,7 +27,7 @@ export function _Button({
   );
   return (
     <Component
-      ref={arguments[1]}
+      ref={ref}
       className={`${Styles.button} ${Styles[variant]} ${className} ${
         classNameType[variant] || ""
       }`}

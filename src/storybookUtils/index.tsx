@@ -1,10 +1,10 @@
-import React, { ComponentProps, PropsWithChildren } from "react";
+import React, { ComponentProps, PropsWithChildren, forwardRef } from "react";
 import Spacing from "../components/Spacing";
 
 export function extractAllPossibilitiesFromEnumProp<
-  C extends React.JSXElementConstructor<any>,
+  C extends (...args: any[]) => any,
   K extends keyof P,
-  P = ComponentProps<C>
+  P extends ComponentProps<C> = ComponentProps<C>
 >(component: C, propName: K): P[K][] {
   return (component as any).__docgenInfo.props[propName].type.value.map(
     (a: { value: string }) => JSON.parse(a.value)

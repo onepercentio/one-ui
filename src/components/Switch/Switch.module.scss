@@ -1,0 +1,31 @@
+@use 'sass:math';
+@import "../../assets/styles/variables.scss";
+
+.root {
+  box-sizing: border-box;
+  $height: 1.4em;
+  height: $height;
+  width: 2em + 0.4em;
+  padding: 0.1em;
+  border-radius: math.div($height, 1);
+  border: .1em solid $digitalBlue;
+  background-color: white;
+  transition: background-color $fast linear;
+  cursor: pointer;
+
+  .toggler {
+    height: 1em;
+    width: 1em;
+    background-color: $digitalBlue;
+    border-radius: math.div(1em, 2);
+    transition: transform $fast linear;
+  }
+
+  &.enabled {
+    background-color: $digitalBlue;
+    .toggler {
+      transform: translateX(1em);
+      background-color: white;
+    }
+  }
+}

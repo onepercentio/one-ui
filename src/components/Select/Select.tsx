@@ -1,7 +1,9 @@
 import React, {
   ComponentProps,
+  DetailedHTMLProps,
   ForwardedRef,
   forwardRef,
+  HTMLAttributes,
   ReactElement,
   useEffect,
   useMemo,
@@ -19,7 +21,7 @@ import {
 } from "../../context/OneUIProvider";
 import { AnchoredTooltipAlignment } from "../AnchoredTooltip/AnchoredTooltip";
 
-export type SelectItem =
+export type SelectItem = (
   | {
       label: string;
       value: string;
@@ -28,7 +30,9 @@ export type SelectItem =
       label: ReactElement;
       labelStr: string;
       value: string;
-    };
+    }
+) &
+  Omit<DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLElement>, "ref">;
 
 /**
  * A dropdown select
@@ -96,7 +100,7 @@ function Select<I extends SelectItem>({
               ? "labelStr" in _selected
                 ? _selected.labelStr
                 : _selected.label
-              : label
+              : label || ""
           }
           disabled
           Icon={
@@ -133,6 +137,7 @@ function Select<I extends SelectItem>({
                 : ""
             } ${dropdownClassNames.item || ""}`}
             onClick={() => onClick(i)}
+            {...i}
           >
             {i.label}
           </Text>
@@ -142,6 +147,4 @@ function Select<I extends SelectItem>({
   );
 }
 
-export default forwardRef((props: any, ref: any) => (
-  <Select {...props} />
-)) as typeof Select;
+export default Select;

@@ -54,6 +54,18 @@ export default function useHero(
      * @returns If the hero should be skipped or not
      */
     onHeroSkip?: (origin: HTMLDivElement, target: HTMLDivElement) => ShouldSkip;
+
+    /**
+     * Before transition start, setup the properties that will be used for hero animation
+     * @returns The container that will be used to check if the hero is out or in the view
+     */
+    onBeforeTransition?: (
+      origin: HTMLDivElement,
+      target: HTMLDivElement
+    ) => [
+      originContainer: HTMLElement | VisualViewport,
+      targetContainer: HTMLElement | VisualViewport
+    ];
   } = {}
 ) {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -96,9 +108,15 @@ export default function useHero(
     ) as HTMLDivElement;
 
     if (otherElement) {
+      const [originContainer, targetContainer] = events.onBeforeTransition
+        ? events.onBeforeTransition(otherElement, heroRef.current!)
+        : [viewport, viewport];
       const shouldSkip =
-        isElementOutsideViewport(viewport, currentElCoordinates) ||
-        isElementOutsideViewport(viewport, otherElement.getBoundingClientRect())
+        isElementOutsideViewport(targetContainer, currentElCoordinates) ||
+        isElementOutsideViewport(
+          originContainer,
+          otherElement.getBoundingClientRect()
+        )
           ? (events.onHeroSkip || (() => true))(otherElement, heroRef.current!)
           : false;
       if (shouldSkip) return;
@@ -194,14 +212,27 @@ export default function useHero(
 }
 
 function isElementOutsideViewport(
-  viewport: VisualViewport,
+  viewport: VisualViewport | HTMLElement,
   coordinates: DOMRect
 ) {
-  const elementOverflowsViewport =
-    coordinates.left >= viewport.width || coordinates.top >= viewport.height;
-  const elementUnderflowsViewport =
-    coordinates.left <= -coordinates.width ||
-    coordinates.top <= -coordinates.height;
+  if (viewport instanceof VisualViewport) {
+    const elementOverflowsViewport =
+      coordinates.left >= viewport.width || coordinates.top >= viewport.height;
+    const elementUnderflowsViewport =
+      coordinates.left <= -coordinates.width ||
+      coordinates.top <= -coordinates.height;
+    return elementOverflowsViewport || elementUnderflowsViewport;
+  } else {
+    const viewportBounds = viewport.getBoundingClientRect();
 
-  return elementOverflowsViewport || elementUnderflowsViewport;
+    const elementOverflowsViewport =
+      coordinates.left >= viewportBounds.left + viewportBounds.width ||
+      coordinates.top >= viewportBounds.top + viewportBounds.height;
+
+    const elementUnderflowsViewport =
+      viewportBounds.left - coordinates.left >= coordinates.width ||
+      viewportBounds.top - coordinates.top >= coordinates.height;
+
+    return elementUnderflowsViewport || elementOverflowsViewport;
+  }
 }

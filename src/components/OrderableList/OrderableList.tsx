@@ -67,7 +67,6 @@ export default function OrderableList({
         ? availableKeys.filter((a) => !props.keyOrder!.includes(a))
         : [];
 
-
     return (
       ("keyOrder" in props && props.keyOrder
         ? [...props.keyOrder, ...missingOrderKeys]
@@ -253,6 +252,7 @@ export default function OrderableList({
     }
   }, [cleanOrder]);
 
+  const { keyOrder: _, onChangeKeyOrder: __, ...toSpread } = props as any;
   return (
     <OrderableListContext.Provider
       value={{
@@ -265,7 +265,11 @@ export default function OrderableList({
         on: eventEmitter.subscriber,
       }}
     >
-      <div ref={rootRef} className={`${Styles.root} ${className}`} {...props}>
+      <div
+        ref={rootRef}
+        className={`${Styles.root} ${className}`}
+        {...toSpread}
+      >
         {mode === OrderableListReorderMode.VERTICAL ? (
           <AnimatedEntrance>
             {[...children]

@@ -18,7 +18,7 @@ Primary.args = {
 } as Partial<ComponentProps<typeof CheckBox>>;
 
 export const SynergyTextAndCheckbox = (args: any) => {
-  const variants = extractAllPossibilitiesFromEnumProp(_Text, "type");
+  const variants = extractAllPossibilitiesFromEnumProp(_Text, 'type');
 
   return variants.map((type) => {
     return (

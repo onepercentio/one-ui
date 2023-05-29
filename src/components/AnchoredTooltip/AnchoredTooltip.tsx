@@ -162,6 +162,11 @@ function AnchoredTooltip(
   const { open, children, anchorRef } = props;
   const tooltipRef = useRef<HTMLDivElement>(null);
   const className = useOneUIConfig("component.tooltip.className");
+  const [realClosed, setRealClosed] = useState(!open);
+
+  useEffect(() => {
+    if (open) setRealClosed(false);
+  }, [open]);
 
   useImperativeHandle(
     ref,
@@ -179,7 +184,7 @@ function AnchoredTooltip(
   );
 
   useEffect(() => {
-    if (open) {
+    if (open && !realClosed) {
       if (anchorRef.current && tooltipRef.current)
         updateTooltipPosition(
           tooltipRef.current,
@@ -201,11 +206,9 @@ function AnchoredTooltip(
         window.removeEventListener("scroll", scrollHandler);
       };
     }
-  }, [open, anchorRef]);
+  }, [open, anchorRef, realClosed]);
 
-  const openedSomeTime = useFreeze(open);
-
-  return openedSomeTime ? (
+  return !realClosed || open ? (
     <>
       {ReactDOM.createPortal(
         <FadeIn
@@ -215,8 +218,9 @@ function AnchoredTooltip(
             props.className || ""
           } ${className}`}
           style={props.style}
+          onHidden={() => setRealClosed(true)}
         >
-          {open ? <div>{children}</div> : undefined}
+          {open && !realClosed ? <div>{children}</div> : undefined}
         </FadeIn>,
         document.body
       )}

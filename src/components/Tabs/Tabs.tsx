@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { ReactElement, useEffect, useRef } from "react";
 import Styles from "./Tabs.module.scss";
 
 /**
@@ -14,7 +14,7 @@ export default function Tabs<O extends string>({
   options: Readonly<
     {
       id: O;
-      label: string;
+      label: string | ReactElement;
     }[]
   >;
   selected?: O;

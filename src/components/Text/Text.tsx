@@ -17,7 +17,7 @@ export function _Text(
       type: OnepercentUtility.UIElements.TextVariants;
     } & React.HTMLAttributes<HTMLParagraphElement>
   >,
-  _ref?: ForwardedRef<HTMLInputElement>
+  _ref?: ForwardedRef<HTMLParagraphElement>
 ) {
   const classNameType = useOneUIConfig("component.text.className", {});
 

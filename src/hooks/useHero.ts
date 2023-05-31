@@ -8,6 +8,10 @@ import {
 
 const ID = (id: string) => `${id}-hero`;
 type ShouldSkip = boolean;
+type Result = [
+  originContainer: Element | VisualViewport,
+  targetContainer: Element | VisualViewport
+]
 
 /**
  * This hook implements the logic for a hero animation between 2 elements
@@ -62,10 +66,7 @@ export default function useHero(
     onBeforeTransition?: (
       origin: HTMLDivElement,
       target: HTMLDivElement
-    ) => [
-      originContainer: HTMLElement | VisualViewport,
-      targetContainer: HTMLElement | VisualViewport
-    ];
+    ) => Result | Readonly<Result>;
   } = {}
 ) {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -212,7 +213,7 @@ export default function useHero(
 }
 
 function isElementOutsideViewport(
-  viewport: VisualViewport | HTMLElement,
+  viewport: VisualViewport | Element,
   coordinates: DOMRect
 ) {
   if (viewport instanceof VisualViewport) {

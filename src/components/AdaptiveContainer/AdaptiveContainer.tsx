@@ -97,7 +97,7 @@ export default function AdaptiveContainer<
   return (
     <>
       <Wrapper
-        className={`${Styles.resetButton} ${className}`}
+        className={`${className}`}
         ref={buttonRef}
         {...otherProps}
       >

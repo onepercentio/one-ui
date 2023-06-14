@@ -1,12 +1,7 @@
-import React, {
-  ComponentProps,
-  ElementRef,
-  ReactElement,
-  useEffect,
-  useRef,
-} from "react";
+import React, { ComponentProps, ReactElement } from "react";
 import AdaptiveContainer from "../AdaptiveContainer";
 import Button from "../Button";
+import Styles from "./AdaptiveButton.module.scss";
 
 /**
  * A button that adapts it's width according to the content size
@@ -21,7 +16,7 @@ export default function AdaptiveButton({
   return (
     <AdaptiveContainer
       containerElement={Button}
-      className={className}
+      className={`${Styles.resetButton} ${className}`}
       {...buttonProps}
     >
       {children}

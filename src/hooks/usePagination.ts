@@ -145,10 +145,19 @@ export function useContainerPagination(
 /**
  * This function receives an amount of local instances and paginates it
  */
-export function useLocalPagination<L>(items: L[], pageSize: number) {
+export function useLocalPagination<L>(
+  items: L[] | undefined,
+  pageSize: number
+) {
   const instanceID = useMemo(() => Date.now(), [items]);
   const cb = useCallback(
     (page: number, currItems: L[] = []) => {
+      if (!items)
+        return Promise.resolve({
+          finished: false,
+          totalItems: 0,
+          items: [],
+        });
       const from = pageSize * page;
       const newArray = [...currItems, ...items.slice(from, from + pageSize)];
 
@@ -162,5 +171,8 @@ export function useLocalPagination<L>(items: L[], pageSize: number) {
   );
   const pagination = usePagination<L[], []>(cb, () => `${instanceID}`);
 
-  return pagination;
+  return {
+    ...pagination,
+    loading: items === undefined,
+  };
 }

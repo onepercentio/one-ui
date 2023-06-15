@@ -170,9 +170,11 @@ export function useLocalPagination<L>(
     [pageSize, items]
   );
   const pagination = usePagination<L[], []>(cb, () => `${instanceID}`);
+  const pagSrc = useMemo(() => items, [pagination.items]);
 
   return {
     ...pagination,
     loading: items === undefined,
+    src: pagSrc,
   };
 }

@@ -11,7 +11,7 @@ type ShouldSkip = boolean;
 type Result = [
   originContainer: Element | VisualViewport,
   targetContainer: Element | VisualViewport
-]
+];
 
 /**
  * This hook implements the logic for a hero animation between 2 elements
@@ -164,7 +164,8 @@ export default function useHero(
 
       const coordinates = otherElement.getBoundingClientRect();
       const currentCoordinates = heroRef.current!.getBoundingClientRect();
-      if (!willTheHeroMove(coordinates, currentCoordinates)) return;
+      const itWontMove = !willTheHeroMove(coordinates, currentCoordinates);
+      if (itWontMove) return;
 
       if (!oldClone) {
         /** Set the clone over the starting element */

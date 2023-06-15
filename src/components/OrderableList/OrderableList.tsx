@@ -253,6 +253,7 @@ export default function OrderableList({
   }, [cleanOrder]);
 
   const { keyOrder: _, onChangeKeyOrder: __, ...toSpread } = props as any;
+
   return (
     <OrderableListContext.Provider
       value={{
@@ -312,7 +313,20 @@ export default function OrderableList({
 }
 
 function HeroWrapper({ children, id }: PropsWithChildren<{ id: string }>) {
-  const { heroRef } = useHero(id);
+  const { heroRef } = useHero(id, undefined, {
+    onHeroStart: (_c, _o, t) => {
+      t.querySelectorAll("img").forEach(
+        (img) => (img.style.visibility = "hidden")
+      );
+    },
+    onHeroEnd: () => {
+      console.log(heroRef.current);
+      if (heroRef.current)
+        heroRef.current
+          .querySelectorAll("img")
+          .forEach((img) => (img.style.visibility = ""));
+    },
+  });
   return <div ref={heroRef}>{children}</div>;
 }
 

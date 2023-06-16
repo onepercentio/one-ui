@@ -9,7 +9,7 @@
     height: 0.75em;
     border-radius: 0.375em;
     margin-left: 4px;
-    background-color: $digitalBlue;
+    background-color: var(--loader--indicator-bg, $digitalBlue);
     animation-name: transparentToOpaque;
     animation-duration: $normal;
     animation-iteration-count: infinite;

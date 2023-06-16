@@ -5,6 +5,7 @@ import {
   useLayoutEffect,
   useRef,
 } from "react";
+import ownEvent from "../utils/ownEvent";
 
 const ID = (id: string) => `${id}-hero`;
 type ShouldSkip = boolean;
@@ -18,10 +19,17 @@ type Result = [
  */
 export default function useHero(
   id: string,
-  propsToTransition: Omit<
-    keyof CSSProperties,
-    "width" | "height" | "top" | "left"
-  >[] = [],
+  options: Partial<{
+    propsToTransition: Omit<
+      keyof CSSProperties,
+      "width" | "height" | "top" | "left"
+    >[];
+    "data-preffix": string;
+    /** This indicates this hero animation will probably be repeated multiple time */
+    repeatable: boolean;
+  }> = {
+    propsToTransition: [],
+  },
   events: {
     /**
      * Should return if the detected element should be "heroed"
@@ -69,22 +77,29 @@ export default function useHero(
     ) => Result | Readonly<Result>;
   } = {}
 ) {
+  const {
+    propsToTransition = [],
+    "data-preffix": dataPreffix,
+    repeatable,
+  } = options;
+  const _dataPreffix = dataPreffix ? `-${dataPreffix}` : "";
+  const dataProperty = `data${_dataPreffix}-hero`;
   const heroRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
-    heroRef.current!.setAttribute("data-hero", id);
+    heroRef.current!.setAttribute(dataProperty, id);
   }, [id]);
 
   const getHerosOnScreen = useCallback(() => {
     const otherElements = (
       Array.from(
-        document.querySelectorAll(`[data-hero="${id}"]`)
+        document.querySelectorAll(`[${dataProperty}="${id}"]`)
       ) as HTMLDivElement[]
     ).filter((el) => el !== heroRef.current);
     return otherElements;
   }, [id]);
 
-  useEffect(() => {
+  function triggerHeroAnimation() {
     const viewport = window.visualViewport!;
     const allPropsToTransition = [
       "width",
@@ -121,18 +136,24 @@ export default function useHero(
           ? (events.onHeroSkip || (() => true))(otherElement, heroRef.current!)
           : false;
       if (shouldSkip) return;
-      const oldClone = document.querySelector(`[data-hero-clone="${ID(id)}"]`);
+      const oldClone = document.querySelector(
+        `[${dataProperty}-clone="${ID(id)}"]`
+      );
       const clone = (oldClone ||
         otherElement.cloneNode(true)) as HTMLDivElement;
 
       // Clean up thos properties that can cause confusion since it's a clone
       clone.style.visibility = "";
-      clone.removeAttribute("data-hero");
+      clone.removeAttribute(dataProperty);
 
-      clone.setAttribute("data-hero-clone", ID(id));
+      clone.setAttribute(`${dataProperty}-clone`, ID(id));
 
-      // Since a transition is now triggering from the old element, he cannot be considered for other transitions
-      otherElement.removeAttribute("data-hero");
+      /**
+       * If it's repeatable, we should keep the flag that indicates the hero existance
+       */
+      if (!repeatable)
+        // Since a transition is now triggering from the old element, he cannot be considered for other transitions
+        otherElement.removeAttribute(dataProperty);
 
       function willTheHeroMove(origin: DOMRect, target: DOMRect) {
         return !(
@@ -184,7 +205,10 @@ export default function useHero(
         const cleanup = () => {
           if (events.onHeroEnd) events.onHeroEnd();
           clone.remove();
-          if (el) el.style.visibility = "";
+          if (el) {
+            if (repeatable) el!.setAttribute(dataProperty, id);
+            el.style.visibility = "";
+          }
         };
         if (events.onHeroStart)
           events.onHeroStart(clone, otherElement, heroRef.current!);
@@ -199,18 +223,27 @@ export default function useHero(
           for (let propToTransition of propsToTransition)
             clone.style[propToTransition as any] =
               el.style[propToTransition as any];
-          clone.addEventListener(
-            "transitionend",
+          const transitionEndCb = ownEvent(
             ({ target, currentTarget }: TransitionEvent) => {
               if (target === currentTarget) cleanup();
             }
           );
+          clone.addEventListener("transitionend", transitionEndCb);
+          const onCancelCb = ownEvent(() => {
+            clone.removeEventListener("transitionend", transitionEndCb);
+            clone.removeEventListener("transitioncancel", onCancelCb);
+          });
+          clone.addEventListener("transitioncancel", onCancelCb);
         }
       }, 0);
     }
+  }
+
+  useEffect(() => {
+    triggerHeroAnimation();
   }, []);
 
-  return { heroRef, getHerosOnScreen };
+  return { heroRef, getHerosOnScreen, trigger: triggerHeroAnimation };
 }
 
 function isElementOutsideViewport(

@@ -1,0 +1,37 @@
+@import "../../assets/styles/variables.scss";
+
+.zoomableIndicator {
+  cursor: zoom-in;
+}
+
+$stubZIndex: 1000000;
+
+.backdrop {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  z-index: $stubZIndex;
+  background: var(--zoomable--backdrop-bg, #0009);
+  transition: opacity $fast linear;
+  opacity: 0;
+  > * {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    > * {
+      cursor: zoom-out;
+      height: 100%;
+      width: initial;
+      max-width: initial;
+    }
+  }
+}
+
+.overBackdrop {
+  z-index: $stubZIndex + 1;
+  max-width: initial;
+}

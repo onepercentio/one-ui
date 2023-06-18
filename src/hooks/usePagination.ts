@@ -17,20 +17,25 @@ type UpdateEvent<I extends any> = {
 
 export default function usePagination<I extends any, A extends any[]>(
   request: (page: number, currItems?: I, ...args: A) => Promise<UpdateEvent<I>>,
-  paginationId: (...args: A) => string = () => "default"
+  paginationId: (...args: A) => string = () => "default",
+  startingItems?: I
 ): Paginable<I, A> {
   const paginationDataRef = useRef<{
     [d: string]:
-    | {
-      finished: boolean;
-      totalItems: number;
-    }
-    | undefined;
+      | {
+          finished: boolean;
+          totalItems: number;
+        }
+      | undefined;
   }>({});
   const { current: paginationData } = paginationDataRef;
 
-  const [items, setItems] =
-    useState<[paginationId: string, items: I, currentPage: number]>();
+  const [items, setItems] = useState<
+    [paginationId: string, items: I, currentPage: number] | undefined
+  >(() => {
+    if (startingItems) return [(paginationId as any)(), startingItems, 0];
+    else return undefined;
+  });
   const { process, ...control } = useAsyncControl();
 
   function updateItems(cb: (prevItems?: I) => UpdateEvent<I>["items"]) {
@@ -93,9 +98,10 @@ export type Paginable<
 export type LocalPaginable<
   I extends any,
   A extends any[] = [],
-  E extends any = any> = Paginable<I, A, E> & {
-    src: I
-  }
+  E extends any = any
+> = Paginable<I, A, E> & {
+  src: I;
+};
 
 /**
  * This returns a ref to be bound to an elements so it can be able to detect when a pagination whould occur
@@ -119,11 +125,11 @@ export function useContainerPagination(
         const offsetLimit =
           direction === "v"
             ? scrollElement.scrollHeight -
-            offsetBottom -
-            scrollElement.clientHeight * 0.6
+              offsetBottom -
+              scrollElement.clientHeight * 0.6
             : scrollElement.scrollWidth -
-            offsetLeft -
-            scrollElement.clientWidth * 0.6;
+              offsetLeft -
+              scrollElement.clientWidth * 0.6;
         const offset =
           direction === "v"
             ? scrollElement.clientHeight + scrollElement.scrollTop
@@ -176,7 +182,11 @@ export function useLocalPagination<L>(
     },
     [pageSize, items]
   );
-  const pagination = usePagination<L[], []>(cb, () => `${instanceID}`);
+  const pagination = usePagination<L[], []>(
+    cb,
+    () => `${instanceID}`,
+    items?.slice(0, pageSize)
+  );
   const pagSrc = useMemo(() => items, [pagination.items]);
 
   return {

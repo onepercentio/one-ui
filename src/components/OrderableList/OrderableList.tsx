@@ -320,7 +320,6 @@ function HeroWrapper({ children, id }: PropsWithChildren<{ id: string }>) {
       );
     },
     onHeroEnd: () => {
-      console.log(heroRef.current);
       if (heroRef.current)
         heroRef.current
           .querySelectorAll("img")

@@ -64,7 +64,6 @@ export default function usePaginationControls(
             childBaseWidth * howMuchOfTheRemainingElementIsShown) *
           (direction === "l" ? -1 : 1);
 
-        console.log("Scrolling", containerRef.current, "to", howMuchToScroll);
         containerRef.current!.scrollBy({
           left: howMuchToScroll,
           behavior: "smooth",
@@ -112,19 +111,16 @@ export default function usePaginationControls(
       if (!isSameTarget(e)) return;
       const { pageX } = touches.item(0)!;
       startingX = pageX;
-      console.log(startingX);
     };
     const onTouchMove = ({ touches, ...e }: TouchEvent) => {
       if (!isSameTarget(e)) return;
       const touch = touches.item(0);
 
       lastX = touch!.pageX;
-      console.log(lastX.toFixed(0), startingX?.toFixed(0));
     };
     const onTouchEnd = (e: Event) => {
       if (!lastX) return;
       const dir = lastX > startingX! ? "l" : "r";
-      console.log("Moving to", dir);
       move(dir, true)();
       startingX = undefined;
     };

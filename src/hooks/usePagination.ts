@@ -21,11 +21,11 @@ export default function usePagination<I extends any, A extends any[]>(
 ): Paginable<I, A> {
   const paginationDataRef = useRef<{
     [d: string]:
-      | {
-          finished: boolean;
-          totalItems: number;
-        }
-      | undefined;
+    | {
+      finished: boolean;
+      totalItems: number;
+    }
+    | undefined;
   }>({});
   const { current: paginationData } = paginationDataRef;
 
@@ -90,6 +90,13 @@ export type Paginable<
   setError: ReturnType<typeof useAsyncControl>["setError"];
 };
 
+export type LocalPaginable<
+  I extends any,
+  A extends any[] = [],
+  E extends any = any> = Paginable<I, A, E> & {
+    src: I
+  }
+
 /**
  * This returns a ref to be bound to an elements so it can be able to detect when a pagination whould occur
  */
@@ -112,11 +119,11 @@ export function useContainerPagination(
         const offsetLimit =
           direction === "v"
             ? scrollElement.scrollHeight -
-              offsetBottom -
-              scrollElement.clientHeight * 0.6
+            offsetBottom -
+            scrollElement.clientHeight * 0.6
             : scrollElement.scrollWidth -
-              offsetLeft -
-              scrollElement.clientWidth * 0.6;
+            offsetLeft -
+            scrollElement.clientWidth * 0.6;
         const offset =
           direction === "v"
             ? scrollElement.clientHeight + scrollElement.scrollTop

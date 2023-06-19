@@ -1,4 +1,12 @@
-import { Ref, RefObject, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Ref,
+  RefObject,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import log from "../models/DebugLogger";
 
 /**
@@ -35,7 +43,7 @@ export default function useElementFit(
   const [itemsToShow, setItemsToShow] = useState(
     (window as any).PRERENDER ? 4 : undefined
   );
-  useEffect(() => {
+  useLayoutEffect(() => {
     setItemsToShow(calculateDimension());
     function onResize() {
       setItemsToShow(calculateDimension());

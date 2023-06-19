@@ -82,6 +82,10 @@ export type OneUIContextSpecs = {
       dialogClassName: string;
       backdropClassName: string;
     };
+    adaptiveSidebar: {
+      className: string;
+      controlClassName: string;
+    };
     checkbox: {
       Component?: (props: ComponentProps<typeof CheckBox>) => ReactElement;
     };

@@ -229,11 +229,13 @@ export default function useHero(
             }
           );
           clone.addEventListener("transitionend", transitionEndCb);
-          const onCancelCb = ownEvent(() => {
-            clone.removeEventListener("transitionend", transitionEndCb);
-            clone.removeEventListener("transitioncancel", onCancelCb);
+          clone.addEventListener("transitionstart", () => {
+            const onCancelCb = ownEvent((e) => {
+              clone.removeEventListener("transitionend", transitionEndCb);
+              clone.removeEventListener("transitioncancel", onCancelCb);
+            });
+            clone.addEventListener("transitioncancel", onCancelCb);
           });
-          clone.addEventListener("transitioncancel", onCancelCb);
         }
       }, 0);
     }

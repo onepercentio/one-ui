@@ -12,8 +12,8 @@ const ON_HERO_START: Parameters<typeof useHero>[2] = {
 /**
  * Allows an element to be zoomable for fullscreen
  */
-export default function useZoomable() {
-  const zoomableID = useMemo(() => `zoomable-${Date.now()}`, []);
+export default function useZoomable(id: string) {
+  const zoomableID = useMemo(() => `zoomable-${id}`, []);
   const getBackdrop = () => {
     return document.querySelector(
       `[data-zoomable="${zoomableID}"]`
@@ -43,10 +43,12 @@ export default function useZoomable() {
         };
         clone.addEventListener("click", middlewayClick);
         bd.addEventListener("transitionend", removeCb);
-        bd.addEventListener(
-          "transitioncancel",
-          ownEvent(() => bd.removeEventListener("transitionend", removeCb))
-        );
+        bd.addEventListener("transitionstart", () => {
+          bd.addEventListener(
+            "transitioncancel",
+            ownEvent(() => bd.removeEventListener("transitionend", removeCb))
+          );
+        });
       },
     }
   );
@@ -56,8 +58,9 @@ export default function useZoomable() {
   }
 
   function _zoom() {
-    const elClone = zoomableEl.current!.cloneNode(true);
-    (elClone as HTMLDivElement).style.visibility = "hidden";
+    const el = zoomableEl.current!;
+    const elClone = el.cloneNode(true) as HTMLDivElement;
+    elClone.style.visibility = "hidden";
 
     function HeroMount() {
       const { heroRef } = useHero(
@@ -88,6 +91,18 @@ export default function useZoomable() {
             if (ref) {
               ref.appendChild(elClone);
               (heroRef as any).current = elClone;
+              const verticalProportion = el.clientWidth / el.clientHeight;
+              const targetWidth = ref.clientHeight * verticalProportion;
+
+              if (targetWidth > ref.clientWidth) {
+                const horizontalProportion = el.clientHeight / el.clientWidth;
+                elClone.style.width = ref.clientWidth + "px";
+                elClone.style.height =
+                  ref.clientWidth * horizontalProportion + "px";
+              } else {
+                elClone.style.height = ref.clientHeight + "px";
+                elClone.style.width = targetWidth + "px";
+              }
             }
           }}
         />

@@ -12,6 +12,7 @@ import ScrollAndFocusLock from "../utilitary/ScrollAndFocusLock";
 import Styles from "./AdaptiveSidebar.module.scss";
 import useBreakpoint from "../../hooks/ui/useBreakpoint";
 import { createPortal } from "react-dom";
+import { useOneUIConfig } from "../../context/OneUIProvider";
 
 const DefaultVisibilityControl = ({ open }: { open: boolean }) => (
   <MutableHamburgerButton size={48} state={open ? "closed" : "default"} />
@@ -55,6 +56,10 @@ function AdaptiveSidebar(
   const containerRef = useRef<HTMLDivElement>(null);
   const _open = externalOpen === undefined ? open : externalOpen;
   const isMobile = useBreakpoint(breakInto);
+  const globalClassName = useOneUIConfig("component.adaptiveSidebar.className");
+  const globalControlClassName = useOneUIConfig(
+    "component.adaptiveSidebar.controlClassName"
+  );
 
   useImperativeHandle(
     ref,
@@ -84,7 +89,7 @@ function AdaptiveSidebar(
         DefaultVisibilityControl === VisibilityControlComponent
           ? Styles.defaultPadding
           : ""
-      } ${_open ? Styles.open : Styles.closed} ${className}`}
+      } ${_open ? Styles.open : Styles.closed} ${className} ${globalClassName}`}
       {...props}
     >
       <ScrollAndFocusLock open={_open}>{children}</ScrollAndFocusLock>
@@ -97,7 +102,7 @@ function AdaptiveSidebar(
         <div
           className={`${isMobile ? Styles.mobile : Styles.desktop} ${
             Styles.hamburger
-          }`}
+          } ${globalControlClassName}`}
           onClick={() => setOpen((a) => !a)}
         >
           <VisibilityControlComponent open={_open} />

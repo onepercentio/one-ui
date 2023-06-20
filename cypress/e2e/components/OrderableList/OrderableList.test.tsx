@@ -17,7 +17,7 @@ function focusDrag(whichOne: number) {
   cy.byTestId(`click`)
     .eq(whichOne - 1)
     .trigger("mousedown");
-  cy.byTestId("orderable-list-clone");
+  return cy.byTestId("orderable-list-clone");
 }
 /**
  * Emulates dragging from the anchor to another
@@ -229,7 +229,65 @@ it("Should be able to transition grid elements", () => {
     .remount(all);
 });
 
-describe.only("BUGFIX", () => {
+describe("BUGFIX", () => {
+  const U = "UNPROVIDED_CHILD";
+  it.only("Weird cenario disables first element mouseover", () => {
+    const [providedOrder, expectedResult, expectedCb] = [
+      [U, "5", "4", "3", "2", "1"],
+      "54312",
+      [U, "5", "4", "3", "1", "2"],
+    ];
+    cy.viewport(1920, 2160);
+    /**
+     * This example renders 5 childs
+     */
+    cy.mount(<AllExamples.InitialImplementation keyOrder={providedOrder} />);
+
+    focusDrag(5).wait(1000);
+    dragEl(1, "start").wait(1500);
+
+    focusDrag(2).wait(1000);
+    dragEl(1, "start").wait(1500);
+  });
+  it.each(
+    [
+      [["5", "4", "3", "2", "1"], "54312", ["5", "4", "3", "1", "2"]],
+      [["5", "4", "2", "1"], "54231", ["5", "4", "2", "3", "1"]],
+      [[U, "5", "4", "3", "2", "1"], "54312", [U, "5", "4", "3", "1", "2"]],
+      [
+        ["5", U, "4", U, "2", U, "1"],
+        "54231",
+        ["5", U, "4", U, "2", "3", U, "1"],
+      ],
+    ] as const,
+    "Should allow reordering if one of the provided keys is not on children",
+    ([providedOrder, expectedResult, expectedCb]) => {
+      const cb = cy.spy();
+      cy.viewport(1920, 2160);
+      /**
+       * This example renders 5 childs
+       */
+      cy.mount(
+        <AllExamples.InitialImplementation
+          keyOrder={providedOrder}
+          onChangeKeyOrder={cb}
+        />
+      );
+
+      focusDrag(5).wait(1000);
+      dragEl(4, "start").wait(1500);
+
+      cy.get("div").then((el) => {
+        expect(el.get(0).textContent!.replace(/[^0-9]/g, "")).to.eq(
+          expectedResult
+        );
+        const changedOrderCalls = cb.getCalls();
+        expect(
+          changedOrderCalls[changedOrderCalls.length - 1].args[0].join(",")
+        ).to.eq(expectedCb.join(","));
+      });
+    }
+  );
   it("Should not hide unlisted elements", () => {
     function c(key: string) {
       return <p key={key}>{key}</p>;

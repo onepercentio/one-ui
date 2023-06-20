@@ -34,6 +34,10 @@ export enum OrderableListReorderMode {
   TWO_DIMENSIONS = "hv",
 }
 
+function cleanKeys(keys: string[]) {
+  return keys.map((a) => a.split(";")[0]);
+}
+
 /**
  * This component receives a list of keyed elements and orders it based of the order provided via the prop "keyOrder"
  **/
@@ -59,9 +63,9 @@ export default function OrderableList({
   const eventEmitter = useEvents<Events, { [k in Events]: [] }>();
   const currentClone = useRef<HTMLDivElement | null>(null);
   const currentWorkingKey = useRef<string>();
+  const availableKeys = children.map((a) => a.key as string);
   const rootRef = useRef<HTMLDivElement>(null as any);
   const [_order, setOrder] = useState(() => {
-    const availableKeys = children.map((a) => a.key as string);
     const missingOrderKeys =
       "keyOrder" in props && props.keyOrder
         ? availableKeys.filter((a) => !props.keyOrder!.includes(a))
@@ -73,7 +77,11 @@ export default function OrderableList({
         : undefined) || availableKeys
     );
   });
-  const order = "currentOrder" in props ? props.currentOrder || _order : _order;
+  const order = useMemo(() => {
+    return (
+      "currentOrder" in props ? props.currentOrder || _order : _order
+    ).filter((o) => o.includes(";") || availableKeys.includes(o));
+  }, [(props as any).currentOrder, _order]);
   const cleanOrder = useMemo(() => order.map((a) => a.split(";")[0]), [order]);
   const orderId = useMemo(() => "key-" + cleanOrder.join(""), [cleanOrder]);
 
@@ -95,11 +103,12 @@ export default function OrderableList({
       if (els.length > currentOrder.length || !currentWorkingKey.current)
         return;
       const parent = findParentElement(e.target);
-      const indexOfOverKey = els.indexOf(parent);
-      const keyOfTheOverElement = currentOrder[indexOfOverKey];
+      const indexOfKeyInCleanOrder = els.indexOf(parent);
+      const keyOfTheOverElement = currentOrder[indexOfKeyInCleanOrder];
       const isDraggingOwnElement =
         currentWorkingKey.current === keyOfTheOverElement;
-      if (indexOfOverKey === -1 || keyOfTheOverElement === undefined) return;
+      if (indexOfKeyInCleanOrder === -1 || keyOfTheOverElement === undefined)
+        return;
       if (!isDraggingOwnElement) {
         const distanceFromTop = e.offsetY;
         const heightOfEl = parent.clientHeight;
@@ -112,7 +121,8 @@ export default function OrderableList({
             keyOfOverElement !== currentWorkingKey.current
           );
         };
-        const indexOfTheNewElement = indexOfOverKey + (isAfter ? 1 : -1);
+        const indexOfTheNewElement =
+          indexOfKeyInCleanOrder + (isAfter ? 1 : -1);
         const shouldTriggerReordering =
           (isAfter || isBefore) &&
           checkIfCanMove(currentOrder[indexOfTheNewElement]);
@@ -121,7 +131,10 @@ export default function OrderableList({
             const previousIndex = currentOrder.indexOf(
               currentWorkingKey.current!
             );
-            let indexOfTheNewElement = indexOfOverKey + (isBefore ? -1 : 0);
+            const indexOfKeyInProvidedOrder =
+              cleanKeys(p).indexOf(keyOfTheOverElement);
+            let indexOfTheNewElement =
+              indexOfKeyInProvidedOrder + (isBefore ? -1 : 0);
             if (previousIndex > indexOfTheNewElement) indexOfTheNewElement++;
             const orderWithoutCurrent = p.filter((a) => {
               if (a.startsWith(`${currentWorkingKey.current};`)) return false;
@@ -149,13 +162,15 @@ export default function OrderableList({
     for (let el of els)
       el.addEventListener("mousemove", calculateReorderingCall);
 
-    if ("onChangeKeyOrder" in props) props.onChangeKeyOrder(cleanOrder);
-
     return () => {
       for (let el of els)
         el.removeEventListener("mousemove", calculateReorderingCall);
     };
   }, [cleanOrder]);
+
+  useEffect(() => {
+    if ("onChangeKeyOrder" in props) props.onChangeKeyOrder(cleanKeys(_order));
+  }, [_order]);
 
   const cleanOrderRef = useRef(cleanOrder);
   useEffect(() => {
@@ -254,6 +269,18 @@ export default function OrderableList({
 
   const { keyOrder: _, onChangeKeyOrder: __, ...toSpread } = props as any;
 
+  const childrenToRender = [...children]
+    .filter((a) => cleanOrder.includes(a.key as string))
+    .sort(
+      (a, b) =>
+        cleanOrder.indexOf(a.key as string) -
+        cleanOrder.indexOf(b.key as string)
+    )
+    .map((a: ReactElement, i) => ({
+      ...a,
+      key: order[i],
+    }));
+
   return (
     <OrderableListContext.Provider
       value={{
@@ -272,19 +299,7 @@ export default function OrderableList({
         {...toSpread}
       >
         {mode === OrderableListReorderMode.VERTICAL ? (
-          <AnimatedEntrance>
-            {[...children]
-              .filter((a) => cleanOrder.includes(a.key as string))
-              .sort(
-                (a, b) =>
-                  cleanOrder.indexOf(a.key as string) -
-                  cleanOrder.indexOf(b.key as string)
-              )
-              .map((a: ReactElement, i) => ({
-                ...a,
-                key: order[i],
-              }))}
-          </AnimatedEntrance>
+          <AnimatedEntrance>{childrenToRender}</AnimatedEntrance>
         ) : (
           <UncontrolledTransition
             className={Styles.transition}

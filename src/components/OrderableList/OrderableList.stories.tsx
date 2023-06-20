@@ -28,8 +28,9 @@ function Wrapper({ i }: { i: number }) {
 const xpto: CSSProperties = {
   display: "flex",
   alignItems: "center",
+  padding: "48px 0px",
   background:
-    "linear-gradient(#f003 48%,#0f03 48%, #0f03 50%, #0f03 52%,#00f3 52%)",
+    "linear-gradient(#0000 5%, #f003 10% 48%,#0f03 48%, #0f03 50%, #0f03 52%,#00f3 52% 90%, #0000 95%)",
 };
 
 export const InitialImplementation = (args: any) => {

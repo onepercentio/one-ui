@@ -45,11 +45,28 @@ export default function OrderableList({
   children,
   className = "",
   mode = OrderableListReorderMode.VERTICAL,
+  shrinkToOnOrder,
+  reorderingClassName,
+  cloneClassName,
   ...props
 }: {
   children: ReactElement[];
   className?: string;
   mode?: OrderableListReorderMode;
+  /**
+   * If provided, makes the elements shrink to this value in px when ordering elements
+   */
+  shrinkToOnOrder?: number;
+
+  /**
+   * A class to apply when reordering
+   */
+  reorderingClassName?: string;
+
+  /**
+   * A class to apply to the clone el
+   */
+  cloneClassName?: string;
 } & (
   | {
       keyOrder?: string[];
@@ -97,6 +114,11 @@ export default function OrderableList({
       );
     return parent;
   };
+
+  useLayoutEffect(() => {
+    if (shrinkToOnOrder)
+      rootRef.current.style.setProperty("--shrink-to", `${shrinkToOnOrder}px`);
+  }, [shrinkToOnOrder]);
 
   const calculateReordering = useMemo(() => {
     return throttle((e: any, els: HTMLDivElement[], currentOrder: string[]) => {
@@ -176,78 +198,108 @@ export default function OrderableList({
   useEffect(() => {
     cleanOrderRef.current = cleanOrder;
   }, [cleanOrder]);
-  const onAnchorClick = useCallback(({ target, x: x0, y: y0 }: MouseEvent) => {
-    let offset: [x: number, y: number];
-    const parent = findParentElement(target as HTMLDivElement);
-    const box = parent.getBoundingClientRect();
-    const els = Array.from(rootRef.current!.children) as HTMLDivElement[];
+  const onAnchorClick = useCallback(
+    ({ target: anchor, x: x0, y: y0 }: MouseEvent) => {
+      let offset: [x: number, y: number];
+      const orderableListItemForAnchor = findParentElement(
+        anchor as HTMLDivElement
+      );
+      const box = orderableListItemForAnchor.getBoundingClientRect();
+      const els = Array.from(rootRef.current!.children) as HTMLDivElement[];
+      const elIndex = els.indexOf(orderableListItemForAnchor);
 
-    const clone = parent.cloneNode(true) as HTMLDivElement;
-    currentClone.current = clone;
-    clone.setAttribute("data-testid", "orderable-list-clone");
-    clone.style.width = `${box.width}px`;
-    clone.style.height = `${box.height}px`;
-    clone.style.top = `${box.top}px`;
-    clone.style.left = `${box.left}px`;
-    clone.classList.add(Styles.clone);
-    parent.classList.add(Styles.currentOrdering);
-    parent.classList.remove(Styles.visible);
+      const clone = orderableListItemForAnchor.cloneNode(
+        true
+      ) as HTMLDivElement;
+      currentClone.current = clone;
+      clone.setAttribute("data-testid", "orderable-list-clone");
+      clone.style.width = `${box.width}px`;
+      clone.style.height = `${box.height}px`;
+      clone.style.top = `${box.top}px`;
+      clone.style.left = `${box.left}px`;
+      clone.classList.add(Styles.clone);
+      setTimeout(() => {
+        if (cloneClassName) clone.classList.add(cloneClassName);
+      }, 0);
 
-    const movementControl = ({ x: x1, y: y1 }: MouseEvent) => {
-      if (!offset) offset = [x1 - box.left, y1 - box.top];
+      orderableListItemForAnchor.classList.add(Styles.currentOrdering);
+      orderableListItemForAnchor.classList.remove(Styles.visible);
 
-      const [offsetX, offsetY] = offset;
-      clone.style.top = `${y1 - offsetY}px`;
-      clone.style.left = `${x1 - offsetX}px`;
-    };
+      const movementControl = ({ x: x1, y: y1 }: MouseEvent) => {
+        if (!offset) offset = [x1 - box.left, y1 - box.top];
 
-    document.body.appendChild(clone);
-    const deleteClone = () => {
-      window.removeEventListener("mousemove", movementControl);
-      window.removeEventListener("mouseup", deleteClone);
-      parent.style.visibility = "initial";
-      currentWorkingKey.current = undefined;
-      window.document.body.classList.remove(Styles.unselectable);
-      {
-        const els = Array.from(rootRef.current!.children) as HTMLDivElement[];
-        const elInvisible = els.find(
-          (a) =>
-            !a.classList.contains(Styles.visible) && a.style.maxHeight !== "0px"
-        )!;
-        const box = elInvisible.getBoundingClientRect();
-        function cleanUp() {
-          eventEmitter.dispatcher("order-stop");
-          rootRef.current.classList.remove(Styles.ordering);
-          for (let el of els) el.classList.remove(Styles.visible);
-          clone.remove();
-          currentClone.current = null;
-          for (let el of Array.from(elInvisible.children) as HTMLDivElement[])
-            el.style.height = "";
+        const [offsetX, offsetY] = offset;
+        clone.style.top = `${y1 - offsetY}px`;
+        clone.style.left = `${x1 - offsetX}px`;
+      };
+
+      document.body.appendChild(clone);
+      const deleteClone = () => {
+        window.removeEventListener("mousemove", movementControl);
+        window.removeEventListener("mouseup", deleteClone);
+        orderableListItemForAnchor.style.visibility = "initial";
+        currentWorkingKey.current = undefined;
+        window.document.body.classList.remove(Styles.unselectable);
+        {
+          const els = Array.from(rootRef.current!.children) as HTMLDivElement[];
+          const elInvisible = els.find(
+            (a) =>
+              !a.classList.contains(Styles.visible) &&
+              a.style.maxHeight !== "0px"
+          )!;
+          const box = elInvisible.getBoundingClientRect();
+          function cleanUp() {
+            if (shrinkToOnOrder)
+              rootRef.current.style.removeProperty("padding-top");
+
+            eventEmitter.dispatcher("order-stop");
+            rootRef.current.classList.remove(Styles.ordering);
+            if (reorderingClassName)
+              rootRef.current.classList.remove(reorderingClassName);
+            for (let el of els) el.classList.remove(Styles.visible);
+            clone.remove();
+            currentClone.current = null;
+            for (let el of Array.from(elInvisible.children) as HTMLDivElement[])
+              el.style.height = "";
+          }
+          if (
+            clone.style.top.startsWith(Math.floor(box.top).toString()) &&
+            clone.style.left.startsWith(Math.floor(box.left).toString())
+          ) {
+            cleanUp();
+          }
+          clone.style.top = `${box.top}px`;
+          clone.style.left = `${box.left}px`;
+          clone.style.transition = `top 500ms linear, left 500ms linear`;
+          clone.addEventListener("transitionend", () => {
+            cleanUp();
+          });
         }
-        if (
-          clone.style.top.startsWith(Math.floor(box.top).toString()) &&
-          clone.style.left.startsWith(Math.floor(box.left).toString())
-        ) {
-          cleanUp();
-        }
-        clone.style.top = `${box.top}px`;
-        clone.style.left = `${box.left}px`;
-        clone.style.transition = `top 500ms linear, left 500ms linear`;
-        clone.addEventListener("transitionend", () => {
-          cleanUp();
-        });
+      };
+      for (let el of els) {
+        el.classList.add(Styles.visible);
       }
-    };
-    for (let el of els) el.classList.add(Styles.visible);
-    parent.style.visibility = "hidden";
-    parent.classList.remove(Styles.visible);
-    rootRef.current.classList.add(Styles.ordering);
-    currentWorkingKey.current = cleanOrderRef.current[els.indexOf(parent)];
-    eventEmitter.dispatcher("order-start");
-    window.document.body.classList.add(Styles.unselectable);
-    window.addEventListener("mouseup", deleteClone);
-    window.addEventListener("mousemove", movementControl);
-  }, []);
+      if (shrinkToOnOrder) {
+        for (let el of els) el.style.maxHeight = `${el.clientHeight}px`;
+        const targetHeight = elIndex * shrinkToOnOrder;
+        const currentHeight =
+          orderableListItemForAnchor.offsetTop - els[0].offsetTop;
+        const paddingTop = currentHeight - targetHeight;
+        rootRef.current.style.paddingTop = `${paddingTop}px`;
+      }
+      orderableListItemForAnchor.style.visibility = "hidden";
+      orderableListItemForAnchor.classList.remove(Styles.visible);
+      rootRef.current.classList.add(Styles.ordering);
+      if (reorderingClassName)
+        rootRef.current.classList.add(reorderingClassName);
+      currentWorkingKey.current = cleanOrderRef.current[elIndex];
+      eventEmitter.dispatcher("order-start");
+      window.document.body.classList.add(Styles.unselectable);
+      window.addEventListener("mouseup", deleteClone);
+      window.addEventListener("mousemove", movementControl);
+    },
+    []
+  );
 
   useLayoutEffect(() => {
     if (currentClone.current) {
@@ -295,7 +347,9 @@ export default function OrderableList({
     >
       <div
         ref={rootRef}
-        className={`${Styles.root} ${className}`}
+        className={`${Styles.root} ${className} ${
+          shrinkToOnOrder ? Styles.shrinkable : ""
+        }`}
         {...toSpread}
       >
         {mode === OrderableListReorderMode.VERTICAL ? (

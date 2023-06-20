@@ -16,19 +16,18 @@ import Styles from "./OrderableList.module.scss";
 function focusDrag(whichOne: number) {
   cy.byTestId(`click`)
     .eq(whichOne - 1)
-    .trigger("mousedown");
+    .trigger("mousedown", { scrollBehavior: false });
   return cy.byTestId("orderable-list-clone");
 }
-/**
- * Emulates dragging from the anchor to another
- */
-function dragEl(ofWhich: number, to: "start" | "middle" | "end") {
+
+function dragOnly(ofWhich: number, to: "start" | "middle" | "end") {
   return cy
     .get("section")
     .eq(ofWhich - 1)
     .then((e) => {
       const el = e.get(0);
       cy.wrap(el).trigger("mousemove", {
+        scrollBehavior: false,
         offsetY:
           to === "middle"
             ? el.clientHeight / 2
@@ -37,8 +36,14 @@ function dragEl(ofWhich: number, to: "start" | "middle" | "end") {
             : el.clientHeight * 0.05,
       });
     })
-    .wait(500)
-    .realMouseUp();
+    .wait(500);
+}
+
+/**
+ * Emulates dragging from the anchor to another
+ */
+function dragEl(ofWhich: number, to: "start" | "middle" | "end") {
+  return dragOnly(ofWhich, to).realMouseUp();
 }
 it("Should be able to show the items", () => {
   cy.mount(<AllExamples.InitialImplementation />);
@@ -229,9 +234,21 @@ it("Should be able to transition grid elements", () => {
     .remount(all);
 });
 
+describe("Features", () => {
+  describe("Shrinkable items", () => {
+    it.only("Should be able to move shrinked elements", () => {
+      cy.mount(<AllExamples.InitialImplementation shrinkToOnOrder={96} />).wait(
+        1000
+      );
+      focusDrag(3).wait(1000);
+      dragOnly(2, "start");
+    });
+  });
+});
+
 describe("BUGFIX", () => {
   const U = "UNPROVIDED_CHILD";
-  it.only("Weird cenario disables first element mouseover", () => {
+  it("Weird cenario disables first element mouseover", () => {
     const [providedOrder, expectedResult, expectedCb] = [
       [U, "5", "4", "3", "2", "1"],
       "54312",

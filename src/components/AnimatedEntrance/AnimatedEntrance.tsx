@@ -88,7 +88,12 @@ export function AnimatedEntranceItem({
             currentTarget,
           }: TransitionEvent<HTMLDivElement>) => {
             if (target !== currentTarget) return;
-            uncontRef.current!.sectionRef.current!.style.maxHeight = "initial";
+            uncontRef.current!.sectionRef.current!.style.removeProperty(
+              "max-height"
+            );
+            uncontRef.current!.sectionRef.current!.classList.remove(
+              Styles.maxHeight
+            );
             uncontRef.current!.sectionRef.current!.removeEventListener(
               "transitionend",
               restoreAutoHeight as any
@@ -99,7 +104,12 @@ export function AnimatedEntranceItem({
             restoreAutoHeight as any
           );
         } else {
-          uncontRef.current!.sectionRef.current!.style.maxHeight = "initial";
+          uncontRef.current!.sectionRef.current!.style.removeProperty(
+            "max-height"
+          );
+          uncontRef.current!.sectionRef.current!.classList.remove(
+            Styles.maxHeight
+          );
         }
       }
     }, 100);

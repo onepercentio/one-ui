@@ -25,8 +25,16 @@
   }
 }
 
-.root > * {
-  transition: max-height 250ms;
+.shrinkable.ordering .visible {
+  max-height: var(--shrink-to) !important;
+}
+
+.root {
+  transition: padding-top 250ms linear;
+  > * {
+    transition: max-height 250ms linear;
+    overflow: hidden;
+  }
 }
 
 .transition {

@@ -69,3 +69,14 @@ export const InitialImplementation = (args: any) => {
 InitialImplementation.args = {} as Partial<
   React.ComponentProps<typeof OrderableList>
 >;
+
+export const Shrinkable = (args: any) => {
+  const shrinkTo = args.shrinkToOnOrder || 96;
+  return (
+    <>
+      <h1>Shrinking to {shrinkTo}px</h1>
+      <InitialImplementation shrinkToOnOrder={shrinkTo} />
+    </>
+  );
+};
+Shrinkable.args = {} as Partial<React.ComponentProps<typeof OrderableList>>;

@@ -220,8 +220,10 @@ export default function OrderableList({
       clone.style.top = `${box.top}px`;
       clone.style.left = `${box.left}px`;
       clone.classList.add(Styles.clone);
+      if (shrinkToOnOrder) clone.style.maxHeight = `${box.height}px`;
       setTimeout(() => {
         if (cloneClassName) clone.classList.add(cloneClassName);
+        if (shrinkToOnOrder) clone.style.maxHeight = `${shrinkToOnOrder}px`;
       }, 0);
 
       orderableListItemForAnchor.classList.add(Styles.currentOrdering);

@@ -8,9 +8,10 @@
 }
 
 .clone {
-  transition: top 250ms left 250ms;
+  transition: max-height 250ms;
   pointer-events: none;
   position: fixed;
+  overflow: hidden;
 }
 
 .ordering {
@@ -25,7 +26,11 @@
   }
 }
 
-.shrinkable.ordering section.visible {
+.shrinkable.ordering section.visible,
+.shrinkable.ordering section.currentOrdering {
+  max-height: var(--shrink-to) !important;
+}
+.shrinkable.ordering > section:not(.visible):not(.currentOrdering) > * {
   max-height: var(--shrink-to) !important;
 }
 

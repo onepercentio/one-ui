@@ -25,7 +25,7 @@
   }
 }
 
-.shrinkable.ordering .visible {
+.shrinkable.ordering section.visible {
   max-height: var(--shrink-to) !important;
 }
 
@@ -34,6 +34,13 @@
   > * {
     transition: max-height 250ms linear;
     overflow: hidden;
+  }
+
+  &::before {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    content: " ";
   }
 }
 

@@ -77,6 +77,7 @@ export default function OrderableList({
     }
 ) &
   DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>) {
+  const { current: anchorsList } = useRef<HTMLDivElement[]>([]);
   const eventEmitter = useEvents<Events, { [k in Events]: [] }>();
   const currentClone = useRef<HTMLDivElement | null>(null);
   const currentWorkingKey = useRef<string>();
@@ -137,6 +138,7 @@ export default function OrderableList({
         const offset = heightOfEl * 0.25;
         const isAfter = distanceFromTop > heightOfEl - offset;
         const isBefore = distanceFromTop < offset;
+
         const checkIfCanMove = (keyOfOverElement?: string) => {
           return (
             keyOfOverElement === undefined ||
@@ -199,7 +201,7 @@ export default function OrderableList({
     cleanOrderRef.current = cleanOrder;
   }, [cleanOrder]);
   const onAnchorClick = useCallback(
-    ({ target: anchor, x: x0, y: y0 }: MouseEvent) => {
+    ({ target: anchor }: Pick<MouseEvent, "target">) => {
       let offset: [x: number, y: number];
       const orderableListItemForAnchor = findParentElement(
         anchor as HTMLDivElement
@@ -225,7 +227,9 @@ export default function OrderableList({
       orderableListItemForAnchor.classList.add(Styles.currentOrdering);
       orderableListItemForAnchor.classList.remove(Styles.visible);
 
-      const movementControl = ({ x: x1, y: y1 }: MouseEvent) => {
+      const movementControl = (e: MouseEvent | TouchEvent) => {
+        const { x: x1, y: y1 } =
+          "touches" in e ? { x: e.touches[0].pageX, y: e.touches[0].pageY } : e;
         if (!offset) offset = [x1 - box.left, y1 - box.top];
 
         const [offsetX, offsetY] = offset;
@@ -236,6 +240,8 @@ export default function OrderableList({
       document.body.appendChild(clone);
       const deleteClone = () => {
         window.removeEventListener("mousemove", movementControl);
+        window.removeEventListener("touchmove", movementControl);
+        window.removeEventListener("touchend", deleteClone);
         window.removeEventListener("mouseup", deleteClone);
         orderableListItemForAnchor.style.visibility = "initial";
         currentWorkingKey.current = undefined;
@@ -249,8 +255,10 @@ export default function OrderableList({
           )!;
           const box = elInvisible.getBoundingClientRect();
           function cleanUp() {
-            if (shrinkToOnOrder)
+            if (shrinkToOnOrder) {
               rootRef.current.style.removeProperty("padding-top");
+              rootRef.current.style.removeProperty("min-height");
+            }
 
             eventEmitter.dispatcher("order-stop");
             rootRef.current.classList.remove(Styles.ordering);
@@ -286,6 +294,7 @@ export default function OrderableList({
           orderableListItemForAnchor.offsetTop - els[0].offsetTop;
         const paddingTop = currentHeight - targetHeight;
         rootRef.current.style.paddingTop = `${paddingTop}px`;
+        rootRef.current.style.minHeight = `${rootRef.current.clientHeight}px`;
       }
       orderableListItemForAnchor.style.visibility = "hidden";
       orderableListItemForAnchor.classList.remove(Styles.visible);
@@ -297,6 +306,8 @@ export default function OrderableList({
       window.document.body.classList.add(Styles.unselectable);
       window.addEventListener("mouseup", deleteClone);
       window.addEventListener("mousemove", movementControl);
+      window.addEventListener("touchend", deleteClone);
+      window.addEventListener("touchmove", movementControl);
     },
     []
   );
@@ -333,14 +344,59 @@ export default function OrderableList({
       key: order[i],
     }));
 
+  useLayoutEffect(() => {
+    rootRef.current!.addEventListener("touchstart", (e) => {
+      const relatedAnchor = anchorsList.find((anchor) =>
+        anchor.contains(e.target as any)
+      );
+      if (relatedAnchor) {
+        e.preventDefault();
+        onAnchorClick({
+          target: relatedAnchor,
+        });
+
+        const moveCb = throttle((e: TouchEvent) => {
+          const touch = e.touches[0];
+          const [x, y] = [touch.clientX, touch.clientY];
+          const els = Array.from(rootRef.current.children) as HTMLDivElement[];
+          const insideElIndex = els.findIndex((c) => {
+            return c.getBoundingClientRect().top > y;
+          });
+          if (insideElIndex) {
+            const el = els[insideElIndex - 1];
+            const rect = el.getBoundingClientRect();
+            calculateReordering(
+              {
+                target: el,
+                offsetY: y - rect.top,
+              },
+              els,
+              cleanOrderRef.current
+            );
+          }
+        }, 500);
+        const removeCb = () => {
+          rootRef.current!.removeEventListener("touchmove", moveCb);
+          rootRef.current!.removeEventListener("touchend", removeCb);
+        };
+        rootRef.current!.addEventListener("touchmove", moveCb);
+        rootRef.current!.addEventListener("touchend", removeCb);
+      }
+    });
+  }, []);
+
+  const { current: debug } = useRef(Date.now());
+
   return (
     <OrderableListContext.Provider
       value={{
         bindAnchor: (el) => {
           el.addEventListener("mousedown", onAnchorClick);
+          anchorsList.push(el);
         },
         unbindAnchor: (el) => {
           el.removeEventListener("mousedown", onAnchorClick);
+          anchorsList.splice(anchorsList.indexOf(el), 1);
         },
         on: eventEmitter.subscriber,
       }}

@@ -100,7 +100,7 @@ it("Should animate the item repositioning when moving it", () => {
   // Backwards
   switchPlaces(5, 4, "1 2 3 5 4");
 });
-it("Should work with variable height elements", () => {
+it.only("Should work with variable height elements", () => {
   cy.viewport(1920, 1080 * 1.6);
   function Wrapper({ i }: { i: number }) {
     const { anchorRef } = useOrderableListAnchor();
@@ -114,6 +114,7 @@ it("Should work with variable height elements", () => {
           data-testid={`click`}
         >
           <MutableHamburgerButton size={24} />
+          {i}
         </div>
       </>
     );
@@ -143,18 +144,24 @@ it("Should work with variable height elements", () => {
       </div>
     );
   }
-  cy.mount(
+  const chain = cy.mountChain((missingEls: boolean) => (
     <Comp onChangeKeyOrder={() => {}}>
-      <VariableWrapper key={"1"} i={1} />
-      <VariableWrapper key={"2"} i={2} />
-      <VariableWrapper key={"3"} i={3} />
-      <VariableWrapper key={"4"} i={4} />
-      <VariableWrapper key={"5"} i={5} />
+      {[
+        <VariableWrapper key={"1"} i={1} />,
+        <VariableWrapper key={"2"} i={2} />,
+        <VariableWrapper key={"3"} i={3} />,
+        <VariableWrapper key={"4"} i={4} />,
+        <VariableWrapper key={"5"} i={5} />,
+      ].filter((_, i) => (missingEls ? false : true))}
     </Comp>
-  ).wait(700);
+  ));
+
+  chain.remount(false).wait(700);
 
   focusDrag(5);
   dragEl(2, "start").wait(1500);
+
+  chain.remount(true).wait(1000);
 });
 function gridRender() {
   const chain = cy.mountChain((currentOrder: number[]) => {
@@ -236,7 +243,7 @@ it("Should be able to transition grid elements", () => {
 
 describe("Features", () => {
   describe("Shrinkable items", () => {
-    it.only("Should be able to move shrinked elements", () => {
+    it("Should be able to move shrinked elements", () => {
       cy.mount(<AllExamples.InitialImplementation shrinkToOnOrder={96} />).wait(
         1000
       );

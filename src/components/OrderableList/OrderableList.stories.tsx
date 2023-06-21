@@ -15,7 +15,7 @@ function Wrapper({ i }: { i: number }) {
         ref={anchorRef}
         style={{
           display: "inline-block",
-          height: 300,
+          height: 100,
         }}
         data-testid={`click`}
       >

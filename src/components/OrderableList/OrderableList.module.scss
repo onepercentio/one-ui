@@ -1,3 +1,6 @@
+$baseSpeed: 300ms;
+$fast: var(--orderable-list--speed);
+
 .unselectable * {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -8,7 +11,8 @@
 }
 
 .clone {
-  transition: max-height 250ms;
+  --orderable-list--speed: #{$baseSpeed};
+  transition: max-height $fast linear;
   pointer-events: none;
   position: fixed;
   overflow: hidden;
@@ -33,11 +37,15 @@
 .shrinkable.ordering > section:not(.visible):not(.currentOrdering) > * {
   max-height: var(--shrink-to) !important;
 }
+.transitionHeight {
+  transition: max-height $fast linear;
+}
 
 .root {
-  transition: padding-top 250ms linear;
+  --orderable-list--speed: #{$baseSpeed};
+  transition: padding-top $fast linear;
   > * {
-    transition: max-height 250ms linear;
+    transition: max-height $fast linear;
     overflow: hidden;
   }
 

@@ -20,6 +20,7 @@ import AnimatedEntrance from "../AnimatedEntrance";
 import { TransitionAnimationTypes } from "../Transition";
 import Styles from "./OrderableList.module.scss";
 import useEvents from "../../hooks/utility/useEvents";
+import ownEvent from "../../utils/ownEvent";
 
 type Events = "order-stop" | "order-start";
 
@@ -255,6 +256,17 @@ export default function OrderableList({
               !a.classList.contains(Styles.visible) &&
               a.style.maxHeight !== "0px"
           )!;
+          if (shrinkToOnOrder) {
+            const child = elInvisible.lastChild as HTMLDivElement;
+            child.style.maxHeight = `${child.scrollHeight}px`;
+            child.classList.add(Styles.transitionHeight);
+            const onEnd = ownEvent(() => {
+              child.removeEventListener("transitionend", onEnd);
+              child.style.maxHeight = `initial`;
+              child.classList.remove(Styles.transitionHeight);
+            });
+            child.addEventListener("transitionend", onEnd);
+          }
           const box = elInvisible.getBoundingClientRect();
           function cleanUp() {
             if (shrinkToOnOrder) {

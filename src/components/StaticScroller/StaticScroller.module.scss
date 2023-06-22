@@ -1,0 +1,12 @@
+.root {
+  display: flex;
+  overflow: auto;
+  > * {
+    flex-shrink: 0;
+  }
+  > :first-child {
+    z-index: -1;
+    position: sticky;
+    left: 0;
+  }
+}

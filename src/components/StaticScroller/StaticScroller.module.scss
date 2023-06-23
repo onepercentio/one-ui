@@ -5,8 +5,10 @@
     flex-shrink: 0;
   }
   > :first-child {
-    z-index: -1;
     position: sticky;
     left: 0;
+  }
+  > :not(:first-child) {
+    z-index: 1;
   }
 }

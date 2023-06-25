@@ -41,13 +41,15 @@ export default function usePaginationControls(
           baseWidth! || containerRef.current!.firstElementChild!.clientWidth;
         const howMuchDoesTheScrollAddsUpTo =
           containerRef.current!.scrollLeft / childBaseWidth -
-          Math.floor(containerRef.current!.scrollLeft / childBaseWidth);
+          Math.floor(
+            (containerRef.current!.scrollLeft + (direction === "l" ? -1 : 0)) /
+              childBaseWidth
+          );
         const howMuchElementsFitOnAPage =
           containerRef.current!.clientWidth / childBaseWidth;
 
-        const howMuchElementsFullyFitOnAPage = Math.floor(
-          howMuchElementsFitOnAPage
-        ) || 1;
+        const howMuchElementsFullyFitOnAPage =
+          Math.floor(howMuchElementsFitOnAPage) || 1;
 
         const directionScale =
           direction === "l"
@@ -139,6 +141,7 @@ export default function usePaginationControls(
   return {
     controls: [
       <Fade
+        key={"l"}
         active={leftControl}
         className={`${Styles.left} ${Styles.control} ${className}`}
         data-testid={usePaginationControlsTestIds.LEFT_CONTROL}
@@ -147,6 +150,7 @@ export default function usePaginationControls(
         {leftControl && <LeftControl />}
       </Fade>,
       <Fade
+        key={"r"}
         active={rightControl}
         className={`${Styles.right} ${Styles.control} ${className}`}
         data-testid={usePaginationControlsTestIds.RIGHT_CONTROL}

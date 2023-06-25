@@ -42,6 +42,7 @@ $fast: var(--orderable-list--speed);
 }
 
 .root {
+  position: relative;
   --orderable-list--speed: #{$baseSpeed};
   transition: padding-top $fast linear;
   > * {

@@ -289,20 +289,21 @@ export default function OrderableList({
             clone.style.left.startsWith(Math.floor(box.left).toString())
           ) {
             cleanUp();
+          } else {
+            clone.style.top = `${box.top}px`;
+            clone.style.left = `${box.left}px`;
+            clone.style.transition = `top 500ms linear, left 500ms linear`;
+            clone.addEventListener("transitionend", () => {
+              cleanUp();
+            });
           }
-          clone.style.top = `${box.top}px`;
-          clone.style.left = `${box.left}px`;
-          clone.style.transition = `top 500ms linear, left 500ms linear`;
-          clone.addEventListener("transitionend", () => {
-            cleanUp();
-          });
         }
       };
       for (let el of els) {
         el.classList.add(Styles.visible);
       }
       if (shrinkToOnOrder) {
-        for (let el of els) el.style.maxHeight = `${el.clientHeight}px`;
+        for (let el of els) el.style.maxHeight = `${el.scrollHeight}px`;
         const targetHeight = elIndex * shrinkToOnOrder;
         const currentHeight =
           orderableListItemForAnchor.offsetTop - els[0].offsetTop;

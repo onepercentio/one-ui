@@ -76,6 +76,7 @@ export default function Collapsable({
   useLayoutEffect(() => {
     const el = contentRef.current!;
     if (open) {
+      el.style.marginTop = ``;
       el.style.height = el.scrollHeight + "px";
       el.parentElement!.style.position = "relative";
       if (mode === "float") {
@@ -127,7 +128,6 @@ export default function Collapsable({
       const onTransitionEnd = () => {
         el.parentElement!.style.position = "initial";
         el.classList.remove(Styles.transitionMarginTop);
-        el.style.marginTop = ``;
         el.removeEventListener("transitionend", onTransitionEnd);
       };
       el.addEventListener("transitionend", onTransitionEnd);

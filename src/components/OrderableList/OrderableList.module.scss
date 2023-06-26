@@ -48,6 +48,9 @@ $fast: var(--orderable-list--speed);
   > * {
     transition: max-height $fast linear;
     overflow: hidden;
+    > * > * {
+      flex-shrink: 0;
+    }
   }
 
   &::before {

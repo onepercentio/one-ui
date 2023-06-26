@@ -257,7 +257,7 @@ export default function OrderableList({
               a.style.maxHeight !== "0px"
           )!;
           if (shrinkToOnOrder) {
-            const child = elInvisible.lastChild as HTMLDivElement;
+            const child = elInvisible.lastElementChild as HTMLDivElement;
             child.style.maxHeight = `${child.scrollHeight}px`;
             child.classList.add(Styles.transitionHeight);
             const onEnd = ownEvent(() => {
@@ -374,11 +374,13 @@ export default function OrderableList({
           const touch = e.touches[0];
           const [x, y] = [touch.clientX, touch.clientY];
           const els = Array.from(rootRef.current.children) as HTMLDivElement[];
-          const insideElIndex = els.findIndex((c) => {
-            return c.getBoundingClientRect().top > y;
+          const currentElementIdx = els.findIndex((c, i) => {
+            const rect = c?.getBoundingClientRect();
+            if (!rect) return false;
+            return rect.top < y && rect.top + rect.height > y;
           });
-          if (insideElIndex) {
-            const el = els[insideElIndex - 1];
+          if (currentElementIdx !== -1) {
+            const el = els[currentElementIdx];
             const rect = el.getBoundingClientRect();
             calculateReordering(
               {
@@ -390,32 +392,40 @@ export default function OrderableList({
             );
           }
         }, 500);
-        const removeCb = () => {
-          rootRef.current!.removeEventListener("touchmove", moveCb);
-          rootRef.current!.removeEventListener("touchend", removeCb);
+        const t = e.target as HTMLDivElement;
+        const touchMoveCb = (e: TouchEvent) => {
+          e.stopPropagation();
+          window.dispatchEvent(new TouchEvent(e.type, e as any));
+          moveCb(e);
         };
-        rootRef.current!.addEventListener("touchmove", moveCb);
-        rootRef.current!.addEventListener("touchend", removeCb);
+        const removeCb = (e: TouchEvent) => {
+          t.removeEventListener("touchmove", touchMoveCb);
+          t.removeEventListener("touchend", removeCb);
+          window.dispatchEvent(new TouchEvent(e.type, e as any));
+        };
+        t.addEventListener("touchmove", touchMoveCb);
+        t.addEventListener("touchend", removeCb);
       }
     });
   }, []);
 
-  const { current: debug } = useRef(Date.now());
+  const e = useMemo(
+    () => ({
+      bindAnchor: (el: HTMLDivElement) => {
+        el.addEventListener("mousedown", onAnchorClick);
+        anchorsList.push(el);
+      },
+      unbindAnchor: (el: HTMLDivElement) => {
+        el.removeEventListener("mousedown", onAnchorClick);
+        anchorsList.splice(anchorsList.indexOf(el), 1);
+      },
+      on: eventEmitter.subscriber,
+    }),
+    []
+  );
 
   return (
-    <OrderableListContext.Provider
-      value={{
-        bindAnchor: (el) => {
-          el.addEventListener("mousedown", onAnchorClick);
-          anchorsList.push(el);
-        },
-        unbindAnchor: (el) => {
-          el.removeEventListener("mousedown", onAnchorClick);
-          anchorsList.splice(anchorsList.indexOf(el), 1);
-        },
-        on: eventEmitter.subscriber,
-      }}
-    >
+    <OrderableListContext.Provider value={e}>
       <div
         ref={rootRef}
         className={`${Styles.root} ${className} ${

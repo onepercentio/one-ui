@@ -8,6 +8,8 @@ import Comp, {
 import * as AllExamples from "../../../../src/components/OrderableList/OrderableList.stories";
 import MutableHamburgerButton from "../../../../src/components/MutableHamburgerButton";
 import Styles from "./OrderableList.module.scss";
+import chroma from "chroma-js";
+import random from "seedrandom";
 
 /**
  * Emulates the focus
@@ -100,7 +102,7 @@ it("Should animate the item repositioning when moving it", () => {
   // Backwards
   switchPlaces(5, 4, "1 2 3 5 4");
 });
-it.only("Should work with variable height elements", () => {
+it("Should work with variable height elements", () => {
   cy.viewport(1920, 1080 * 1.6);
   function Wrapper({ i }: { i: number }) {
     const { anchorRef } = useOrderableListAnchor();
@@ -249,6 +251,34 @@ describe("Features", () => {
       );
       focusDrag(3).wait(1000);
       dragOnly(2, "start");
+    });
+  });
+  describe("TOUCH", () => {
+    it.only("Should be able to reorder items via touch", () => {
+      function Wrapper({ color }: { color: string }) {
+        const { anchorRef } = useOrderableListAnchor();
+        return (
+          <div
+            style={{ backgroundColor: color, height: "300px", width: "100%" }}
+          >
+            <div>
+              <span ref={anchorRef as any}>DRAG ME</span>
+            </div>
+          </div>
+        );
+      }
+      const list = new Array(3).fill(3).map((_, i) => {
+        const color = `rgb(${255 * random(`${i}r`).double()},${
+          255 * random(`${i}g`).double()
+        },${255 * random(`${i}b`).double()})`;
+
+        return <Wrapper key={`row-${i}`} color={color} />;
+      });
+      cy.mount(
+        <div style={{ padding: "200px" }}>
+          <Comp shrinkToOnOrder={100}>{list}</Comp>
+        </div>
+      ).wait(1000);
     });
   });
 });

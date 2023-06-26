@@ -42,3 +42,8 @@ declare module "use-wallet" {
   export const useWallet: typeof UseWallet["use-wallet"];
   export const UseWalletProvider: typeof UseWallet["UseWalletProvider"];
 }
+
+declare module "*.mp4" {
+  const v: string;
+  export default v;
+}

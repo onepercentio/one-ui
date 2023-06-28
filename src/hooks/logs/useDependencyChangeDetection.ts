@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import log from "../../models/DebugLogger";
 
 export default function useDependencyChangeDetection(
   tag: string,
@@ -10,7 +9,7 @@ export default function useDependencyChangeDetection(
     useEffect(() => {
       if (!prevValue.current) return;
       if (process.env.NODE_ENV === "development")
-        log(
+        require('../../models/DebugLogger').default(
           `${useDependencyChangeDetection.name}:${tag}`,
           `Element index ${dependencyIndex} (prev: ${JSON.stringify(
             prevValue.current

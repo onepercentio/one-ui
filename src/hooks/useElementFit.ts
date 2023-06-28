@@ -1,13 +1,9 @@
 import {
-  Ref,
   RefObject,
-  useEffect,
   useLayoutEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
-import log from "../models/DebugLogger";
 
 /**
  * This hook receives a base width of an element and returns how much items fit **vertically** inside the referenced html element
@@ -36,8 +32,7 @@ export default function useElementFit(
     const maxItemsVertically = Math.floor(width / baseWidth) || 1;
 
     if (process.env.NODE_ENV === "development")
-      log(`${useElementFit.name}:clientWidth`, ref.current?.clientWidth);
-
+      require('../models/DebugLogger').default(`${useElementFit.name}:clientWidth`, ref.current?.clientWidth);
     return maxItemsVertically * fittingRows();
   }
   const [itemsToShow, setItemsToShow] = useState(

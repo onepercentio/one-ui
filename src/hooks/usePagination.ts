@@ -145,7 +145,9 @@ export function useContainerPagination(
       }
     );
 
-    el.addEventListener("scroll", calculateIfReachedLimit);
+    el.addEventListener("scroll", calculateIfReachedLimit, {
+      passive: true,
+    });
     return () => el.removeEventListener("scroll", calculateIfReachedLimit);
   }, [cb]);
 

@@ -51,7 +51,9 @@ export default function StaticScroller({
       checkIfNeedsToHide();
       throtleSetLast(el.scrollLeft);
     };
-    el.addEventListener("scroll", onScroll);
+    el.addEventListener("scroll", onScroll, {
+      passive: true
+    });
 
     return () => {
       el.removeEventListener("scroll", onScroll);

@@ -290,7 +290,9 @@ function _PaginationIndicator(
     const onScroll = (e: Event) =>
       updatePageIndicators(e.currentTarget as HTMLDivElement, defs.pages);
     updatePageIndicators(el, defs.pages);
-    el.addEventListener("scroll", onScroll);
+    el.addEventListener("scroll", onScroll, {
+      passive: true
+    });
     return () => {
       el.removeEventListener("scroll", onScroll);
     };

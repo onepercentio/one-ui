@@ -126,7 +126,9 @@ export default function usePaginationControls(
       move(dir, true)();
       startingX = undefined;
     };
-    el.addEventListener("scroll", throttledCheck);
+    el.addEventListener("scroll", throttledCheck, {
+      passive: true,
+    });
     el.addEventListener("touchstart", onTouchStart);
     el.addEventListener("touchend", onTouchEnd);
     el.addEventListener("touchmove", onTouchMove);

@@ -83,7 +83,9 @@ export default function useContainedRepositioning(
       reposition();
       reposition.flush();
 
-      relativeParent.addEventListener("scroll", reposition);
+      relativeParent.addEventListener("scroll", reposition, {
+        passive: true
+      });
       return () => {
         reposition.cancel();
         relativeParent.removeEventListener("scroll", reposition);

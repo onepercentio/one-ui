@@ -24,6 +24,11 @@ export type OneUIContextSpecs = {
           typeof import("../components/Text")["default"]
         >["type"]]?: string;
       };
+      htmlTag?: {
+        [k in React.ComponentProps<
+          typeof import("../components/Text")["default"]
+        >["type"]]?: 'p' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+      };
     };
     button?: {
       className?: {

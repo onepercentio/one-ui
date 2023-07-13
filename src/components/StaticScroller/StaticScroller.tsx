@@ -1,8 +1,13 @@
 import React, {
   DetailedHTMLProps,
+  ForwardedRef,
   HTMLAttributes,
+  MutableRefObject,
   PropsWithChildren,
+  createRef,
+  forwardRef,
   useLayoutEffect,
+  useMemo,
   useRef,
 } from "react";
 import Styles from "./StaticScroller.module.scss";
@@ -11,13 +16,18 @@ import { debounce, throttle } from "lodash";
 /**
  * Mantains a static content at the start of the container and when scrolled animates it's concealment
  **/
-export default function StaticScroller({
-  children,
-  ...props
-}: PropsWithChildren<
-  DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>
->) {
-  const rootRef = useRef<HTMLDivElement>(null);
+function StaticScroller(
+  {
+    children,
+    ...props
+  }: PropsWithChildren<
+    DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>
+  >,
+  ref: ForwardedRef<HTMLDivElement>
+) {
+  const rootRef = useMemo(() => {
+    return ref as MutableRefObject<HTMLDivElement> || createRef<HTMLDivElement>();
+  }, [ref]);
 
   useLayoutEffect(() => {
     const el = rootRef.current!;
@@ -52,7 +62,7 @@ export default function StaticScroller({
       throtleSetLast(el.scrollLeft);
     };
     el.addEventListener("scroll", onScroll, {
-      passive: true
+      passive: true,
     });
 
     return () => {
@@ -66,3 +76,5 @@ export default function StaticScroller({
     </div>
   );
 }
+
+export default forwardRef(StaticScroller);

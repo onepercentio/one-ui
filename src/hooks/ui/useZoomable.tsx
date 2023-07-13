@@ -129,6 +129,13 @@ export default function useZoomable(id: string) {
     el.addEventListener("click", _zoom);
     return () => {
       el.classList.remove(Styles.zoomableIndicator);
+      const bd = getBackdrop();
+      if (bd) {
+        bd.style.opacity = "0";
+        bd.addEventListener("transitionend", () => {
+          bd.remove();
+        });
+      }
     };
   }, []);
 

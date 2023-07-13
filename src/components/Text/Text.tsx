@@ -20,9 +20,12 @@ export function _Text(
   _ref?: ForwardedRef<HTMLParagraphElement>
 ) {
   const classNameType = useOneUIConfig("component.text.className", {});
+  const tagByType = useOneUIConfig("component.text.htmlTag", {});
+
+  const TagType = tagByType[type] || "p";
 
   return (
-    <p
+    <TagType
       ref={_ref}
       className={`${Styles.text} ${
         classNameType[type] || Styles[type]
@@ -30,7 +33,7 @@ export function _Text(
       {...otherProps}
     >
       {children}
-    </p>
+    </TagType>
   );
 }
 

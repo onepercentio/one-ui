@@ -215,7 +215,9 @@ export default function OrderableList({
         true
       ) as HTMLDivElement;
       currentClone.current = clone;
-      clone.setAttribute("data-testid", "orderable-list-clone");
+      if (process.env.NODE_ENV === "development")
+        clone.setAttribute("data-testid", "orderable-list-clone");
+      clone.setAttribute("data-orderableid", "orderable-list-clone");
       clone.style.width = `${box.width}px`;
       clone.style.height = `${box.height}px`;
       clone.style.top = `${box.top}px`;

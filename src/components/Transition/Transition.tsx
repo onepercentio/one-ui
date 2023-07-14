@@ -413,11 +413,11 @@ function Transition(
       containerRef.current!.style.overflow = "";
     }
   }, [childrenWrappers.length]);
-  const {
-    transitionType: _transitionType,
-    config,
-    ...propsToSpread
-  } = props as any;
+  
+  const propsToSpread = { ...props } as any;
+  delete propsToSpread.transitionType;
+  delete propsToSpread.config;
+
   return (
     <>
       <section

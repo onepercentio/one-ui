@@ -347,7 +347,9 @@ export default function OrderableList({
     }
   }, [cleanOrder]);
 
-  const { keyOrder: _, onChangeKeyOrder: __, ...toSpread } = props as any;
+  const toSpread = { ...props } as any;
+  delete toSpread.keyOrder;
+  delete toSpread.onChangeKeyOrder;
 
   const childrenToRender = [...children]
     .filter((a) => cleanOrder.includes(a.key as string))

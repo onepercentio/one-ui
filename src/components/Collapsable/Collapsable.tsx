@@ -137,7 +137,8 @@ export default function Collapsable({
     }
   }, [open]);
 
-  const { alignTo, ...propsToSpread } = props as any;
+  const propsToSpread = { ...props } as any;
+  delete propsToSpread.alignTo;
 
   return (
     <div

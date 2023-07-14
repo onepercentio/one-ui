@@ -7,7 +7,9 @@
   "license": "MIT",
   "types": "src/types.ts",
   "devDependencies": {
-    "@babel/core": "^7.16.0",
+    "@babel/cli": "^7.22.9",
+    "@babel/core": "^7.22.9",
+    "@babel/preset-typescript": "^7.22.5",
     "@cypress/react": "^5.12.5",
     "@firebase/rules-unit-testing": "^2.0.2",
     "@metamask/providers": "^9.1.0",
@@ -32,6 +34,9 @@
     "@types/react-router-dom": "^5.3.3",
     "assert": "^2.0.0",
     "babel-loader": "^8.2.3",
+    "babel-plugin-react-remove-properties": "^0.3.0",
+    "babel-plugin-remove-object-properties": "^1.0.2",
+    "babel-plugin-remove-unused-vars": "2.2.0",
     "buffer": "^6.0.3",
     "chroma-js": "^2.4.2",
     "cpy-cli": "^3.1.1",
@@ -85,10 +90,9 @@
   "scripts": {
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "prebuild": "cd src",
-    "copy-css": "cpy --cwd=\"src\" \"**/*.{scss,svg}\" \"../dist\" --parents",
-    "build": "tsc && npm run copy-css",
-    "postbuild": "cd ..",
+    "prebuild": "rm -rf ./dist",
+    "build": "babel src --ignore \"**/*.e2e.ts,**/*.test.ts,**/*.test.tsx,**/*.stories.tsx\" --out-dir dist --extensions \".ts,.tsx\" --copy-files --no-copy-ignored",
+    "postbuild": "tsc",
     "dev": "tsc --watch",
     "test:watch": "jest --watchAll --coverage",
     "deploy:storybook": "yarn build-storybook && firebase deploy --only hosting",
@@ -109,8 +113,8 @@
     ]
   },
   "peerDependencies": {
-    "color-seed": "^1.1.3",
     "chroma-js": "^2.4.2",
+    "color-seed": "^1.1.3",
     "use-wallet": "0.13.5"
   }
 }

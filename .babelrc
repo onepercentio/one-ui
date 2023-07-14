@@ -1,0 +1,18 @@
+{
+  "plugins": [
+    ["react-remove-properties", { "properties": ["data-testid"] }],
+    ["remove-object-properties", { "regexp": "data-testid" }],
+    "remove-unused-vars"
+  ],
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": "> 0.25%, not dead",
+        "exclude": ["transform-block-scoping", "transform-for-of"]
+      }
+    ],
+    "@babel/preset-typescript",
+    "@babel/preset-react"
+  ]
+}

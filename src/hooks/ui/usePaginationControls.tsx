@@ -4,6 +4,7 @@ import Fade from "../../components/FadeIn";
 import { useOneUIConfig } from "../../context/OneUIProvider";
 import Styles from "./usePaginationControls.module.scss";
 import { isSameTarget } from "../../utils/html.utils";
+import { usePaginationControlsTestIds } from "./usePaginationControls.e2e";
 
 /**
  * This hook handles the display of pagination controls for the user to move to another page
@@ -163,9 +164,4 @@ export default function usePaginationControls(
     ],
     checkControlsRequirement,
   };
-}
-
-export enum usePaginationControlsTestIds {
-  LEFT_CONTROL = "page-l",
-  RIGHT_CONTROL = "page-r",
 }

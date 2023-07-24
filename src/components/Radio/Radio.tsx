@@ -1,11 +1,11 @@
 import React, { PropsWithChildren } from "react";
 import { useOneUIConfig } from "../../context/OneUIProvider";
-import Styles from "./CheckBox.module.scss";
+import Styles from "./Radio.module.scss";
 
 /**
- * A simple checkbox with nissan guidelines
+ * A simple radio with nice guidelines
  **/
-export default function CheckBox({
+export default function Radio({
   checked,
   onToggle,
   label,
@@ -28,7 +28,7 @@ export default function CheckBox({
     HTMLSpanElement
   >) {
   const Checkbox = useOneUIConfig(
-    "component.checkbox.Component",
+    "component.radio.Component",
     "span" as any
   ) as any;
   return (
@@ -46,8 +46,7 @@ export default function CheckBox({
           label ? Styles.wContent : ""
         }`}
       />
-      <input type="checkbox" name={groupId} id={value} checked={checked} />
-
+      <input type="radio" name={groupId} id={value} checked={checked} />
       {label}
     </label>
   );

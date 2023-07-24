@@ -153,16 +153,18 @@ function Select<I extends SelectItem>({
         }}
       >
         {filter && (
-          <Input
-            onChange={({ target: { value } }) => setFilterTerm(value)}
-            decoration={<span>🔎&nbsp;</span>}
-            className={Styles.searchInput}
-            containerProps={{
-              onClick: (e) => e.stopPropagation(),
-            }}
-            border={false}
-            value={filterTerm}
-          />
+          <div>
+            <Input
+              onChange={({ target: { value } }) => setFilterTerm(value)}
+              decoration={<span>🔎&nbsp;</span>}
+              className={Styles.searchInput}
+              containerProps={{
+                onClick: (e) => e.stopPropagation(),
+              }}
+              border={false}
+              value={filterTerm}
+            />
+          </div>
         )}
         {filteredItems.map((i) => (
           <Text

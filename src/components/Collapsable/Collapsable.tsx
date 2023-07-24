@@ -1,9 +1,12 @@
 import FadeIn from "../FadeIn";
 import React, {
+  ForwardedRef,
   HTMLAttributes,
   HTMLProps,
   PropsWithChildren,
+  forwardRef,
   useEffect,
+  useImperativeHandle,
   useLayoutEffect,
   useRef,
   useState,
@@ -17,52 +20,55 @@ import {
 /**
  * Wrapps some content on a collapsable header
  **/
-export default function Collapsable({
-  children,
-  title,
-  className,
-  onToggleOpen,
-  open,
-  id,
-  mode = "block",
-  contentClassName,
-  onContentClick,
-  keepUnderlayingElement,
-  onClickOut,
-  ...props
-}: PropsWithChildren<
+function Collapsable(
   {
-    title: React.ReactNode;
-    className?: string;
-    contentClassName?: string;
-    onToggleOpen: (isOpen: boolean) => void;
-    open: boolean;
-    id?: string | undefined;
-    "data-testid"?: string;
-    onContentClick?: HTMLAttributes<HTMLInputElement>["onClick"];
-    /**
-     * This flag indicates if the collapsable content should be kept in HTML while it's collapsed
-     *
-     * Usefull for responsive layouts where the collapsable should not "behave" as a collapsable content
-     */
-    keepUnderlayingElement?: boolean;
+    children,
+    title,
+    className,
+    onToggleOpen,
+    open,
+    id,
+    mode = "block",
+    contentClassName,
+    onContentClick,
+    keepUnderlayingElement,
+    onClickOut,
+    ...props
+  }: PropsWithChildren<
+    {
+      title: React.ReactNode;
+      className?: string;
+      contentClassName?: string;
+      onToggleOpen: (isOpen: boolean) => void;
+      open: boolean;
+      id?: string | undefined;
+      "data-testid"?: string;
+      onContentClick?: HTMLAttributes<HTMLInputElement>["onClick"];
+      /**
+       * This flag indicates if the collapsable content should be kept in HTML while it's collapsed
+       *
+       * Usefull for responsive layouts where the collapsable should not "behave" as a collapsable content
+       */
+      keepUnderlayingElement?: boolean;
 
-    /**
-     * To detect when the user clicks out of the container
-     */
-    onClickOut?: () => void;
-  } & (
-    | {
-        /** This will define if the content will be floating under the title or will expand all the container as one */
-        mode?: "block";
-      }
-    | {
-        mode: "float";
-        alignTo: AnchoredTooltipAlignment;
-      }
-  )
-> &
-  Omit<HTMLAttributes<HTMLDivElement>, "title">) {
+      /**
+       * To detect when the user clicks out of the container
+       */
+      onClickOut?: () => void;
+    } & (
+      | {
+          /** This will define if the content will be floating under the title or will expand all the container as one */
+          mode?: "block";
+        }
+      | {
+          mode: "float";
+          alignTo: AnchoredTooltipAlignment;
+        }
+    )
+  > &
+    Omit<HTMLAttributes<HTMLDivElement>, "title">,
+  ref: ForwardedRef<{ redimension: () => void }>
+) {
   const contentRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLDivElement>(null);
 
@@ -73,11 +79,17 @@ export default function Collapsable({
     }
   }, [!!onClickOut, open]);
 
-  useLayoutEffect(() => {
+  function redimension(canShrink: boolean = false) {
     const el = contentRef.current!;
+    const contentEl = el.firstElementChild! as HTMLDivElement;
     if (open) {
       el.style.marginTop = ``;
-      el.style.height = el.scrollHeight + "px";
+      el.style.height =
+        Math.min(
+          canShrink ? contentEl.clientHeight : Number.POSITIVE_INFINITY,
+          el.scrollHeight,
+          visualViewport!.height - 16
+        ) + "px";
       el.parentElement!.style.position = "relative";
       if (mode === "float") {
         el.style.minHeight = el.style.height;
@@ -135,6 +147,14 @@ export default function Collapsable({
         el.removeEventListener("transitionend", onTransitionEnd);
       };
     }
+  }
+
+  useImperativeHandle(ref, () => ({
+    redimension: () => redimension(true),
+  }));
+
+  useLayoutEffect(() => {
+    redimension();
   }, [open]);
 
   const propsToSpread = { ...props } as any;
@@ -218,3 +238,5 @@ class _CollapsableInterface {
 export function CollapsableInterface(id: string) {
   return new _CollapsableInterface(id);
 }
+
+export default forwardRef(Collapsable);

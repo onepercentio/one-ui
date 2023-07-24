@@ -25,8 +25,6 @@ export default function Compact({
       ? "completed"
       : "waiting";
 
-  console.log(progress, statusClass)
-
   const progressDashArray = useMemo(() => {
     if (progress !== undefined) {
       const strokePercent = (progress * 300) / 100;

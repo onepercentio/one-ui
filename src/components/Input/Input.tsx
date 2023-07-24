@@ -5,6 +5,7 @@ import React, {
   ForwardedRef,
   forwardRef,
   HTMLAttributes,
+  ReactElement,
   useEffect,
   useImperativeHandle,
   useMemo,
@@ -17,10 +18,10 @@ import Styles from "./Input.module.scss";
 
 export type InputProps = {
   decoration?: React.ReactElement | null;
-  error?: string;
+  error?: string | ReactElement;
   hideError?: "onfocus";
   placeholder?: string;
-  disclaimer?: string;
+  disclaimer?: string | ReactElement;
   multiline?: number;
   border?: boolean;
   icon?: {
@@ -28,6 +29,7 @@ export type InputProps = {
   } & DetailedHTMLProps<React.ImgHTMLAttributes<HTMLImageElement>, any>;
   Icon?: React.ReactElement;
   onChange?: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+  containerProps?: Omit<React.HTMLProps<HTMLDivElement>, "ref">;
 } & Omit<
   React.HTMLProps<HTMLInputElement | HTMLTextAreaElement>,
   "ref" | "onChange"
@@ -48,6 +50,8 @@ function Input(
     multiline,
     decoration = null,
     border: propBorder,
+    containerProps,
+    className: localClassName,
     ...otherProps
   }: InputProps,
   ref: ForwardedRef<any>
@@ -78,7 +82,8 @@ function Input(
     <div
       className={`${Styles.inputContainer} ${
         false ? Styles.withIcon : ""
-      } ${className}`}
+      } ${className} ${localClassName}`}
+      {...containerProps}
     >
       {decoration}
       <Component
@@ -98,7 +103,7 @@ function Input(
       {withBorder && <div className={Styles.border} />}
       {error && shouldShowError ? (
         <Text
-          title={error}
+          title={typeof error === "string" ? error : ""}
           data-testid={InputTestIds.ERROR}
           className={Styles.caption}
           type="error"
@@ -107,7 +112,7 @@ function Input(
         </Text>
       ) : disclaimer ? (
         <Text
-          title={disclaimer}
+          title={typeof disclaimer === "string" ? disclaimer : ""}
           type="caption"
           className={Styles.caption}
           data-testid={InputTestIds.DISCLAIMER}

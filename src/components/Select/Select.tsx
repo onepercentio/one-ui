@@ -1,12 +1,16 @@
 import React, {
   ComponentProps,
   DetailedHTMLProps,
+  ElementRef,
   ForwardedRef,
   forwardRef,
+  Fragment,
   HTMLAttributes,
   ReactElement,
   useEffect,
+  useLayoutEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import Collapsable from "../Collapsable";
@@ -20,6 +24,8 @@ import {
   useOneUIContext,
 } from "../../context/OneUIProvider";
 import { AnchoredTooltipAlignment } from "../AnchoredTooltip/AnchoredTooltip";
+import UncontrolledTransition from "../UncontrolledTransition/UncontrolledTransition";
+import { TransitionAnimationTypes } from "../Transition";
 
 export type SelectItem = (
   | {
@@ -46,6 +52,7 @@ function Select<I extends SelectItem>({
   rootClassName = "",
   dropdownClassName: _drop = "",
   alignTo = AnchoredTooltipAlignment.CENTER,
+  filter,
   ...otherProps
 }: {
   loading?: boolean;
@@ -54,6 +61,7 @@ function Select<I extends SelectItem>({
   rootClassName?: string;
   dropdownClassName?: string;
   alignTo?: AnchoredTooltipAlignment;
+  filter?: (item: I, term: string) => boolean;
 } & (
   | {
       selected?: I["value"];
@@ -66,12 +74,28 @@ function Select<I extends SelectItem>({
 ) &
   Omit<ComponentProps<typeof Input>, "selected" | "onClick">) {
   const { StateIndicator } = useOneUIContext().component.select;
+  const collapsableRef = useRef<ElementRef<typeof Collapsable>>(null);
 
   const _selected = useMemo(() => {
     return items.find((a) => a.value === selected);
   }, [selected, items]);
 
   const [open, setOpen] = useState(false);
+  const [filterTerm, setFilterTerm] = useState("");
+
+  const filteredItems = useMemo(() => {
+    if (filter && filterTerm)
+      return items.filter((item) => filter(item, filterTerm));
+    else return items;
+  }, [filterTerm]);
+
+  useEffect(() => {
+    collapsableRef.current!.redimension();
+  }, [filteredItems.length]);
+
+  useLayoutEffect(() => {
+    if (open) setFilterTerm("");
+  }, [open]);
 
   const dropdownClassNames = _drop
     ? ({
@@ -119,6 +143,7 @@ function Select<I extends SelectItem>({
       className={`${otherProps.disabled ? "disabled" : ""} ${rootClassName}`}
       contentClassName={`${Styles.optionsContainer} ${dropdownClassNames.dropdown}`}
       alignTo={alignTo}
+      ref={collapsableRef}
     >
       <div
         className={Styles.items}
@@ -127,7 +152,19 @@ function Select<I extends SelectItem>({
           setOpen(false);
         }}
       >
-        {items.map((i) => (
+        {filter && (
+          <Input
+            onChange={({ target: { value } }) => setFilterTerm(value)}
+            decoration={<span>🔎&nbsp;</span>}
+            className={Styles.searchInput}
+            containerProps={{
+              onClick: (e) => e.stopPropagation(),
+            }}
+            border={false}
+            value={filterTerm}
+          />
+        )}
+        {filteredItems.map((i) => (
           <Text
             type="caption"
             key={i.value}

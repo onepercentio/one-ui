@@ -3,6 +3,8 @@
 .inputContainer {
   position: relative;
   display: flex;
+  font-size: 22px;
+  line-height: 33px;
   .icon {
     position: absolute;
     top: 1.5px;
@@ -24,8 +26,8 @@
     border: none;
     background-color: transparent;
     width: 100%;
-    font-size: 22px;
-    line-height: 33px;
+    font-size: inherit;
+    line-height: inherit;
     font-family: $mainFontFamily;
     color: var(--input-text-color, $spaceBlue);
     margin-bottom: 18px;

@@ -69,6 +69,11 @@ export default function useHero(
     onHeroSkip?: (origin: HTMLDivElement, target: HTMLDivElement) => ShouldSkip;
 
     /**
+     * Called when a hero is skipped
+     */
+    onHeroSkipped?: () => void;
+
+    /**
      * Before transition start, setup the properties that will be used for hero animation
      * @returns The container that will be used to check if the hero is out or in the view
      */
@@ -135,7 +140,10 @@ export default function useHero(
         )
           ? (events.onHeroSkip || (() => true))(otherElement, heroRef.current!)
           : false;
-      if (shouldSkip) return;
+      if (shouldSkip) {
+        events.onHeroSkipped?.();
+        return;
+      }
       const oldClone = document.querySelector(
         `[${dataProperty}-clone="${ID(id)}"]`
       );

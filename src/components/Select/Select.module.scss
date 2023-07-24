@@ -4,7 +4,9 @@
   cursor: pointer;
   background: $mainBackgroundColor;
   padding: 12px 32px;
-  margin-bottom: 8px;
+  &:not(:last-child) {
+    margin-bottom: 8px;
+  }
   margin-left: 4px;
   margin-right: 4px;
   text-align: left;
@@ -17,7 +19,7 @@
 .empty {
   opacity: 0.3;
 }
-.input {
+.input input {
   transition: opacity $fast;
   cursor: pointer;
   padding-right: 30px;
@@ -38,4 +40,14 @@
 .optionsContainer {
   margin: 0px 8px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.16);
+}
+.searchInput {
+  > span {
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+  }
+  input {
+    margin-bottom: 0px !important;
+  }
 }

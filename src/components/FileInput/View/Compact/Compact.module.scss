@@ -1,0 +1,59 @@
+@import "../../../../assets/styles/index.scss";
+
+.root {
+  padding: 14px 22px;
+  background-color: $fileInputBackgroundColor;
+  display: flex;
+  align-items: center;
+  button {
+    padding: 0px;
+    min-width: initial;
+    margin-right: 24px;
+  }
+  > :first-child svg {
+    height: 46px;
+  }
+  > div {
+    p {
+      margin: 0px;
+    }
+    p:nth-child(1) {
+      font-weight: bold;
+      font-size: 14px;
+      font-family: $mainFontFamily;
+    }
+    p:nth-child(2) {
+      font-size: 12px;
+      font-family: $mainFontFamily;
+    }
+    p:nth-child(3) {
+      margin-top: 8px;
+      font-size: 16px;
+      font-family: $mainFontFamily;
+    }
+  }
+  svg {
+    --svg-color: #{$digitalBlue};
+    &.loading {
+      circle {
+        transition: stroke-dasharray 250ms ease-out;
+        stroke-dasharray: var(--progress-stroke-dasharray);
+      }
+    }
+    &.completed {
+      --svg-color: #{$successDark};
+      circle {
+        fill: #{$success};
+        stroke: #{$successDark};
+      }
+      polyline {
+        stroke-width: 3;
+      }
+    }
+    &.waiting {
+      circle {
+        stroke-dasharray: 10%;
+      }
+    }
+  }
+}

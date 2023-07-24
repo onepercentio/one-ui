@@ -1,4 +1,9 @@
 {
+  "plugins": [
+    ["react-remove-properties", { "properties": ["data-testid"] }],
+    ["remove-object-properties", { "regexp": "data-testid" }],
+    "remove-unused-vars"
+  ],
   "presets": [
     [
       "@babel/preset-env",

@@ -15,14 +15,15 @@
     visibility: visible;
     width: 1.5em;
     height: 1.5em;
-    border-radius: 0.80em;
+    border-radius: 0.8em;
     background-image: url("../../assets/img/svg/checkbox.svg");
     background-color: transparent;
     transition: background-color 250ms, border 250ms, box-shadow 250ms;
     border: 1px solid rgb(40, 43, 53);
     box-shadow: 0px 0px 0px -4px $digitalBlue;
+    flex-shrink: 0;
     &.wContent {
-      margin-right: 0.80em;
+      margin-right: 0.8em;
     }
   }
   > span:first-child.checked {

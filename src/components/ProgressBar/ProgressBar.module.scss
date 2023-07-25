@@ -24,6 +24,10 @@
     background: var(--progress-bar-bar, var(--digital-blue));
     transition: width var(--animation-speed-transition, $fast) ease-out;
   }
+  &.completed > :first-child {
+    border-top-right-radius: math.div(0.25em, 2);
+    border-bottom-right-radius: math.div(0.25em, 2);
+  }
   &.guide > :last-child {
     position: absolute;
     margin-top: math.div(-0.5em, 1.25);

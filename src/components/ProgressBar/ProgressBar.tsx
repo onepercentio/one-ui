@@ -22,7 +22,9 @@ export default function ProgressBar({
 }) {
   return (
     <div
-      className={`${Styles.container} ${Styles[style]}`}
+      className={`${Styles.container} ${Styles[style]} ${
+        progress === 100 ? Styles.completed : ""
+      }`}
       style={{ fontSize: size }}
     >
       <span style={{ width: `${progress}%` }} />

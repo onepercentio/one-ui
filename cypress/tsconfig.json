@@ -3,7 +3,8 @@
     "jsx": "react-jsx",
     "strict": true,
     "esModuleInterop": true,
-    "types": ["cypress", "@muritavo/cypress-toolkit", "react-scripts"]
+    "types": ["cypress", "@muritavo/cypress-toolkit", "react-scripts"],
+    "baseUrl": "../src"
   },
   "include": ["./", "../src"]
 }

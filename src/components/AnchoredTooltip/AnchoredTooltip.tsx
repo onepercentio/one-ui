@@ -40,15 +40,23 @@ export enum AnchoredTooltipAlignment {
   RIGHT,
 }
 
+export enum AnchoredTooltipAnchor {
+  TOP,
+  BOTTOM,
+}
+
 function calculateTooltipFromAnchor(
   anchorRef: HTMLElement,
   tooltipRef: HTMLDivElement,
   containInViewport: boolean,
-  alignTo: AnchoredTooltipAlignment = AnchoredTooltipAlignment.CENTER
+  alignTo: AnchoredTooltipAlignment = AnchoredTooltipAlignment.CENTER,
+  anchorTo: AnchoredTooltipAnchor = AnchoredTooltipAnchor.TOP
 ) {
   const anchorPosition = getPositionOnViewport(anchorRef);
 
-  const shouldAnchorToBottom = tooltipRef.clientHeight > anchorPosition.top;
+  const shouldAnchorToBottom =
+    anchorTo === AnchoredTooltipAnchor.BOTTOM ||
+    tooltipRef.clientHeight > anchorPosition.top;
 
   let top = anchorPosition.top - tooltipRef.clientHeight;
 
@@ -122,14 +130,16 @@ export function updateTooltipPosition(
   tooltipRef: HTMLDivElement,
   anchorRef: HTMLElement,
   limitToViewport: boolean = true,
-  alignment: AnchoredTooltipAlignment = AnchoredTooltipAlignment.CENTER
+  alignment: AnchoredTooltipAlignment = AnchoredTooltipAlignment.CENTER,
+  anchorTo: AnchoredTooltipAnchor = AnchoredTooltipAnchor.TOP
 ) {
   const { top, left, shouldAnchorToBottom, offsetIndicatorLeft } =
     calculateTooltipFromAnchor(
       anchorRef,
       tooltipRef,
       limitToViewport,
-      alignment
+      alignment,
+      anchorTo
     );
   if (limitToViewport) {
     const maxHeight = window.innerHeight - top;

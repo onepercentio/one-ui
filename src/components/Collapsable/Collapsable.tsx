@@ -14,6 +14,7 @@ import React, {
 import Styles from "./Collapsable.module.scss";
 import {
   AnchoredTooltipAlignment,
+  AnchoredTooltipAnchor,
   updateTooltipPosition,
 } from "../AnchoredTooltip/AnchoredTooltip";
 
@@ -63,6 +64,7 @@ function Collapsable(
       | {
           mode: "float";
           alignTo: AnchoredTooltipAlignment;
+          anchorTo?: AnchoredTooltipAnchor;
         }
     )
   > &
@@ -97,7 +99,8 @@ function Collapsable(
           el,
           toggleRef.current!,
           true,
-          "alignTo" in props ? props.alignTo : AnchoredTooltipAlignment.CENTER
+          "alignTo" in props ? props.alignTo : AnchoredTooltipAlignment.CENTER,
+          "anchorTo" in props ? props.anchorTo : undefined
         );
         el.style.minHeight = "";
         if (!shouldAnchorToBottom) {

@@ -23,7 +23,10 @@ import {
   useOneUIConfig,
   useOneUIContext,
 } from "../../context/OneUIProvider";
-import { AnchoredTooltipAlignment } from "../AnchoredTooltip/AnchoredTooltip";
+import {
+  AnchoredTooltipAlignment,
+  AnchoredTooltipAnchor,
+} from "../AnchoredTooltip/AnchoredTooltip";
 import UncontrolledTransition from "../UncontrolledTransition/UncontrolledTransition";
 import { TransitionAnimationTypes } from "../Transition";
 
@@ -144,6 +147,7 @@ function Select<I extends SelectItem>({
       contentClassName={`${Styles.optionsContainer} ${dropdownClassNames.dropdown}`}
       alignTo={alignTo}
       ref={collapsableRef}
+      anchorTo={AnchoredTooltipAnchor.BOTTOM}
     >
       <div
         className={Styles.items}

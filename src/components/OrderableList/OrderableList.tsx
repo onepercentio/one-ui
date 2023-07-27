@@ -79,13 +79,9 @@ export default function OrderableList({
     }
 ) &
   DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>) {
-  const { current: anchorsList } = useRef<HTMLDivElement[]>([]);
-  const eventEmitter = useEvents<Events, { [k in Events]: [] }>();
-  const currentClone = useRef<HTMLDivElement | null>(null);
-  const currentWorkingKey = useRef<string>();
   const availableKeys = children.map((a) => a.key as string);
-  const rootRef = useRef<HTMLDivElement>(null as any);
-  const [_order, setOrder] = useState(() => {
+  const availableKeysDep = availableKeys.join(",");
+  const initializeOrder = useCallback(() => {
     const missingOrderKeys =
       "keyOrder" in props && props.keyOrder
         ? availableKeys.filter((a) => !props.keyOrder!.includes(a))
@@ -96,12 +92,20 @@ export default function OrderableList({
         ? [...props.keyOrder, ...missingOrderKeys]
         : undefined) || availableKeys
     );
-  });
+  }, [availableKeysDep, (props as any).keyOrder]);
+  const { current: anchorsList } = useRef<HTMLDivElement[]>([]);
+  const eventEmitter = useEvents<Events, { [k in Events]: [] }>();
+  const currentClone = useRef<HTMLDivElement | null>(null);
+  const currentWorkingKey = useRef<string>();
+  const rootRef = useRef<HTMLDivElement>(null as any);
+  const [_order, setOrder] = useState(initializeOrder);
+  useEffect(() => setOrder(initializeOrder()), [initializeOrder]);
+
   const order = useMemo(() => {
     return (
       "currentOrder" in props ? props.currentOrder || _order : _order
     ).filter((o) => o.includes(";") || availableKeys.includes(o));
-  }, [(props as any).currentOrder, _order, availableKeys.join(";")]);
+  }, [(props as any).currentOrder, _order, availableKeysDep]);
   const cleanOrder = useMemo(() => order.map((a) => a.split(";")[0]), [order]);
   const orderId = useMemo(() => "key-" + cleanOrder.join(""), [cleanOrder]);
   function rootEl() {

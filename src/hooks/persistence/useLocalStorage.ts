@@ -5,6 +5,8 @@ const toString = (val: any) => {
   switch (typeof val) {
     case "boolean":
       return !val ? "0" : "1";
+    case "string":
+      return val;
     default:
       throw new Error("Doesn't know how to handle type " + typeof val);
   }
@@ -13,6 +15,8 @@ const fromString = (type: AvailablePrimitives, value: string) => {
   switch (type) {
     case "boolean":
       return value === "1";
+    case "string":
+      return value;
     default:
       throw new Error("Doesn't know how to handle type " + type);
   }

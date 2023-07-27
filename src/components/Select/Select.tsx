@@ -90,7 +90,7 @@ function Select<I extends SelectItem>({
     if (filter && filterTerm)
       return items.filter((item) => filter(item, filterTerm));
     else return items;
-  }, [filterTerm]);
+  }, [filterTerm, items]);
 
   useEffect(() => {
     collapsableRef.current!.redimension();
@@ -157,11 +157,10 @@ function Select<I extends SelectItem>({
         }}
       >
         {filter && (
-          <div>
+          <div className={Styles.searchInput}>
             <Input
               onChange={({ target: { value } }) => setFilterTerm(value)}
               decoration={<span>🔎&nbsp;</span>}
-              className={Styles.searchInput}
               containerProps={{
                 onClick: (e) => e.stopPropagation(),
               }}

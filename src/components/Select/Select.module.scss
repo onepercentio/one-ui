@@ -42,7 +42,9 @@
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.16);
 }
 .searchInput {
-  > span {
+  position: sticky;
+  top: 0px;
+  > * > span {
     margin-right: 12px;
     display: flex;
     align-items: center;

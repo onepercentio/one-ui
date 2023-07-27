@@ -47,6 +47,9 @@ export default function useHero(
      */
     onHeroEnd?: () => void;
 
+    /** Do somethign with the clone before it goes to the html */
+    onHeroCloned?: (clone: HTMLDivElement) => void;
+
     /**
      * Do something when the hero starts the transition
      * Here it's usefull to switch classNames with the target.
@@ -149,6 +152,8 @@ export default function useHero(
       );
       const clone = (oldClone ||
         otherElement.cloneNode(true)) as HTMLDivElement;
+
+      if (events.onHeroCloned && !oldClone) events.onHeroCloned(clone);
 
       // Clean up thos properties that can cause confusion since it's a clone
       clone.style.visibility = "";

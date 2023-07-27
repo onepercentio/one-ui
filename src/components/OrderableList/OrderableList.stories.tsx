@@ -1,6 +1,9 @@
-import React, { CSSProperties, useRef } from "react";
+import React, { CSSProperties, useEffect, useRef, useState } from "react";
 import MutableHamburgerButton from "../MutableHamburgerButton";
-import OrderableList, { useOrderableListAnchor } from "./OrderableList";
+import OrderableList, {
+  OrderableListReorderMode,
+  useOrderableListAnchor,
+} from "./OrderableList";
 
 export default {
   component: OrderableList,
@@ -80,3 +83,57 @@ export const Shrinkable = (args: any) => {
   );
 };
 Shrinkable.args = {} as Partial<React.ComponentProps<typeof OrderableList>>;
+
+export const OrderableTable = (args: any) => {
+  const [abc, setAbc] = useState("abcdefghijklmnopqrstuvwxyz");
+  function Anchor() {
+    const { anchorRef } = useOrderableListAnchor();
+
+    return (
+      <div
+        ref={anchorRef}
+        style={{ position: "absolute", top: "8px", right: "8px" }}
+      >
+        <MutableHamburgerButton state="hamburger" size={24} />
+      </div>
+    );
+  }
+
+  useEffect(() => {
+    setTimeout(() => {
+      setAbc("aeiou");
+    }, 500);
+  }, []);
+  return (
+    <>
+      <OrderableList {...args} mode={OrderableListReorderMode.TWO_DIMENSIONS}>
+        {abc.split("").map((char) => (
+          <div
+            style={{
+              padding: 10,
+            }}
+            key={char}
+          >
+            <div
+              style={{
+                width: 100,
+                height: 100,
+                border: "2px solid black",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                textTransform: "uppercase",
+                fontWeight: "bold",
+                fontSize: 74,
+                position: "relative",
+              }}
+            >
+              {char}
+              <Anchor />
+            </div>
+          </div>
+        ))}
+      </OrderableList>
+    </>
+  );
+};

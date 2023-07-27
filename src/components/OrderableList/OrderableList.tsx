@@ -1,5 +1,6 @@
 import throttle from "lodash/throttle";
 import UncontrolledTransition from "../UncontrolledTransition";
+import TransitionStyles from "../Transition/Transition.module.scss";
 import React, {
   createContext,
   DetailedHTMLProps,
@@ -100,13 +101,19 @@ export default function OrderableList({
     return (
       "currentOrder" in props ? props.currentOrder || _order : _order
     ).filter((o) => o.includes(";") || availableKeys.includes(o));
-  }, [(props as any).currentOrder, _order]);
+  }, [(props as any).currentOrder, _order, availableKeys.join(";")]);
   const cleanOrder = useMemo(() => order.map((a) => a.split(";")[0]), [order]);
   const orderId = useMemo(() => "key-" + cleanOrder.join(""), [cleanOrder]);
+  function rootEl() {
+    if (mode === OrderableListReorderMode.TWO_DIMENSIONS)
+      return rootRef.current!.lastElementChild!
+        .lastElementChild! as HTMLDivElement;
+    return rootRef.current! as HTMLDivElement;
+  }
 
   const findParentElement = (target: HTMLDivElement) => {
     let parent: HTMLDivElement = target as HTMLDivElement;
-    while (parent.parentElement !== rootRef.current) {
+    while (parent.parentElement !== rootEl()) {
       if (parent.parentElement === null) break;
       parent = parent.parentElement as any;
     }
@@ -119,7 +126,7 @@ export default function OrderableList({
 
   useLayoutEffect(() => {
     if (shrinkToOnOrder)
-      rootRef.current.style.setProperty("--shrink-to", `${shrinkToOnOrder}px`);
+      rootEl().style.setProperty("--shrink-to", `${shrinkToOnOrder}px`);
   }, [shrinkToOnOrder]);
 
   const calculateReordering = useMemo(() => {
@@ -134,11 +141,23 @@ export default function OrderableList({
       if (indexOfKeyInCleanOrder === -1 || keyOfTheOverElement === undefined)
         return;
       if (!isDraggingOwnElement) {
-        const distanceFromTop = e.offsetY;
-        const heightOfEl = parent.clientHeight;
-        const offset = heightOfEl * 0.25;
-        const isAfter = distanceFromTop > heightOfEl - offset;
-        const isBefore = distanceFromTop < offset;
+        const { isAfter, isBefore } = (() => {
+          if (mode === OrderableListReorderMode.TWO_DIMENSIONS) {
+            const distanceFromLeft = e.offsetX;
+            const widthOfEl = parent.clientWidth;
+            const offset = widthOfEl * 0.25;
+            const isAfter = distanceFromLeft > widthOfEl - offset;
+            const isBefore = distanceFromLeft < offset;
+            return { isAfter, isBefore };
+          } else {
+            const distanceFromTop = e.offsetY;
+            const heightOfEl = parent.clientHeight;
+            const offset = heightOfEl * 0.25;
+            const isAfter = distanceFromTop > heightOfEl - offset;
+            const isBefore = distanceFromTop < offset;
+            return { isAfter, isBefore };
+          }
+        })();
 
         const checkIfCanMove = (keyOfOverElement?: string) => {
           return (
@@ -178,19 +197,33 @@ export default function OrderableList({
   }, []);
 
   useEffect(() => {
-    const els = Array.from(rootRef.current!.children) as HTMLDivElement[];
-
-    const calculateReorderingCall = (e: any) => {
-      const els = Array.from(rootRef.current!.children) as HTMLDivElement[];
-      calculateReordering(e, els, cleanOrder);
-    };
-    for (let el of els)
-      el.addEventListener("mousemove", calculateReorderingCall);
-
-    return () => {
+    function registerListeners() {
+      const els = Array.from(rootEl()!.children) as HTMLDivElement[];
+      const calculateReorderingCall = (e: any) => {
+        const els = Array.from(rootEl()!.children) as HTMLDivElement[];
+        calculateReordering(e, els, cleanOrder);
+      };
       for (let el of els)
-        el.removeEventListener("mousemove", calculateReorderingCall);
-    };
+        el.addEventListener("mousemove", calculateReorderingCall);
+
+      return () => {
+        for (let el of els)
+          el.removeEventListener("mousemove", calculateReorderingCall);
+      };
+    }
+
+    if (mode === OrderableListReorderMode.VERTICAL) {
+      return registerListeners();
+    } else {
+      let unsubscribe: () => void;
+      let timeout = setTimeout(() => {
+        unsubscribe = registerListeners();
+      }, 250);
+      return () => {
+        clearTimeout(timeout);
+        if (unsubscribe) unsubscribe();
+      };
+    }
   }, [cleanOrder]);
 
   useEffect(() => {
@@ -208,7 +241,7 @@ export default function OrderableList({
         anchor as HTMLDivElement
       );
       const box = orderableListItemForAnchor.getBoundingClientRect();
-      const els = Array.from(rootRef.current!.children) as HTMLDivElement[];
+      const els = Array.from(rootEl()!.children) as HTMLDivElement[];
       const elIndex = els.indexOf(orderableListItemForAnchor);
 
       const clone = orderableListItemForAnchor.cloneNode(
@@ -252,7 +285,7 @@ export default function OrderableList({
         currentWorkingKey.current = undefined;
         window.document.body.classList.remove(Styles.unselectable);
         {
-          const els = Array.from(rootRef.current!.children) as HTMLDivElement[];
+          const els = Array.from(rootEl()!.children) as HTMLDivElement[];
           const elInvisible = els.find(
             (a) =>
               !a.classList.contains(Styles.visible) &&
@@ -272,14 +305,14 @@ export default function OrderableList({
           const box = elInvisible.getBoundingClientRect();
           function cleanUp() {
             if (shrinkToOnOrder) {
-              rootRef.current.style.removeProperty("padding-top");
-              rootRef.current.style.removeProperty("min-height");
+              rootEl().style.removeProperty("padding-top");
+              rootEl().style.removeProperty("min-height");
             }
 
             eventEmitter.dispatcher("order-stop");
-            rootRef.current.classList.remove(Styles.ordering);
+            rootEl().classList.remove(Styles.ordering);
             if (reorderingClassName)
-              rootRef.current.classList.remove(reorderingClassName);
+              rootEl().classList.remove(reorderingClassName);
             for (let el of els) el.classList.remove(Styles.visible);
             clone.remove();
             currentClone.current = null;
@@ -310,14 +343,13 @@ export default function OrderableList({
         const currentHeight =
           orderableListItemForAnchor.offsetTop - els[0].offsetTop;
         const paddingTop = currentHeight - targetHeight;
-        rootRef.current.style.paddingTop = `${paddingTop}px`;
-        rootRef.current.style.minHeight = `${rootRef.current.clientHeight}px`;
+        rootEl().style.paddingTop = `${paddingTop}px`;
+        rootEl().style.minHeight = `${rootEl().clientHeight}px`;
       }
       orderableListItemForAnchor.style.visibility = "hidden";
       orderableListItemForAnchor.classList.remove(Styles.visible);
-      rootRef.current.classList.add(Styles.ordering);
-      if (reorderingClassName)
-        rootRef.current.classList.add(reorderingClassName);
+      rootEl().classList.add(Styles.ordering);
+      if (reorderingClassName) rootEl().classList.add(reorderingClassName);
       currentWorkingKey.current = cleanOrderRef.current[elIndex];
       eventEmitter.dispatcher("order-start");
       window.document.body.classList.add(Styles.unselectable);
@@ -331,7 +363,7 @@ export default function OrderableList({
 
   useLayoutEffect(() => {
     if (currentClone.current) {
-      const els = Array.from(rootRef.current!.children) as HTMLDivElement[];
+      const els = Array.from(rootEl()!.children) as HTMLDivElement[];
       const elInvisible = els.find(
         (a) =>
           !a.classList.contains(Styles.visible) && a.style.maxHeight !== "0px"
@@ -364,7 +396,7 @@ export default function OrderableList({
     }));
 
   useLayoutEffect(() => {
-    rootRef.current!.addEventListener("touchstart", (e) => {
+    rootEl()!.addEventListener("touchstart", (e) => {
       const relatedAnchor = anchorsList.find((anchor) =>
         anchor.contains(e.target as any)
       );
@@ -377,7 +409,7 @@ export default function OrderableList({
         const moveCb = throttle((e: TouchEvent) => {
           const touch = e.touches[0];
           const [x, y] = [touch.clientX, touch.clientY];
-          const els = Array.from(rootRef.current.children) as HTMLDivElement[];
+          const els = Array.from(rootEl().children) as HTMLDivElement[];
           const currentElementIdx = els.findIndex((c, i) => {
             const rect = c?.getBoundingClientRect();
             if (!rect) return false;
@@ -442,7 +474,17 @@ export default function OrderableList({
         ) : (
           <UncontrolledTransition
             className={Styles.transition}
-            transitionType={TransitionAnimationTypes.FADE}
+            transitionType={TransitionAnimationTypes.CUSTOM}
+            config={{
+              backward: {
+                elementEntering: "",
+                elementExiting: "",
+              },
+              forward: {
+                elementEntering: Styles.stubEntering,
+                elementExiting: TransitionStyles.fadeOut,
+              },
+            }}
             contentClassName={`${className}`}
           >
             <Fragment key={orderId}>
@@ -472,6 +514,9 @@ function HeroWrapper({ children, id }: PropsWithChildren<{ id: string }>) {
       t.querySelectorAll("img").forEach(
         (img) => (img.style.visibility = "hidden")
       );
+    },
+    onHeroCloned(clone) {
+      // if (!clone.classList.contains(Styles.visible)) clone.style.opacity = "0";
     },
     onHeroEnd: () => {
       if (heroRef.current)

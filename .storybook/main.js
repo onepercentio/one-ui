@@ -1,4 +1,5 @@
 const { ProvidePlugin } = require("webpack");
+const getCSSModuleLocalIdent = require("react-dev-utils/getCSSModuleLocalIdent");
 
 module.exports = {
   stories: ["../src/**/*.stories.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
@@ -12,6 +13,11 @@ module.exports = {
     builder: "webpack5",
   },
   webpackFinal: (config) => {
+    config.module.rules[3].use[1].options = {
+      modules: {
+        getLocalIdent: getCSSModuleLocalIdent,
+      },
+    };
     config.resolve.fallback = {
       fs: false,
       zlib: false,

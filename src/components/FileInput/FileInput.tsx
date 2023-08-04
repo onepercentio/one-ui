@@ -25,6 +25,7 @@ export type FileInputProps = {
   file?: File;
   onFile: (file: File | undefined) => void;
   progress?: number;
+  disabled?: boolean;
 } & React.HTMLProps<HTMLInputElement>;
 
 /**

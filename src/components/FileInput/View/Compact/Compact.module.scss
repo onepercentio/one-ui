@@ -5,6 +5,11 @@
   background-color: $fileInputBackgroundColor;
   display: flex;
   align-items: center;
+  cursor: pointer;
+  &.disabled {
+    pointer-events: none;
+    cursor: initial;
+  }
   button {
     padding: 0px;
     min-width: initial;
@@ -41,10 +46,8 @@
       }
     }
     &.completed {
-      --svg-color: #{$successDark};
       circle {
-        fill: #{$success};
-        stroke: #{$successDark};
+        fill: var(--svg-color);
       }
       polyline {
         stroke-width: 3;

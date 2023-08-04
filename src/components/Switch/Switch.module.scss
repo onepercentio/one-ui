@@ -8,10 +8,18 @@
   width: 2em + 0.4em;
   padding: 0.1em;
   border-radius: math.div($height, 1);
-  border: .1em solid $digitalBlue;
+  border: 0.1em solid $digitalBlue;
   background-color: white;
   transition: background-color $fast linear;
   cursor: pointer;
+
+  input {
+    max-width: 0px;
+    max-height: 0px;
+    width: 0;
+    height: 0;
+    opacity: 0;
+  }
 
   .toggler {
     height: 1em;
@@ -21,7 +29,11 @@
     transition: transform $fast linear;
   }
 
-  &.enabled {
+  &.disabled {
+    opacity: 0.4;
+    cursor: initial;
+  }
+  &.on {
     background-color: $digitalBlue;
     .toggler {
       transform: translateX(1em);

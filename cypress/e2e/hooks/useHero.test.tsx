@@ -1,7 +1,7 @@
 import { CSSProperties, Fragment, PropsWithChildren } from "react";
 import { TransitionAnimationTypes } from "../../../src/components/Transition";
 import UncontrolledTransition from "../../../src/components/UncontrolledTransition";
-import useHero from "../../../src/hooks/useHero";
+import useHero, { TRANSITION_FACTORY } from "../../../src/hooks/useHero";
 import Styles from "./useHero.module.scss";
 import chroma from "chroma-js";
 
@@ -171,9 +171,7 @@ function ElementToTransition({
       clone.style.marginLeft = "0px";
     },
     onBeforeTransition: (el) => {
-      return {
-        container: el.parentElement!,
-      };
+      return [el.parentElement!, el.parentElement!];
     },
   });
   return (
@@ -197,7 +195,7 @@ function ElementToTransition({
   );
 }
 
-it.only("Should not animate elements that are out of screen to reduce amount and increase performance", () => {
+it("Should not animate elements that are out of screen to reduce amount and increase performance", () => {
   cy.viewport(1000, 1000);
   const transitionedElements: Set<string> = new Set();
   window.addEventListener("transitionstart", (e) => {
@@ -308,9 +306,7 @@ it("Should be able to bounds container for transition optimization", () => {
       </>
     );
     return (
-      <UncontrolledTransition
-        transitionType={TransitionAnimationTypes.FADE}
-      >
+      <UncontrolledTransition transitionType={TransitionAnimationTypes.FADE}>
         {!transition ? (
           <Fragment key="1">
             <h1 style={{ margin: "auto" }}>First screen</h1>
@@ -340,4 +336,80 @@ it("Should be able to bounds container for transition optimization", () => {
         );
       });
     });
+});
+
+/**
+ * Dunno how to call the effect I'm creating
+ */
+it.only("Should be able to apply centrifuge force effect", () => {
+  cy.viewport(2000, 2000);
+  function Hero({ p }: { p: [left: number, top: number] }) {
+    const h = useHero("square", undefined, TRANSITION_FACTORY.ACCELERATION());
+    return (
+      <div
+        ref={h.heroRef}
+        style={{
+          height: 300,
+          width: 300,
+          position: "absolute",
+          top: p[1],
+          left: p[0],
+          background: "linear-gradient(red, green, purple)",
+        }}
+      />
+    );
+  }
+  function Wrapper({ p }: { p: [left: number, top: number] }) {
+    return (
+      <div
+        style={{
+          width: 2000,
+          height: 2000,
+          position: "relative",
+          backgroundColor: "blue",
+        }}
+      >
+        <UncontrolledTransition transitionType={TransitionAnimationTypes.FADE}>
+          <div
+            key={p.join(",")}
+            style={{
+              width: 2000,
+              height: 2000,
+              position: "relative",
+            }}
+          >
+            <Hero p={p} />
+          </div>
+        </UncontrolledTransition>
+      </div>
+    );
+  }
+  const chain = cy.mountChain((p: [left: number, top: number]) => (
+    <Wrapper p={p} />
+  ));
+  function goTo(
+    p: readonly [left: number, top: number],
+    skipPause: boolean = false
+  ) {
+    cy.log(`Remounting ${p.join(", ")}`)
+    chain.remount(p as any);
+    if (!skipPause) cy.pause();
+    else cy.wait(1600);
+  }
+  goTo([377.0918303779677, 101.29989459343993])
+  goTo([946.7953627605262, 1515.9577735297455])
+
+  for (let pos of new Array(100)
+    .fill(undefined)
+    .map(() => [Math.random() * 1700, Math.random() * 1700] as const))
+    goTo(pos, true);
+  goTo([0, 850]);
+  goTo([1700, 850]);
+  goTo([1700, 0]);
+  goTo([0, 1700]);
+  goTo([0, 0]);
+  goTo([1700, 1700]);
+  goTo([0, 1700]);
+  goTo([0, 850]);
+  goTo([0, 0]);
 });

@@ -6,6 +6,7 @@ import {
   useRef,
 } from "react";
 import ownEvent from "../utils/ownEvent";
+import Styles from "./useHero.module.scss";
 
 const ID = (id: string) => `${id}-hero`;
 type ShouldSkip = boolean;
@@ -235,7 +236,7 @@ export default function useHero(
         else {
           for (let propToTransition of propsToTransition)
             clone.style[propToTransition as any] =
-              el.style[propToTransition as any];
+              window.getComputedStyle(el)[propToTransition as any];
           const transitionEndCb = ownEvent(
             ({ target, currentTarget }: TransitionEvent) => {
               if (target === currentTarget) cleanup();
@@ -295,3 +296,62 @@ function isElementOutsideContainer(
     return elementUnderflowsViewport || elementOverflowsViewport;
   }
 }
+
+type EVENTS_INTERFACE = Parameters<typeof useHero>[2];
+type TRANSITION_TYPES = "ACCELERATION";
+function centerPoint(rect: DOMRect) {
+  return [rect.left + rect.width / 2, rect.top + rect.height / 2] as const;
+}
+const angle = (
+  pointA: readonly [x: number, y: number],
+  pointB: readonly [x: number, y: number]
+) =>
+  Number(
+    (
+      Math.atan2(pointA[1] - pointB[1], pointA[0] - pointB[0]) *
+      (179.08 / Math.PI)
+    ).toFixed(5)
+  );
+export const TRANSITION_FACTORY: {
+  [n in TRANSITION_TYPES]: (events?: EVENTS_INTERFACE) => EVENTS_INTERFACE;
+} = {
+  ACCELERATION: (events) => ({
+    ...events,
+    onHeroStart(clone, origin, target) {
+      if (events?.onHeroStart) events.onHeroStart(clone, origin, target);
+      clone.classList.add(Styles.acceleration);
+      const centerPointOrigin = centerPoint(origin.getBoundingClientRect());
+      const centerPointDestination = centerPoint(
+        target.getBoundingClientRect()
+      );
+      const angleBetweenElements = angle(
+        centerPointOrigin,
+        centerPointDestination
+      );
+      const vectorX = Math.sin(angleBetweenElements);
+      const vectorY = Math.cos(angleBetweenElements);
+
+      const rotateY = (10 * vectorY).toFixed(0);
+      const originX = (vectorY + 1) * 50;
+
+      const rotateX = -(10 * vectorX).toFixed(0);
+      const originY = (vectorX + 1) * 50;
+
+      console.log(vectorX, vectorY, originX);
+      clone.style.setProperty(
+        "--stage-1",
+        `rotateY(${rotateY}deg) rotateX(${-rotateX}deg)`
+      );
+      clone.style.setProperty(
+        "--stage-2",
+        `rotateY(${-rotateY}deg) rotateX(${rotateX}deg)`
+      );
+      clone.style.setProperty("--origin-1", `${originX}% ${originY}%`);
+      clone.style.setProperty(
+        "--origin-2",
+        `${100 - originX}% ${100 - originY}%`
+      );
+      document.body.style.perspective = "100vw";
+    },
+  }),
+};

@@ -1,0 +1,33 @@
+$timing: cubic-bezier(0.5, -0.45, 0.44, 1.37);
+// $timing: cubic-bezier(0.73, -0.49, 0.16, 1.4);
+
+.acceleration {
+  --animation--speed-fast: 1s;
+  animation-name: acceleration;
+  animation-duration: var(--animation--speed-fast);
+  animation-timing-function: $timing;
+  transition-timing-function: $timing !important;
+  transform-origin: var(--origin-1);
+}
+
+@keyframes acceleration {
+  0% {
+    transform: rotateY(0deg);
+  }
+  10% {
+    transform-origin: var(--origin-1);
+    transform: var(--stage-1);
+  }
+
+  70% {
+    transform: var(--stage-1);
+    transform-origin: var(--origin-1);
+  }
+  85% {
+    transform-origin: var(--origin-2);
+    transform: var(--stage-2);
+  }
+  100% {
+    transform: rotateY(0deg);
+  }
+}

@@ -337,14 +337,13 @@ export const TRANSITION_FACTORY: {
       const rotateX = -(10 * vectorX).toFixed(0);
       const originY = (vectorX + 1) * 50;
 
-      console.log(vectorX, vectorY, originX);
       clone.style.setProperty(
         "--stage-1",
         `rotateY(${rotateY}deg) rotateX(${-rotateX}deg)`
       );
       clone.style.setProperty(
         "--stage-2",
-        `rotateY(${-rotateY}deg) rotateX(${rotateX}deg)`
+        `rotateY(${-rotateY * 0.3}deg) rotateX(${rotateX * 0.3}deg)`
       );
       clone.style.setProperty("--origin-1", `${originX}% ${originY}%`);
       clone.style.setProperty(

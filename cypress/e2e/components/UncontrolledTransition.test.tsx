@@ -11,6 +11,7 @@ import React, {
 import { TransitionAnimationTypes } from "../../../src/components/Transition";
 import Comp from "../../../src/components/UncontrolledTransition";
 import TestAnimation from "../../component/TestAnimation";
+import UncontrolledTransition from "components/UncontrolledTransition/UncontrolledTransition";
 
 const animationDuration = 2000;
 
@@ -244,6 +245,47 @@ describe("BUGFIX", () => {
 });
 
 describe.only("Features", () => {
+  it.only("Should be able to keep scroll when switching elements", () => {
+    cy.viewport(1000, 1000);
+    const chain = cy.mountChain((bg: string, height: string) => {
+      return (
+        <UncontrolledTransition
+          contentStyle={{ overflow: "auto" }}
+          style={{ height: "100vh", alignItems: "flex-start" }}
+          transitionType={TransitionAnimationTypes.FADE}
+        >
+          <div
+            id="scroller"
+            key={bg}
+            style={{
+              height,
+              backgroundColor: bg,
+              width: "100vw",
+              backgroundImage: "linear-gradient(#fff9,#fff3, #fff9)",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-start",
+              backgroundSize: "100vw 100vh",
+            }}
+          >
+            {new Array(1000).fill(undefined).map((_, i) => (
+              <p style={{ fontSize: "10vh" }}>{i} TEXT EXAMPLE</p>
+            ))}
+          </div>
+        </UncontrolledTransition>
+      );
+    });
+    chain.remount("blue", "1000vh");
+
+    cy.wait(1000)
+      .get("#scroller")
+      .parent()
+      .scrollTo(0, 1000 * 8);
+
+    cy.pause();
+
+    chain.remount("green", "100vh");
+  });
   it("Should be able to transition using svg mask", () => {
     cy.viewport(600, 600);
     const chain = cy.mountChain((screen: number) => {
@@ -268,9 +310,13 @@ describe.only("Features", () => {
           }
         >
           {screen === 0 ? (
-            <React.Fragment key={"first1"}><h1 style={{backgroundColor: "green"}}>First</h1></React.Fragment>
+            <React.Fragment key={"first1"}>
+              <h1 style={{ backgroundColor: "green" }}>First</h1>
+            </React.Fragment>
           ) : (
-            <React.Fragment key={"second1"}><h1 style={{backgroundColor: "blue"}}>Second</h1></React.Fragment>
+            <React.Fragment key={"second1"}>
+              <h1 style={{ backgroundColor: "blue" }}>Second</h1>
+            </React.Fragment>
           )}
         </Comp>
       );

@@ -1,4 +1,4 @@
-import {
+import React, {
   CSSProperties,
   useCallback,
   useEffect,
@@ -237,11 +237,22 @@ export default function useHero(
           for (let propToTransition of propsToTransition)
             clone.style[propToTransition as any] =
               window.getComputedStyle(el)[propToTransition as any];
+          let initialOffset: number;
+          const s = ({ target }: MouseEvent) => {
+            const d = target as HTMLDivElement;
+            if (d.contains(el)) {
+              if (initialOffset === undefined) initialOffset = d.scrollTop;
+              else
+                clone.style.marginTop = `${-(d.scrollTop - initialOffset)}px`;
+            }
+          };
           const transitionEndCb = ownEvent(
             ({ target, currentTarget }: TransitionEvent) => {
               if (target === currentTarget) cleanup();
+              document.removeEventListener("scroll", s as any, true);
             }
           );
+          document.addEventListener("scroll", s as any, true);
           clone.addEventListener("transitionend", transitionEndCb);
           clone.addEventListener("transitionstart", () => {
             const onCancelCb = ownEvent((e) => {

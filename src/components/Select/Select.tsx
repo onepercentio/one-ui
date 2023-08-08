@@ -2,9 +2,6 @@ import React, {
   ComponentProps,
   DetailedHTMLProps,
   ElementRef,
-  ForwardedRef,
-  forwardRef,
-  Fragment,
   HTMLAttributes,
   ReactElement,
   useEffect,
@@ -27,8 +24,6 @@ import {
   AnchoredTooltipAlignment,
   AnchoredTooltipAnchor,
 } from "../AnchoredTooltip/AnchoredTooltip";
-import UncontrolledTransition from "../UncontrolledTransition/UncontrolledTransition";
-import { TransitionAnimationTypes } from "../Transition";
 
 export type SelectItem = (
   | {

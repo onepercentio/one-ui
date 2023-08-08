@@ -4,7 +4,6 @@ import Fade from "../../components/FadeIn";
 import { useOneUIConfig } from "../../context/OneUIProvider";
 import Styles from "./usePaginationControls.module.scss";
 import { isSameTarget } from "../../utils/html.utils";
-import { usePaginationControlsTestIds } from "./usePaginationControls.e2e";
 
 /**
  * This hook handles the display of pagination controls for the user to move to another page
@@ -15,11 +14,13 @@ export default function usePaginationControls(
     snapToPage,
     baseWidth,
     snapToCutElement: _snapToCutElement,
+    ...props
   }: {
     snapToPage?: boolean;
     baseWidth?: number;
     /** This will scroll only until the partially visible element is at the border, instead of scrolling all the container */
     snapToCutElement?: boolean;
+    "data-testid"?: [left: string, right: string];
   } = {}
 ) {
   const [[leftControl, rightControl], setControls] = useState<
@@ -147,7 +148,7 @@ export default function usePaginationControls(
         key={"l"}
         active={leftControl}
         className={`${Styles.left} ${Styles.control} ${className}`}
-        data-testid={usePaginationControlsTestIds.LEFT_CONTROL}
+        data-testid={props["data-testid"]?.[0]}
         onClick={move("l")}
       >
         {leftControl && <LeftControl />}
@@ -156,7 +157,7 @@ export default function usePaginationControls(
         key={"r"}
         active={rightControl}
         className={`${Styles.right} ${Styles.control} ${className}`}
-        data-testid={usePaginationControlsTestIds.RIGHT_CONTROL}
+        data-testid={props["data-testid"]?.[1]}
         onClick={move("r")}
       >
         {rightControl && <RightControl />}

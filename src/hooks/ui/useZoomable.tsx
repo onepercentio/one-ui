@@ -1,14 +1,10 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import Styles from "./useZoomable.module.scss";
+import { createRoot } from "react-dom/client";
 import ReactDOM from "react-dom";
 import useHero from "../useHero";
 import { useMergeRefsFunc } from "../useMergeRefs";
 import ownEvent from "../../utils/ownEvent";
-
-const ON_HERO_START: Parameters<typeof useHero>[2] = {
-  onHeroStart: (clone) => clone.classList.add(Styles.overBackdrop),
-};
-
 /**
  * Allows an element to be zoomable for fullscreen
  */
@@ -35,7 +31,6 @@ export default function useZoomable(id: string) {
           }
         };
         bd.style.opacity = "0";
-        ON_HERO_START!.onHeroStart!(clone, ...args);
         const middlewayClick = () => {
           bd.removeEventListener("transitionend", removeCb);
           clone.removeEventListener("click", middlewayClick);
@@ -72,7 +67,6 @@ export default function useZoomable(id: string) {
         {
           onHeroStart: (clone, ...args) => {
             getBackdrop().style.opacity = "1";
-            ON_HERO_START!.onHeroStart!(clone, ...args);
             const unzoomCb = () => {
               _unzoom();
               clone.removeEventListener("click", unzoomCb);
@@ -118,9 +112,9 @@ export default function useZoomable(id: string) {
       backdrop.setAttribute("data-zoomable", zoomableID);
 
       document.body.appendChild(backdrop);
-      ReactDOM.render(<HeroMount />, backdrop);
+      createRoot(backdrop).render(<HeroMount />);
     } else {
-      ReactDOM.render(<HeroMount />, existingBackdrop);
+      createRoot(existingBackdrop).render(<HeroMount />);
     }
   }
   useEffect(() => {

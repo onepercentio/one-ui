@@ -4,12 +4,6 @@
       "@babel/preset-env",
       {
         "targets": "> 0.25%, not dead",
-        "exclude": [
-          "proposal-dynamic-import",
-          "transform-block-scoping",
-          "transform-for-of",
-          "transform-regenerator"
-        ]
       }
     ],
     "@babel/preset-typescript",

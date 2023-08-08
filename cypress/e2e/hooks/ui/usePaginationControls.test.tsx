@@ -1,8 +1,12 @@
 import { useMemo, useRef } from "react";
 import OneUIProvider from "../../../../src/context/OneUIProvider";
-import usePageControls, {
-  usePaginationControlsTestIds,
-} from "../../../../src/hooks/ui/usePaginationControls";
+import usePageControls from "../../../../src/hooks/ui/usePaginationControls";
+
+export enum usePaginationControlsTestIds {
+  LEFT_CONTROL = "page-l",
+  RIGHT_CONTROL = "page-r",
+}
+
 function mount(childWidth: number = 1200, count: number = 10) {
   function rand() {
     return Math.random() * 255;
@@ -14,6 +18,10 @@ function mount(childWidth: number = 1200, count: number = 10) {
     const ref = useRef<HTMLDivElement>(null);
     const { controls, checkControlsRequirement } = usePageControls(ref, {
       snapToCutElement: true,
+      "data-testid": [
+        usePaginationControlsTestIds.LEFT_CONTROL,
+        usePaginationControlsTestIds.RIGHT_CONTROL,
+      ],
     });
     const rands = useMemo(() => {
       return new Array(count).fill(undefined).map(() => randColor());
@@ -132,7 +140,7 @@ describe("Improvement", () => {
       scroll(howMuchToScroll);
       cy.byTestId(usePaginationControlsTestIds.LEFT_CONTROL).click().wait(1000);
     }
-    mountAndTestLeft(10.20)
+    mountAndTestLeft(10.2);
     // moundAndTest(0)
     // moundAndTest(1)
     // moundAndTest(2)

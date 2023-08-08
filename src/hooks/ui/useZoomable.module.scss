@@ -28,7 +28,7 @@ $stubZIndex: 1000000;
   }
 }
 
-.overBackdrop {
+.backdrop + * {
   z-index: $stubZIndex + 1;
   max-width: initial;
 }

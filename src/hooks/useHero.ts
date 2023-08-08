@@ -363,5 +363,9 @@ export const TRANSITION_FACTORY: {
       );
       document.body.style.perspective = "100vw";
     },
+    onHeroEnd() {
+      if (events?.onHeroEnd) events.onHeroEnd();
+      document.body.style.perspective = "";
+    },
   }),
 };

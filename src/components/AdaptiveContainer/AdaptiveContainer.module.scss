@@ -1,8 +1,10 @@
 .resetSection {
   min-height: 0px;
-  transition: width var(--adaptive-container-transition-time, 400ms), height var(--adaptive-container-transition-time, 400ms);
+  transition: width var(--adaptive-container-transition-time, 400ms) linear,
+    height var(--adaptive-container-transition-time, 400ms) linear;
   transition-timing-function: linear;
   overflow: hidden;
+  align-items: flex-start;
   &.h {
     > * {
       min-width: auto !important;

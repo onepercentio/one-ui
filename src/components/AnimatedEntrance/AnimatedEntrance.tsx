@@ -118,16 +118,16 @@ export function AnimatedEntranceItem({
     };
   }, [typeof screen === "object" ? screen?.key : screen]);
 
-  const className = useMemo(
-    () => (!noEntranceAnimation ? Styles.maxHeight : ""),
-    [String(children.key).includes("-nullated")]
+  const firstRenderClass = useMemo(
+    () => (noEntranceAnimation ? "" : Styles.maxHeight),
+    [screen === null]
   );
 
-  return screen === null ? null : (
+  return (
     <UncontrolledTransition
       ref={uncontRef}
       transitionType={TransitionAnimationTypes.CUSTOM}
-      className={`${Styles.resetHeight} ${className}`}
+      className={`${Styles.resetHeight} ${firstRenderClass}`}
       lockTransitionWidth
       key={String(children.key).replace("-nullated", "")}
       onDiscardStep={(k) => {
@@ -138,7 +138,13 @@ export function AnimatedEntranceItem({
       }}
       config={CONFIGS_BY_ENTRANCE_TYPE[entranceType]}
     >
-      {typeof screen === "string" ? children : screen}
+      {screen === null ? (
+        <Fragment key={"null"} />
+      ) : typeof screen === "string" ? (
+        children
+      ) : (
+        screen
+      )}
     </UncontrolledTransition>
   );
 }

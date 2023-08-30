@@ -8,7 +8,6 @@ import React, {
   useEffect,
   useRef,
 } from "react";
-import Button from "../Button";
 import { TransitionAnimationTypes } from "../Transition";
 import UncontrolledTransition from "../UncontrolledTransition";
 import Styles from "./AdaptiveContainer.module.scss";
@@ -72,18 +71,18 @@ export default function AdaptiveContainer<
             if (direction === "h") {
               const contentWidth = lastChild.clientWidth;
               const targetWidth = `${contentWidth}px`;
+              const prevWidth = sectionDiv.style.width;
               sectionDiv.style.width = targetWidth;
               const func = resetFactory("width", contentWidth);
-              if (targetWidth === sectionDiv.style.width)
-                func({ propertyName: "width" });
+              if (targetWidth === prevWidth) func({ propertyName: "width" });
               else sectionDiv.addEventListener("transitionend", func);
             } else {
               const contentHeight = lastChild.scrollHeight;
               const targetHeight = `${contentHeight}px`;
+              const prevHeight = sectionDiv.style.height;
               sectionDiv.style.height = targetHeight;
               const func = resetFactory("height", contentHeight);
-              if (targetHeight === sectionDiv.style.height)
-                func({ propertyName: "height" });
+              if (targetHeight === prevHeight) func({ propertyName: "height" });
               else sectionDiv.addEventListener("transitionend", func);
             }
           }
@@ -96,11 +95,7 @@ export default function AdaptiveContainer<
 
   return (
     <>
-      <Wrapper
-        className={`${className}`}
-        ref={buttonRef}
-        {...otherProps}
-      >
+      <Wrapper className={`${className}`} ref={buttonRef} {...otherProps}>
         <UncontrolledTransition
           ref={uncontrolledRef}
           transitionType={TransitionAnimationTypes.CUSTOM}

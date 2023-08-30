@@ -10,6 +10,7 @@ $success: var(--success, lightgreen);
 $successDark: var(--success-dark, green);
 $mainBackgroundColor: var(--bg-color, white);
 $primaryColor: var(--primary-color, var(--digital-blue));
+$elevation: var(--card-elevation, 0px 4px 10px rgba(0, 0, 0, 0.1));
 
 //FONTS
 $mainFontFamily: var(--main-font, Roboto);

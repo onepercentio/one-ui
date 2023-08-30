@@ -52,7 +52,36 @@ Should animate exiting of a component`, () => {
   cy.contains("Elemento 5").find("button").click();
 });
 
-it.only("Should transition between elements out of order", () => {
+it.only("Should animate an item enter and exiting", () => {
+  const A = [
+    <h1 key="1">First element</h1>,
+    <h1 key="2">Second element</h1>,
+    <h1 key="3">Third element</h1>,
+  ];
+  const B = [
+    <h1 key="1">First element</h1>,
+    <h1 key="2">Second element</h1>,
+    <h1 key="3">Third element</h1>,
+    <h1 key="4">Fourth element</h1>,
+  ];
+  cy.mountChain((children: ReactElement[]) => (
+    <AnimatedEntrance>{children}</AnimatedEntrance>
+  ))
+    .remount(A)
+    .wait(1200)
+    .remount(B)
+    .wait(500)
+    .window()
+    .then((w) => {
+      w.console.clear();
+    })
+    .pause()
+    .remount(A)
+    .pause()
+    .remount(B);
+});
+
+it("Should transition between elements out of order", () => {
   cy.mountChain((children: ReactElement[]) => (
     <AnimatedEntrance>{children}</AnimatedEntrance>
   ))

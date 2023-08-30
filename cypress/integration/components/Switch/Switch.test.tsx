@@ -10,5 +10,3 @@ function renderScreen(props: React.ComponentProps<typeof Component>) {
 it('Should at least render :)', () => {
     renderScreen({});
 })
-
-it("Should be able to toggle between states");

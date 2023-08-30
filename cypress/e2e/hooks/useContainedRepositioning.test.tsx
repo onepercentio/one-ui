@@ -50,6 +50,7 @@ function Wrapper({ elToFocus }: { elToFocus?: number }) {
           width: "100vw",
           minWidth: "100vw",
           overflow: "auto",
+          position: "relative",
         }}
       >
         <div

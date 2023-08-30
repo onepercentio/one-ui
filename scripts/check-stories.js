@@ -24,8 +24,10 @@ const files = dirs
 
 files.forEach(({ filePath, testFilePath, comp }, i) => {
   const testExists = existsSync(testFilePath);
+  console.log(testExists, testFilePath);
   if (!testExists) {
-    mkdirSync(join(testFilePath, ".."));
+    const testFileFolder = join(testFilePath, "..");
+    if (!existsSync(testFileFolder)) mkdirSync(testFileFolder);
     writeFileSync(
       testFilePath,
       `import React from "react";

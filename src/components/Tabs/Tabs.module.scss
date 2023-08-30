@@ -11,11 +11,29 @@
       font-weight: bold;
     }
   }
+  &.FULL {
+    p {
+      transition: color 250ms linear;
+      padding: 16px 40px;
+      z-index: 1;
+      margin: 0px;
+
+      &.selected {
+        color: var(--tab-selected-color);
+      }
+    }
+    .guide {
+      box-shadow: $elevation;
+      border-radius: 24px / 50%;
+    }
+  }
 }
 
 .guide {
   height: 0.1em;
-  background-color: $digitalBlue;
+  background-color: var(--tab-guide-color, $digitalBlue);
   position: absolute;
-  transition: left $fast, width $fast, top $fast;
+  &.enableTransition {
+    transition: left $fast, width $fast, top $fast, height $fast;
+  }
 }

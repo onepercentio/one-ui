@@ -1,15 +1,21 @@
 import React, { ReactElement, useEffect, useRef } from "react";
 import Styles from "./Tabs.module.scss";
 
+export enum TabType {
+  FULL,
+  UNDERLINE,
+}
+
 /**
  * Show tabs for toggling between options
  **/
-export default function Tabs<O extends string>({
+export default function Tabs<O extends string | number>({
   options,
   selected,
   onSelect,
   itemClassName = "",
   className = "",
+  type = TabType.UNDERLINE,
 }: {
   options: Readonly<
     {
@@ -21,26 +27,38 @@ export default function Tabs<O extends string>({
   onSelect: (option: O) => void;
   itemClassName?: string;
   className?: string;
+  type?: TabType;
 }) {
   const selectedRef = useRef<HTMLParagraphElement>(null);
   const guideRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    guideRef.current!.style["opacity"] = selectedRef.current
-      ? "1"
-      : guideRef.current!.style["opacity"];
-    guideRef.current!.style["width"] = selectedRef.current
-      ? selectedRef.current.clientWidth + "px"
-      : "0px";
-    guideRef.current!.style["left"] = selectedRef.current
-      ? selectedRef.current.offsetLeft + "px"
-      : guideRef.current!.style["left"] || "initial";
-    guideRef.current!.style["top"] = selectedRef.current
-      ? selectedRef.current.offsetTop + selectedRef.current.clientHeight + "px"
-      : guideRef.current!.style["top"] || "initial";
+    const guideStyle = guideRef.current!.style;
+    const currEl = selectedRef.current;
+    guideStyle["opacity"] = currEl ? "1" : guideStyle["opacity"];
+    guideStyle["width"] = currEl ? currEl.clientWidth + "px" : "0px";
+    guideStyle["left"] = currEl
+      ? currEl.offsetLeft + "px"
+      : guideStyle["left"] || "initial";
+    if (type === TabType.FULL) {
+      guideStyle["height"] = currEl ? currEl.clientHeight + "px" : "";
+      guideStyle["top"] = currEl
+        ? currEl.offsetTop + "px"
+        : guideStyle["top"] || "initial";
+    } else {
+      guideStyle["top"] = currEl
+        ? currEl.offsetTop + currEl.clientHeight + "px"
+        : guideStyle["top"] || "initial";
+    }
   }, [selected]);
+
+  useEffect(() => {
+    guideRef.current!.classList.add(Styles.enableTransition);
+  }, []);
   return (
     <>
-      <div className={`${Styles.container} ${className}`}>
+      <div
+        className={`${Styles.container} ${className} ${Styles[TabType[type]]}`}
+      >
         {options.map((o) => (
           <p
             ref={selected === o.id ? selectedRef : undefined}

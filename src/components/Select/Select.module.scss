@@ -19,12 +19,15 @@
 .empty {
   opacity: 0.3;
 }
-.input input {
-  transition: opacity $fast;
+.input {
   cursor: pointer;
-  padding-right: 30px;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  input {
+    transition: opacity $fast;
+    padding-right: 30px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    pointer-events: none;
+  }
 }
 .indicator {
   display: flex;

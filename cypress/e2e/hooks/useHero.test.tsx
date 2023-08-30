@@ -341,7 +341,7 @@ it("Should be able to bounds container for transition optimization", () => {
 /**
  * Dunno how to call the effect I'm creating
  */
-it.only("Should be able to apply centrifuge force effect", () => {
+it("Should be able to apply centrifuge force effect", () => {
   cy.viewport(2000, 2000);
   function Hero({ p }: { p: [left: number, top: number] }) {
     const h = useHero("square", undefined, TRANSITION_FACTORY.ACCELERATION());
@@ -391,13 +391,13 @@ it.only("Should be able to apply centrifuge force effect", () => {
     p: readonly [left: number, top: number],
     skipPause: boolean = false
   ) {
-    cy.log(`Remounting ${p.join(", ")}`)
+    cy.log(`Remounting ${p.join(", ")}`);
     chain.remount(p as any);
     if (!skipPause) cy.pause();
     else cy.wait(1600);
   }
-  goTo([377.0918303779677, 101.29989459343993])
-  goTo([946.7953627605262, 1515.9577735297455])
+  goTo([377.0918303779677, 101.29989459343993]);
+  goTo([946.7953627605262, 1515.9577735297455]);
 
   for (let pos of new Array(100)
     .fill(undefined)
@@ -412,4 +412,70 @@ it.only("Should be able to apply centrifuge force effect", () => {
   goTo([0, 1700]);
   goTo([0, 850]);
   goTo([0, 0]);
+});
+
+it.only("Should be able to hide/show dynamic elements between heroes", () => {
+  function Wrapper({ cenario }: { cenario: "a" | "b" }) {
+    const { heroRef, heroComponentRef } = useHero("test-composition");
+    const RESET = { margin: "0px" };
+    const BIG = { fontSize: "32px", ...RESET };
+    return (
+      <div
+        ref={heroRef}
+        style={{
+          backgroundColor: "red",
+          display: "inline-block",
+          position: "relative",
+          top: cenario === "a" ? 400 : 0,
+          left: cenario === "b" ? 400 : 0,
+          width: "500px",
+        }}
+      >
+        {cenario === "a" && (
+          <>
+            <div ref={heroComponentRef("only-a")}>
+              <p style={BIG}>I am only shown on cenario A</p>
+            </div>
+            <div ref={heroComponentRef("only-a2")}>
+              <p style={BIG}>I also is shown on cenario A</p>
+            </div>
+            <div ref={heroComponentRef("only-a3")}>
+              <p style={BIG}>Well here we are cenario A</p>
+            </div>
+          </>
+        )}
+        <div>
+          <p style={RESET}>I am always shown</p>
+        </div>
+        {cenario === "b" && (
+          <div ref={heroComponentRef("only-b")}>
+            <p style={BIG}>I am only shown on cenario B</p>
+          </div>
+        )}
+        <div>
+          <p style={RESET}>I am also always shown</p>
+        </div>
+      </div>
+    );
+  }
+  cy.document().then((d) => {
+    d.body.style.setProperty("--animation--speed-fast", "1s");
+  });
+  const chain = cy.mountChain((cenario: "a" | "b") => {
+    return (
+      <UncontrolledTransition
+        transitionType={TransitionAnimationTypes.FADE}
+        style={{ alignItems: "flex-start" }}
+      >
+        <Wrapper cenario={cenario} key={cenario} />
+      </UncontrolledTransition>
+    );
+  });
+  chain.remount("a");
+  cy.pause();
+  chain.remount("b");
+  cy.pause();
+  chain.remount("a");
+  cy.pause();
+  chain.remount("b");
 });

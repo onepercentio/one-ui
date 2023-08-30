@@ -15,6 +15,66 @@ type Result = [
   targetContainer: Element | VisualViewport
 ];
 const viewport = window.visualViewport!;
+const DATA_TAG_HERO_COMPONENT = "data-hero-component";
+
+function triggerDynamicComponents(
+  clone: HTMLDivElement,
+  componentsThatWillAppear: HTMLDivElement[]
+) {
+  const idsThatWillAppear = componentsThatWillAppear.map((a) =>
+    a.getAttribute(DATA_TAG_HERO_COMPONENT)
+  );
+  const preexistingComponents = Array.from(
+    clone.querySelectorAll(`[${DATA_TAG_HERO_COMPONENT}]`)
+  ) as HTMLDivElement[];
+  const removedElements: HTMLDivElement[] = preexistingComponents.filter(
+    (el) =>
+      !idsThatWillAppear.includes(el.getAttribute(DATA_TAG_HERO_COMPONENT))
+  );
+
+  for (let elementThatIsBeingRemoved of removedElements) {
+    elementThatIsBeingRemoved.style.height = `${elementThatIsBeingRemoved.clientHeight}px`;
+  }
+  setTimeout(() => {
+    for (let elementThatIsBeingRemoved of removedElements) {
+      elementThatIsBeingRemoved.style.height = `0px`;
+      elementThatIsBeingRemoved.style.opacity = `0`;
+    }
+  }, 0);
+
+  for (let componentThatWillAppear of componentsThatWillAppear) {
+    const alreadyInjectedElement = !!clone.querySelector(
+      `[${DATA_TAG_HERO_COMPONENT}="${componentThatWillAppear.getAttribute(
+        DATA_TAG_HERO_COMPONENT
+      )}"]`
+    );
+    if (!alreadyInjectedElement) {
+      const targetElementClone = componentThatWillAppear.cloneNode(
+        true
+      ) as HTMLDivElement;
+      targetElementClone.style.height = "0px";
+      const shouldBeInsrtedAtIndex = Array.from(
+        componentThatWillAppear.parentElement!.children
+      ).indexOf(componentThatWillAppear);
+      const remainingIndexes = Array.from(clone.children)
+        .map((el, i) =>
+          removedElements.includes(el as HTMLDivElement) ? undefined : i
+        )
+        .filter((e) => e !== undefined) as number[];
+
+      if (shouldBeInsrtedAtIndex === remainingIndexes.length)
+        clone.append(targetElementClone);
+      else
+        clone.insertBefore(
+          targetElementClone,
+          clone.childNodes.item(remainingIndexes[shouldBeInsrtedAtIndex])
+        );
+      setTimeout(() => {
+        targetElementClone.style.height = `${componentThatWillAppear.clientHeight}px`;
+      }, 0);
+    }
+  }
+}
 
 /**
  * This hook implements the logic for a hero animation between 2 elements
@@ -218,14 +278,23 @@ export default function useHero(
         const el = heroRef.current;
         const cleanup = () => {
           if (events.onHeroEnd) events.onHeroEnd();
-          clone.remove();
           if (el) {
             if (repeatable) el!.setAttribute(dataProperty, id);
             el.style.visibility = "";
           }
+          setTimeout(() => {
+            clone.remove();
+          }, 0);
         };
-        if (events.onHeroStart)
+        if (events.onHeroStart) {
           events.onHeroStart(clone, otherElement, heroRef.current!);
+        }
+        triggerDynamicComponents(
+          clone,
+          Array.from(
+            heroRef.current!.querySelectorAll(`[${DATA_TAG_HERO_COMPONENT}]`)
+          ) as HTMLDivElement[]
+        );
         if (!el) {
           cleanup();
           return;
@@ -270,7 +339,18 @@ export default function useHero(
     triggerHeroAnimation();
   }, []);
 
-  return { heroRef, getHerosOnScreen, trigger: triggerHeroAnimation };
+  return {
+    heroRef,
+    getHerosOnScreen,
+    trigger: triggerHeroAnimation,
+    heroComponentRef:
+      (componentId: string) => (elRef: HTMLDivElement | null) => {
+        if (elRef) {
+          elRef.setAttribute(DATA_TAG_HERO_COMPONENT, componentId);
+          elRef.classList.add(Styles.component);
+        }
+      },
+  };
 }
 
 function isElementOutsideViewport(coordinates: DOMRect) {

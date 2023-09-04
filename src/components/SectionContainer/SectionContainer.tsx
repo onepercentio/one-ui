@@ -22,7 +22,7 @@ type Props<S extends string> =
 /**
  * This component wraps a section and limits it's content as well as defining an id to reference this section
  **/
-function SectionContainer<S extends string = OnepercentUtility.PageSections>(
+function _SectionContainer<S extends string = OnepercentUtility.PageSections>(
   { children, section, className = "", decoration, onClick }: Props<S>,
   ref: ForwardedRef<HTMLDivElement>
 ) {
@@ -45,4 +45,5 @@ function SectionContainer<S extends string = OnepercentUtility.PageSections>(
   );
 }
 
-export default forwardRef<HTMLDivElement, Props<string>>(SectionContainer);
+const SectionContainer = forwardRef<HTMLDivElement, Props<string>>(_SectionContainer);
+export default SectionContainer;

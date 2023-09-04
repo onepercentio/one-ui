@@ -38,7 +38,7 @@ export type InputProps = {
 /**
  * A transparent input with some prebuilt states common to the application
  **/
-function Input(
+function _Input(
   {
     error,
     placeholder = " ",
@@ -131,4 +131,5 @@ export enum InputTestIds {
   ERROR = "error",
 }
 
-export default forwardRef(Input);
+const Input = forwardRef(_Input);
+export default Input;

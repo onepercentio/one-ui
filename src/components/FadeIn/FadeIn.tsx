@@ -23,7 +23,7 @@ type FadeInProps = PropsWithChildren<{
 /**
  * Receives a children and displays it with a fade in animation, also when it's removed, it hides with a fadeout
  **/
-function FadeIn(
+function _FadeIn(
   {
     onHidden,
     children,
@@ -72,4 +72,5 @@ function FadeIn(
   );
 }
 
-export default forwardRef<HTMLDivElement, FadeInProps>(FadeIn);
+const FadeIn = forwardRef<HTMLDivElement, FadeInProps>(_FadeIn);
+export default FadeIn;

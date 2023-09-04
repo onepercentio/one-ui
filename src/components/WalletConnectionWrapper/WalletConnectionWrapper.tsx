@@ -61,7 +61,7 @@ type Props = {
 /**
  * This component handles a lot of cenarios when dealing with the wallet connection to different providers (ex: Metamask)
  **/
-function WalletConnectionWrapper(
+function _WalletConnectionWrapper(
   props: PropsWithChildren<Props>,
   ref: ForwardedRef<{
     connect: () => Promise<void>;
@@ -79,7 +79,7 @@ function WalletConnectionWrapper(
  **/
 function _BaseWalletConnectionWrapper(
   props: Props & {
-    children?: any
+    children?: any;
   },
   ref: ForwardedRef<{
     connect: () => Promise<void>;
@@ -192,7 +192,9 @@ function Content({
   );
 }
 
-export default forwardRef(WalletConnectionWrapper);
+const WalletConnectionWrapper = forwardRef(_WalletConnectionWrapper);
+export default WalletConnectionWrapper;
+
 export const BaseWalletConnectionWrapper = forwardRef(
   _BaseWalletConnectionWrapper
 );

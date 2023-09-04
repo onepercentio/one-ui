@@ -37,4 +37,5 @@ export function _Text(
   );
 }
 
-export default forwardRef(_Text);
+const Text = forwardRef(_Text);
+export default Text;

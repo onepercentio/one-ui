@@ -157,7 +157,7 @@ function ChildrenWrapperFactory(
 /**
  * Handles the transition between multiple children and recycling of elements
  **/
-function Transition(
+function _Transition(
   {
     step,
     contentStyle,
@@ -471,4 +471,5 @@ export enum TransitionAnimationTypes {
   CUSTOM,
 }
 
-export default forwardRef(Transition);
+const Transition = forwardRef(_Transition);
+export default Transition;

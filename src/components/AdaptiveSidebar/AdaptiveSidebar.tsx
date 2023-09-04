@@ -25,7 +25,7 @@ type AdaptiveSidebarControls = {
 /**
  * A component that you can put anywhere but hides when small enough and shows the control via a fixed floating button
  **/
-function AdaptiveSidebar(
+function _AdaptiveSidebar(
   {
     open: externalOpen,
     children,
@@ -113,4 +113,5 @@ function AdaptiveSidebar(
   );
 }
 
-export default forwardRef(AdaptiveSidebar);
+const AdaptiveSidebar = forwardRef(_AdaptiveSidebar);
+export default AdaptiveSidebar;

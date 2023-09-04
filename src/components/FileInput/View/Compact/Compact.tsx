@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import Styles from "./Compact.module.scss";
 import { FileInputViewProps } from "../View.types";
-import UncontrolledTransition from "../../../UncontrolledTransition/UncontrolledTransition";
+import _UncontrolledTransition from "../../../UncontrolledTransition/UncontrolledTransition";
 import { TransitionAnimationTypes } from "../../../Transition";
 import Button from "../../../Button/Button";
 
@@ -61,7 +61,7 @@ export default function Compact({
         } as any
       }
     >
-      <UncontrolledTransition
+      <_UncontrolledTransition
         transitionType={TransitionAnimationTypes.COIN_FLIP}
       >
         <Button variant="transparent" key={statusClass}>
@@ -115,7 +115,7 @@ export default function Compact({
             )}
           </svg>
         </Button>
-      </UncontrolledTransition>
+      </_UncontrolledTransition>
       <div>
         <p>{state.title}</p>
         {state.description && <p>{state.description}</p>}

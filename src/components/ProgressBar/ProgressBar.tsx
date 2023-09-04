@@ -7,7 +7,7 @@ import Styles from "./ProgressBar.module.scss";
 export default function ProgressBar({
   size,
   progress,
-  style = "guide",
+  mode = "guide",
 }: {
   /**
    * Given as css font size
@@ -18,17 +18,17 @@ export default function ProgressBar({
    */
   progress: number;
 
-  style?: "gauge" | "guide";
+  mode?: "gauge" | "guide";
 }) {
   return (
     <div
-      className={`${Styles.container} ${Styles[style]} ${
+      className={`${Styles.container} ${Styles[mode]} ${
         progress === 100 ? Styles.completed : ""
       }`}
       style={{ fontSize: size }}
     >
       <span style={{ width: `${progress}%` }} />
-      {style === "guide" && <span style={{ left: `${progress}%` }} />}
+      {mode === "guide" && <span style={{ left: `${progress}%` }} />}
     </div>
   );
 }
@@ -38,12 +38,12 @@ export function BalancedProgressBar({
   max,
   current,
   size,
-  style,
+  mode,
 }: {
   min: number;
   max: number;
   current: number;
-} & Pick<ComponentProps<typeof ProgressBar>, "size" | "style">) {
+} & Pick<ComponentProps<typeof ProgressBar>, "size" | "mode">) {
   const progress = useMemo(() => {
     const progressVal = current - min;
     const maxVal = max - min;
@@ -53,5 +53,5 @@ export function BalancedProgressBar({
     return currProgress;
   }, [min, max, current]);
 
-  return <ProgressBar size={size} progress={progress} style={style} />;
+  return <ProgressBar size={size} progress={progress} mode={mode} />;
 }

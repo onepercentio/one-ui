@@ -165,7 +165,7 @@ export function updateTooltipPosition(
 /**
  * This tooltip anchors itself to an element and handles positioning relative to the anchored element
  **/
-function AnchoredTooltip(
+function _AnchoredTooltip(
   { containInViewport = true, alignment, ...props }: Props,
   ref: ForwardedRef<{ updatePosition: () => void }>
 ) {
@@ -240,4 +240,6 @@ function AnchoredTooltip(
   ) : null;
 }
 
-export default forwardRef(AnchoredTooltip);
+
+const AnchoredTooltip = forwardRef(_AnchoredTooltip);
+export default AnchoredTooltip;

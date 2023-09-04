@@ -18,7 +18,7 @@ import {
 /**
  * This component handles when a child changes and transition this child change, allowing the finest experiences
  **/
-function UncontrolledTransition(
+function _UncontrolledTransition(
   {
     className = "",
     contentClassName,
@@ -133,4 +133,5 @@ function UncontrolledTransition(
   );
 }
 
-export default forwardRef(UncontrolledTransition);
+const UncontrolledTransition = forwardRef(_UncontrolledTransition);
+export default UncontrolledTransition;

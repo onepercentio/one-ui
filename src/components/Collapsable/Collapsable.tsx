@@ -21,7 +21,7 @@ import {
 /**
  * Wrapps some content on a collapsable header
  **/
-function Collapsable(
+function _Collapsable(
   {
     children,
     title,
@@ -242,4 +242,5 @@ export function CollapsableInterface(id: string) {
   return new _CollapsableInterface(id);
 }
 
-export default forwardRef(Collapsable);
+const Collapsable = forwardRef(_Collapsable);
+export default Collapsable;

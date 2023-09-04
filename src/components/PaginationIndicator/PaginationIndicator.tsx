@@ -311,4 +311,6 @@ function _PaginationIndicator(
   );
 }
 
-export default forwardRef(_PaginationIndicator);
+const PaginationIndicator = forwardRef(_PaginationIndicator);
+export default PaginationIndicator;
+

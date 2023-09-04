@@ -39,7 +39,7 @@ const RULES = [
 /**
  * A Input based wrapper to handle inputing of password
  **/
-function PasswordInput(
+function _PasswordInput(
   props: ({
     value: string;
     error?: string;
@@ -146,4 +146,5 @@ function PasswordInput(
   );
 }
 
-export default forwardRef(PasswordInput);
+const PasswordInput = forwardRef(_PasswordInput);
+export default PasswordInput;

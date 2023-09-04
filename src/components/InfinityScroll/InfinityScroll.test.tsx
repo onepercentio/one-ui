@@ -1,7 +1,7 @@
 import React, { createRef } from "react";
 import { render } from "@testing-library/react";
 
-import InfinityScroll, { keys, shouldIncrementPage } from "./InfinityScroll";
+import _InfinityScroll, { keys, shouldIncrementPage } from "./InfinityScroll";
 import { act } from "@testing-library/react";
 
 HTMLElement.prototype.scrollTo = jest.fn();
@@ -32,7 +32,7 @@ const elements = [
 ];
 it("Should be able to decide when to emulate the page recycling", () => {
   const wrapper = render(
-    <InfinityScroll ref={createRef()} items={elements} pageSize={3} />
+    <_InfinityScroll ref={createRef()} items={elements} pageSize={3} />
   );
 
   expect(wrapper.container.textContent).toEqual("def123456");
@@ -46,7 +46,7 @@ it.each([
   (initialPage, expectation) => {
     const elements = ["1", "2", "3", "4"];
     const wrapper = render(
-      <InfinityScroll
+      <_InfinityScroll
         ref={createRef()}
         items={elements}
         pageSize={3}
@@ -83,7 +83,7 @@ it.each([
 it("Should not infinitize if the number of items can be displayed on single section", () => {
   const elements = ["1", "2", "3"];
   const { container } = render(
-    <InfinityScroll
+    <_InfinityScroll
       ref={createRef()}
       items={elements}
       pageSize={3}
@@ -100,11 +100,11 @@ describe("BugFixing", () => {
     const elements = ["1", "2", "3"];
     const moreElements = ["1", "2", "3", "4"];
     const { rerender, container, getByTestId } = render(
-      <InfinityScroll ref={createRef()} items={elements} pageSize={3} />
+      <_InfinityScroll ref={createRef()} items={elements} pageSize={3} />
     );
     expect(container.textContent).toEqual("123");
     rerender(
-      <InfinityScroll ref={createRef()} items={moreElements} pageSize={3} />
+      <_InfinityScroll ref={createRef()} items={moreElements} pageSize={3} />
     );
     expect(container.textContent).toEqual("234123412");
     const parent = getByTestId("infinity-parent");
@@ -127,7 +127,7 @@ describe("BugFixing", () => {
     event.initEvent("scroll", true, true);
     const elements = ["1", "2", "3", "4"];
     const { getByTestId, container } = render(
-      <InfinityScroll
+      <_InfinityScroll
         ref={createRef()}
         items={elements}
         pageSize={3}
@@ -184,7 +184,7 @@ describe("BugFixing", () => {
     event.initEvent("scroll", true, true);
     const elements = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
     const { getByTestId, container } = render(
-      <InfinityScroll
+      <_InfinityScroll
         ref={createRef()}
         items={elements}
         pageSize={3}

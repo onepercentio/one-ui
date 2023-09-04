@@ -11,7 +11,7 @@ import Styles from "./MainGrid.module.scss";
 /**
  * This layout provides 3 parts to compose screens
  **/
-function MainGrid(
+function _MainGrid(
   {
     children,
     leftContent,
@@ -62,4 +62,5 @@ function MainGrid(
   );
 }
 
-export default forwardRef(MainGrid);
+const MainGrid = forwardRef(_MainGrid);
+export default MainGrid;

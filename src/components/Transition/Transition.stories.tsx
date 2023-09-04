@@ -1,15 +1,15 @@
 import React from "react";
 import Text from "../Text";
-import Transition from "./Transition";
+import _Transition from "./Transition";
 
 export default {
-  component: Transition,
+  component: _Transition,
   title: "Transitor de elementos",
 };
 
 export const InitialImplementation = (args: any) => (
   <>
-    <Transition {...args}>
+    <_Transition {...args}>
       <div style={{ backgroundColor: "red" }}>
         <Text style={{ padding: 48, textAlign: "center" }} type="title">
           Etapa 1
@@ -30,10 +30,10 @@ export const InitialImplementation = (args: any) => (
           Etapa 4
         </Text>
       </div>
-    </Transition>
+    </_Transition>
     <h1>Controle o elemento atual pelos controles abaixo, existem 4 etapas</h1>
   </>
 );
 InitialImplementation.args = {
   step: 0,
-} as Partial<React.ComponentProps<typeof Transition>>;
+} as Partial<React.ComponentProps<typeof _Transition>>;

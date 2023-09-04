@@ -60,7 +60,7 @@ export function getItemsFactory<T extends any>(
 /**
  * Manages a set of divs that allows the effect of inifinite scrolling between pages
  **/
-function InfinityScroll(
+function _InfinityScroll(
   {
     items,
     pageSize,
@@ -177,7 +177,8 @@ function InfinityScroll(
   );
 }
 
-export default forwardRef(InfinityScroll);
+const InfinityScroll = forwardRef(_InfinityScroll);
+export default InfinityScroll;
 
 export enum InfinityDataTestId {
   PREV_PAGE = "infinity-prev",

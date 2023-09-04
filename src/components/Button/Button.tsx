@@ -39,4 +39,5 @@ export function _Button(
   );
 }
 
-export default forwardRef<HTMLButtonElement, ButtonProps>(_Button);
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(_Button);
+export default Button;

@@ -102,7 +102,7 @@ export type FirebaseFormProps<M extends FormForm> = {
       };
   btnProps?: ComponentProps<typeof Button>;
 };
-function FirebaseForm<M extends BaseForm>(
+function _FirebaseForm<M extends BaseForm>(
   {
     submitting,
     onSubmit,
@@ -239,4 +239,5 @@ function FirebaseForm<M extends BaseForm>(
     </>
   );
 }
-export default forwardRef(FirebaseForm) as typeof FirebaseForm;
+const FirebaseForm = forwardRef(_FirebaseForm);
+export default FirebaseForm;

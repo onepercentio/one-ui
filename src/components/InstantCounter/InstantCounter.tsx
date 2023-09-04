@@ -11,7 +11,7 @@ import { FormatNumberOptions, useIntl } from "react-intl";
 /**
  * Increments the numbers from 0 to X
  **/
-function InstantCounter(
+function _InstantCounter(
   {
     from = 0,
     to,
@@ -73,4 +73,5 @@ function InstantCounter(
   );
 }
 
-export default forwardRef(InstantCounter);
+const InstantCounter = forwardRef(_InstantCounter);
+export default InstantCounter;

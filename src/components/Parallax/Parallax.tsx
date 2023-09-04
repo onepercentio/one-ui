@@ -60,7 +60,7 @@ type Props = PropsWithChildren<{
 /**
  * It holds a children and animates it according to mouse position
  **/
-function Parallax(
+function _Parallax(
   {
     children,
     className = "",
@@ -244,4 +244,5 @@ function Parallax(
   );
 }
 
-export default forwardRef<HTMLDivElement, Props>(Parallax);
+const Parallax = forwardRef(_Parallax);
+export default Parallax;

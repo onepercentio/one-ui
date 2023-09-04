@@ -16,7 +16,7 @@ import { debounce, throttle } from "lodash";
 /**
  * Mantains a static content at the start of the container and when scrolled animates it's concealment
  **/
-function StaticScroller(
+function _StaticScroller(
   {
     children,
     ...props
@@ -77,4 +77,5 @@ function StaticScroller(
   );
 }
 
-export default forwardRef(StaticScroller);
+const StaticScroller = forwardRef(_StaticScroller);
+export default StaticScroller;

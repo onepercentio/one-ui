@@ -13,26 +13,34 @@ it("All examples mount at least", () => {
 });
 
 it.only("Should be able to cover all items", () => {
+  cy.viewport(2100, 1080)
   function Wrapper({ s }: { s: string }) {
     const [selected, ss] = useState("");
     useEffect(() => {
       ss(s);
     }, [s]);
     return (
-      <Tabs
-        onSelect={(a) => {
-          ss(a);
-        }}
-        selected={selected}
-        options={["Example 1", "Example 2", "Example 3"].map((w) => ({
-          id: w,
-          label: w,
-        }))}
-        type={TabType.FULL}
-      />
+      <>
+        {[10, 18, 24, 32, 48, 72].map((fontSize) => (
+          <div style={{ fontSize }}>
+            <p>Font size {fontSize}px</p>
+            <Tabs
+              onSelect={(a) => {
+                ss(a);
+              }}
+              selected={selected}
+              options={["Example 1", "O", "This is a long ass option"].map((w) => ({
+                id: w,
+                label: w,
+              }))}
+              type={TabType.FULL}
+            />
+          </div>
+        ))}
+      </>
     );
   }
   const chain = cy.mountChain((s: string) => <Wrapper s={s} />);
   chain.remount("").wait(2000);
-  chain.remount("Example 2");
+  chain.remount("This is a long ass option");
 });

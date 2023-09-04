@@ -12,9 +12,10 @@
     }
   }
   &.FULL {
+    overflow: visible;
     p {
       transition: color 250ms linear;
-      padding: 16px 40px;
+      padding: 0.4em 1em;
       z-index: 1;
       margin: 0px;
 
@@ -24,7 +25,7 @@
     }
     .guide {
       box-shadow: $elevation;
-      border-radius: 24px / 50%;
+      border-radius: 1em / 50%;
     }
   }
 }

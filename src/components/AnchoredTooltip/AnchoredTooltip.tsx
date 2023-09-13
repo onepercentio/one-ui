@@ -5,6 +5,7 @@ import React, {
   RefObject,
   useEffect,
   useImperativeHandle,
+  useLayoutEffect,
   useRef,
   useState,
 } from "react";
@@ -220,13 +221,19 @@ function _AnchoredTooltip(
     }
   }, [open, anchorRef, realClosed]);
 
+  useLayoutEffect(() => {
+    if (!tooltipRef.current) return;
+    if (open) tooltipRef.current!.classList.add(Styles.open);
+    else tooltipRef.current!.classList.remove(Styles.open);
+  }, [open]);
+
   return !realClosed || open ? (
     <>
       {ReactDOM.createPortal(
         <FadeIn
           onClick={(e) => e.stopPropagation()}
           ref={tooltipRef}
-          className={`${Styles.tooltipContainer} ${open ? Styles.open : ""} ${
+          className={`${Styles.tooltipContainer} ${
             props.className || ""
           } ${className}`}
           style={props.style}
@@ -239,7 +246,6 @@ function _AnchoredTooltip(
     </>
   ) : null;
 }
-
 
 const AnchoredTooltip = forwardRef(_AnchoredTooltip);
 export default AnchoredTooltip;

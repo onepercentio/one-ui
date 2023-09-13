@@ -17,7 +17,7 @@ type FadeInProps = PropsWithChildren<{
   onClick?: (e: SyntheticEvent<HTMLDivElement>) => void;
   onHidden?: () => void;
   "data-testid"?: string;
-  style?: any
+  style?: any;
 }>;
 
 /**
@@ -57,7 +57,9 @@ function _FadeIn(
         el.removeEventListener("transitionend", handler);
       };
     } else {
-      el.classList.add(Styles.active);
+      setTimeout(() => {
+        el.classList.add(Styles.active);
+      }, 0);
     }
   }, [children, active]);
   return (

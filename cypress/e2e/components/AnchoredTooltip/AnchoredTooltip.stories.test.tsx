@@ -7,7 +7,10 @@ import React, {
 } from "react";
 import { mount } from "cypress/react";
 import * as AllExamples from "../../../../src/components/AnchoredTooltip/AnchoredTooltip.stories";
-import { updateTooltipPosition } from "../../../../src/components/AnchoredTooltip/AnchoredTooltip";
+import AnchoredTooltip, {
+  updateTooltipPosition,
+} from "../../../../src/components/AnchoredTooltip/AnchoredTooltip";
+import Button from "components/Button";
 
 it("All examples mount at least", () => {
   for (let ExampleName in AllExamples) {
@@ -18,7 +21,43 @@ it("All examples mount at least", () => {
   }
 });
 
-describe.only("Improvement", () => {
+describe("Bugfix", () => {
+  it.only("Should show the tooltip content with a deccent animation & should not jump when closing", () => {
+    function Wrapper() {
+      const [show, setShow] = useState(false);
+      const r = useRef(null);
+      return (
+        <>
+          <Button ref={r} onClick={() => setShow((p) => !p)}>
+            Click me
+          </Button>
+          <AnchoredTooltip open={show} anchorRef={r}>
+            <>THIS SHOULD ANIMATE ENTRANCE and with small text</>
+          </AnchoredTooltip>
+        </>
+      );
+    }
+    const chain = cy.mountChain(() => (
+      <div
+        style={{
+          width: "100vw",
+          height: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Wrapper />
+      </div>
+    ));
+    chain.remount();
+    cy.get("button").click();
+    cy.pause();
+    cy.get("button").click();
+  });
+});
+
+describe("Improvement", () => {
   it("Should be able to reposition when the tooltip is born close to the borders", () => {
     cy.viewport(460, 800);
     function Wrapper(css: CSSProperties) {
@@ -35,7 +74,7 @@ describe.only("Improvement", () => {
             <button
               ref={anchorRef}
               onClick={() => {
-                setShowTooltip(true);
+                setShowTooltip((p) => !p);
               }}
             >
               Click me

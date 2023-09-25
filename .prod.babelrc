@@ -18,5 +18,6 @@
     ],
     "@babel/preset-typescript",
     "@babel/preset-react"
-  ]
+  ],
+  "sourceMaps": "inline"
 }

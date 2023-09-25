@@ -9,10 +9,10 @@ export default function useMouseHover() {
   const [hovering, setHovering] = useState(false);
   const uiEvents = useMemo(
     () => ({
-      onMouseEnter: ownEvent(() => {
+      onMouseEnter: ownEvent<MouseEvent>(() => {
         setHovering(true);
       }),
-      onMouseOut: ownEvent(() => {
+      onMouseOut: ownEvent<MouseEvent>(() => {
         setHovering(false);
       }),
     }),

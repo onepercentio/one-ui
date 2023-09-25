@@ -74,7 +74,7 @@ export default function PingPongText({
   return (
     <Text
       ref={textRef}
-      {...uiEvents}
+      {...uiEvents as any}
       {...props}
       className={`${Styles.pingPong} ${props.className || ""}`}
     />

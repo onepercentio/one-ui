@@ -3,10 +3,10 @@ import { BigNumber } from "bignumber.js";
 import { ReactElement, useEffect, useState } from "react";
 
 export default function useShortIntl(): IntlShape & {
-  txt: (
+  txt: <R extends ReturnType<IntlFormatters["formatMessage"]> = string>(
     id: OnepercentUtility.IntlIds,
     params?: Record<string, string | ReactElement>
-  ) => ReturnType<IntlFormatters["formatMessage"]>;
+  ) => R;
   formatToDoubleDecimal(
     number: number,
     options?: Parameters<IntlFormatters["formatNumber"]>[1]

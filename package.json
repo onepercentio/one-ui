@@ -26,12 +26,14 @@
     "@testing-library/react-hooks": "^7.0.2",
     "@testing-library/user-event": "^13.5.0",
     "@types/chroma-js": "^2.1.3",
+    "@types/google-libphonenumber": "^7.4.27",
     "@types/jest": "^27.4.0",
     "@types/jsdom": "^21.1.1",
     "@types/matter-js": "^0.18.2",
     "@types/node": "^17.0.13",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.2.7",
+    "@types/react-input-mask": "^3.0.3",
     "@types/react-router-dom": "^5.3.3",
     "assert": "^2.0.0",
     "babel-loader": "^8.2.3",
@@ -47,6 +49,7 @@
     "cypress": "^12.17.2",
     "firebase": "^9.8.1",
     "firebase-admin": "^10.2.0",
+    "google-libphonenumber": "^3.2.33",
     "https-browserify": "^1.0.0",
     "inquirer": "^8.2.4",
     "jest": "^27.3.1",
@@ -59,6 +62,7 @@
     "react-docgen-typescript": "^2.2.2",
     "react-docgen-typescript-plugin": "^1.0.1",
     "react-dom": "^18.0.0",
+    "react-input-mask": "^2.0.4",
     "react-intl": "^6.3.2",
     "react-router-dom": "^5",
     "react-scripts": "^5.0.0",
@@ -117,8 +121,12 @@
     ]
   },
   "peerDependencies": {
+    "@types/google-libphonenumber": "^7.4.27",
+    "@types/react-input-mask": "^3.0.3",
     "chroma-js": "^2.4.2",
     "color-seed": "^1.1.3",
+    "google-libphonenumber": "^3.2.33",
+    "react-input-mask": "^2.0.4",
     "use-wallet": "0.13.5"
   }
 }

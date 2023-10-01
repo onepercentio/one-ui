@@ -22,7 +22,7 @@ namespace OnepercentUtility {
   }
   /** These are the extensible properties for the UI elements */
   namespace UIElements {
-    type ButtonVariants = "transparent" | "filled" | "outline";
+    type ButtonVariants = "transparent" | "filled" | "outline" | "link";
     type TextVariants =
       | "title"
       | "description"
@@ -35,6 +35,23 @@ namespace OnepercentUtility {
       | "link"
       | "boldTitleBig"
       | "content";
+    type FormExtension = {
+      fields:
+        | {
+            type: "phone";
+            country: string
+          }
+        | {
+            type: "date";
+          };
+      fieldAnswer: {
+        phone: [
+          phoneNumber: string,
+          isValid: boolean,
+          error: string | undefined
+        ];
+      };
+    };
   }
 }
 declare module "use-wallet" {

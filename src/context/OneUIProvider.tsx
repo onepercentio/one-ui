@@ -2,7 +2,7 @@ import get from "lodash/get";
 import merge from "lodash/merge";
 import clone from "lodash/cloneDeep";
 import { Get } from "type-fest";
-import React, { ComponentProps, ReactElement, useMemo } from "react";
+import React, { ComponentProps, ReactElement, ReactNode, useMemo } from "react";
 import { createContext, PropsWithChildren, useContext } from "react";
 import { FieldPath } from "../type-utils";
 import useAdaptiveImage from "../hooks/ui/useAdaptiveImage";
@@ -10,8 +10,12 @@ import { ImageScales } from "@muritavo/webpack-microfrontend-scripts/bin/types/I
 import Button from "../components/Button";
 import CheckBox from "../components/CheckBox";
 import Radio from "../components/Radio/Radio";
-import { FileInputProps } from "../components/FileInput/FileInput";
 import { FileInputViewProps } from "../components/FileInput/View/View.types";
+import {
+  AnswerByField,
+  GenericFormFieldProps,
+} from "../components/Form/v2/FormField/FormField.types";
+import { UploadTask } from "firebase/storage";
 
 type DeepPartial<T> = {
   [P in keyof T]?: NonNullable<T[P]> extends Function
@@ -21,6 +25,27 @@ type DeepPartial<T> = {
 
 export type OneUIContextSpecs = {
   component: {
+    form: {
+      titleVariant: OnepercentUtility.UIElements.TextVariants;
+      labelVariant: OnepercentUtility.UIElements.TextVariants;
+      /** Label shown when a field is optional */
+      optionalLabel: string;
+
+      /** Label shown when a required field was not provided */
+      requiredLabel: string;
+
+      onFileUpload(questionId: string, file: File): UploadTask;
+
+      extensions?: {
+        [K in OnepercentUtility.UIElements.FormExtension["fields"]["type"]]: {
+          Input: (props: GenericFormFieldProps<K>) => ReactElement;
+          validator: (answer: AnswerByField<{ type: K }>) => {
+            isValid: boolean;
+            error?: string;
+          };
+        };
+      };
+    };
     text?: {
       className?: {
         [k in React.ComponentProps<

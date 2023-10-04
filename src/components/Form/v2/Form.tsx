@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
-import { FormMode, FormViewProps } from "./Form.types";
+import { BaseQuestion, FormMode, FormViewProps } from "./Form.types";
 import { useFieldErrors, useForm } from "./Form.hook";
 import FormField from "./FormField";
+import { FormFieldView } from "./FormField/FormField.types";
 
 /**
  * Brainstorm:
@@ -12,13 +13,13 @@ import FormField from "./FormField";
 /**
  * A new and improved version of the one-ui design form
  **/
-export default function Form({
+export default function Form<Q extends FormFieldView[]>({
   questions,
   initialAnswers = {},
   ...props
-}: FormViewProps) {
+}: FormViewProps<Q>) {
   const { mode = FormMode.WRITE } = props;
-  const { showAllErrors = false } = props as FormViewProps & {
+  const { showAllErrors = false } = props as FormViewProps<Q> & {
     mode: FormMode.WRITE;
   };
   const { answers, onAnswerAction, isQuestionsAnswered, isFilesUploaded } =
@@ -34,6 +35,7 @@ export default function Form({
     <>
       {questions.map((q) => (
         <FormField
+          key={q.id}
           config={q}
           onAnswer={onAnswerAction}
           value={answers[q.id] as any}

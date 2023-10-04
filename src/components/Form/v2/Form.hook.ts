@@ -15,7 +15,7 @@ export function useForm(
   defaultAnswers: AnswersMap,
   mode: FormMode
 ) {
-  const { onFileUpload } = useOneUIConfig("component.form");
+  const formConfig = useOneUIConfig("component.form");
   const [answers, setAnswers] = useState<AnswersMap>(() => {
     const clone = {
       ...defaultAnswers,
@@ -25,7 +25,11 @@ export function useForm(
   });
 
   const { isValid: isQuestionsAnswered } = useMemo(() => {
-    return areAllQuestionsAnswered(currentQuestions, answers);
+    return areAllQuestionsAnswered(
+      currentQuestions,
+      answers,
+      formConfig.requiredLabel
+    );
   }, [answers, currentQuestions]);
 
   const onAnswerAction = <T extends FormField["type"]>(
@@ -39,6 +43,7 @@ export function useForm(
   ) => {
     switch (questionType) {
       case "file":
+        const { onFileUpload } = formConfig;
         setAnswers((prev: any) => {
           const file = answer as File | undefined;
           if (file)
@@ -190,9 +195,9 @@ export function useFieldErrors<
 
 export function areAllQuestionsAnswered(
   currentQuestions: FormField[],
-  answers: AnswersMap
+  answers: AnswersMap,
+  requiredLabel: string
 ) {
-  const { requiredLabel } = useOneUIConfig("component.form");
   const isValid = currentQuestions.reduce((answeredAll, question) => {
     const ans = <T extends FormFieldView["type"]>(
       question: FormField & {
@@ -234,7 +239,9 @@ export function areAllQuestionsAnswered(
             );
             return validationResult.isValid && answeredAll;
           default:
-            return false;
+            return question.validator
+              ? question.validator(ans(question))
+              : !!ans(question);
         }
       })();
     return result;

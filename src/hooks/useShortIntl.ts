@@ -40,7 +40,7 @@ export default function useShortIntl(): IntlShape & {
   return {
     ...intl,
     txt: (id, params) => {
-      return devMode ? id : formatMessage({ id }, params);
+      return devMode ? id : formatMessage({ id }, params) as any;
     },
     formatToDoubleDecimal(val: number, options = {}) {
       return formatNumber(val, {

@@ -8,7 +8,11 @@ import {
   FormField,
 } from "./FormField/FormField.types";
 
-export type FormState = [answers: AnswersMap, isValid: boolean];
+export type BaseQuestion = { id: string; type: FormField["type"] };
+export type FormState<Q extends BaseQuestion[] = []> = [
+  answers: AnswersMap<Q>,
+  isValid: boolean
+];
 
 export enum DataStatus {
   /** Form is empty */
@@ -70,13 +74,13 @@ export type ModeProps =
       onFinish: () => void;
       onCancel: () => void;
     };
-export type FormViewProps = {
-  questions: FormFieldView[];
+export type FormViewProps<Q extends BaseQuestion[]> = {
+  questions: Q;
 } & (
   | {
       mode?: FormMode.WRITE;
       initialAnswers?: AnswersMap;
-      onFormUpdate: (...args: FormState) => void;
+      onFormUpdate: (...args: FormState<Q>) => void;
       /** When provided (true) show all current errors that are blocking the completion of the form */
       showAllErrors?: boolean;
     }
@@ -86,9 +90,13 @@ export type FormViewProps = {
     }
 );
 
-export type AnswersMap = Partial<{
-  [questionId: string]: AnswerByField<FormField>;
-}>;
+export type AnswersMap<Q extends Readonly<BaseQuestion[]> = []> = Partial<
+  {
+    [questionId in Q[number]["id"]]: AnswerByField<
+      Q[number] & { id: questionId }
+    >;
+  }
+>;
 
 export enum INVESTOR_PROFILE {
   /**

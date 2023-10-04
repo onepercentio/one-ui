@@ -41,4 +41,9 @@ export declare type FieldArrayPathValue<TFieldValues extends FieldValues, TField
 export declare type FieldPathValues<TFieldValues extends FieldValues, TPath extends FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[]> = {} & {
     [K in keyof TPath]: FieldPathValue<TFieldValues, TPath[K] & FieldPath<TFieldValues>>;
 };
+/**
+ * Returns the type U when this type is resolved
+ * Or the fallback type F when type is no resolved
+ */
+export declare type UnresolvableOr<U, F> = keyof U extends U ? F : U
 export {};

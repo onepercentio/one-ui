@@ -7,6 +7,8 @@ const toString = (val: any) => {
       return !val ? "0" : "1";
     case "string":
       return val;
+    case "object":
+      return JSON.stringify(val);
     default:
       throw new Error("Doesn't know how to handle type " + typeof val);
   }
@@ -17,13 +19,15 @@ const fromString = (type: AvailablePrimitives, value: string) => {
       return value === "1";
     case "string":
       return value;
+    case "object":
+      return JSON.parse(value);
     default:
       throw new Error("Doesn't know how to handle type " + type);
   }
 };
 export default function useLocalStorage<T extends any>(
   id: string,
-  defaultValue: T
+  defaultValue: Exclude<T, undefined>
 ) {
   const [val, setVal] = useState<T>(() => {
     const persistedValue = localStorage.getItem(id);

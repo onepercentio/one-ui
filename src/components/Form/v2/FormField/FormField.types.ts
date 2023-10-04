@@ -1,6 +1,7 @@
 import { ReactElement, ReactNode } from "react";
 import { SelectItem } from "../../../Select/Select";
 import { UploadTask } from "firebase/storage";
+import { UnresolvableOr } from "../../../../type-utils";
 
 export type GenericFormFieldProps<T extends FormField["type"]> = {
   value: AnswerByField<{ type: T }>;
@@ -96,7 +97,7 @@ export type FormField = {
         optional?: true;
       }[];
     }
-  | OnepercentUtility.UIElements.FormExtension["fields"]
+  | UnresolvableOr<OnepercentUtility.UIElements.FormExtension["fields"], {}>
 );
 
 export type AnswerByField<F extends Pick<FormField, "type">> =
@@ -104,6 +105,9 @@ export type AnswerByField<F extends Pick<FormField, "type">> =
     ? UploadTask | true
     : F["type"] extends "accept" | "check" | "rawcheck"
     ? boolean[]
-    : F["type"] extends keyof OnepercentUtility.UIElements.FormExtension["fieldAnswer"]
+    : F["type"] extends keyof UnresolvableOr<
+        OnepercentUtility.UIElements.FormExtension["fieldAnswer"],
+        {}
+      >
     ? OnepercentUtility.UIElements.FormExtension["fieldAnswer"][F["type"]]
     : string;

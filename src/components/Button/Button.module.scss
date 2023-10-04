@@ -3,8 +3,6 @@
 .button {
   cursor: pointer;
   display: block;
-  min-width: $buttonMinWidth;
-  min-height: $buttonMinHeight;
   padding: 16px;
   border: none;
   transition: color $fast;
@@ -43,4 +41,5 @@
 
 .link {
   padding: 0px;
+  @extend .transparent;
 }

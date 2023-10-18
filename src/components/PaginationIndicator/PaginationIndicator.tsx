@@ -21,10 +21,6 @@ export enum PaginationIndicatorMode {
   /** This will make the guide ball move, while the indicator balls keep in place */
   START,
 }
-
-/**
- * A cool component to indicate how many pages are
- **/
 export function PaginationIndicatorView({
   size,
   page: currentPage,
@@ -291,7 +287,7 @@ function _PaginationIndicator(
       updatePageIndicators(e.currentTarget as HTMLDivElement, defs.pages);
     updatePageIndicators(el, defs.pages);
     el.addEventListener("scroll", onScroll, {
-      passive: true
+      passive: true,
     });
     return () => {
       el.removeEventListener("scroll", onScroll);
@@ -311,6 +307,8 @@ function _PaginationIndicator(
   );
 }
 
+/**
+ * A cool component to indicate how many pages are
+ **/
 const PaginationIndicator = forwardRef(_PaginationIndicator);
 export default PaginationIndicator;
-

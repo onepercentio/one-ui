@@ -53,6 +53,7 @@ export type BasicFormFields =
     }
   | {
       type: "text";
+      multiline?: number;
     }
   | {
       type: "number";

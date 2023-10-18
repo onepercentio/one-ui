@@ -1,5 +1,6 @@
 import React from "react";
 import AdaptiveSidebar from "./AdaptiveSidebar";
+import Sample from "./AdaptiveSidebar.sample";
 
 export default {
   component: AdaptiveSidebar,
@@ -19,3 +20,5 @@ export const InitialImplementation = (args: any) => (
 InitialImplementation.args = {} as Partial<
   React.ComponentProps<typeof AdaptiveSidebar>
 >;
+
+export const OneSuggests_ExampleSample = Sample;

@@ -162,10 +162,6 @@ export function updateTooltipPosition(
 
   return { shouldAnchorToBottom };
 }
-
-/**
- * This tooltip anchors itself to an element and handles positioning relative to the anchored element
- **/
 function _AnchoredTooltip(
   { containInViewport = true, alignment, ...props }: Props,
   ref: ForwardedRef<{ updatePosition: () => void }>
@@ -247,5 +243,8 @@ function _AnchoredTooltip(
   ) : null;
 }
 
+/**
+ * This tooltip anchors itself to an element and handles positioning relative to the anchored element
+ **/
 const AnchoredTooltip = forwardRef(_AnchoredTooltip);
 export default AnchoredTooltip;

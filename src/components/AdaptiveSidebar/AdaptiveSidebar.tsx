@@ -21,10 +21,6 @@ const DefaultVisibilityControl = ({ open }: { open: boolean }) => (
 type AdaptiveSidebarControls = {
   dismiss: () => void;
 };
-
-/**
- * A component that you can put anywhere but hides when small enough and shows the control via a fixed floating button
- **/
 function _AdaptiveSidebar(
   {
     open: externalOpen,
@@ -98,20 +94,30 @@ function _AdaptiveSidebar(
 
   return (
     <>
-      {!externalControl && (
-        <div
-          className={`${isMobile ? Styles.mobile : Styles.desktop} ${
-            Styles.hamburger
-          } ${globalControlClassName}`}
-          onClick={() => setOpen((a) => !a)}
-        >
-          <VisibilityControlComponent open={_open} />
-        </div>
-      )}
-      {isMobile ? createPortal(content, document.body) : content}
+      {isMobile
+        ? createPortal(
+            <>
+              {content}
+              {!externalControl && (
+                <div
+                  className={`${isMobile ? Styles.mobile : Styles.desktop} ${
+                    Styles.hamburger
+                  } ${globalControlClassName}`}
+                  onClick={() => setOpen((a) => !a)}
+                >
+                  <VisibilityControlComponent open={_open} />
+                </div>
+              )}
+            </>,
+            document.body
+          )
+        : content}
     </>
   );
 }
 
+/**
+ * A component that you can put anywhere but hides when small enough and shows the control via a fixed floating button
+ **/
 const AdaptiveSidebar = forwardRef(_AdaptiveSidebar);
 export default AdaptiveSidebar;

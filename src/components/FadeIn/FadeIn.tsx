@@ -19,10 +19,6 @@ type FadeInProps = PropsWithChildren<{
   "data-testid"?: string;
   style?: any;
 }>;
-
-/**
- * Receives a children and displays it with a fade in animation, also when it's removed, it hides with a fadeout
- **/
 function _FadeIn(
   {
     onHidden,
@@ -74,5 +70,8 @@ function _FadeIn(
   );
 }
 
+/**
+ * Receives a children and displays it with a fade in animation, also when it's removed, it hides with a fadeout
+ **/
 const FadeIn = forwardRef<HTMLDivElement, FadeInProps>(_FadeIn);
 export default FadeIn;

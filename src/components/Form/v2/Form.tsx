@@ -1,23 +1,25 @@
-import React, { useEffect } from "react";
+import React, {
+  ForwardedRef,
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+} from "react";
 import { BaseQuestion, FormMode, FormViewProps } from "./Form.types";
 import { useFieldErrors, useForm } from "./Form.hook";
 import FormField from "./FormField";
-import { FormFieldView } from "./FormField/FormField.types";
+import { AnswerByField, FormFieldView } from "./FormField/FormField.types";
 
-/**
- * Brainstorm:
- * The answers must be externalized in some way because those answers will be manipulated
- * There must be a way to disable non validation related errors
- */
+export type FormRef<Q extends FormFieldView[]> = {
+  setAnswer<I extends Q[number]["id"]>(
+    questionId: I,
+    ans: AnswerByField<Q[number] & { id: I }>
+  ): void;
+};
 
-/**
- * A new and improved version of the one-ui design form
- **/
-export default function Form<Q extends FormFieldView[]>({
-  questions,
-  initialAnswers = {},
-  ...props
-}: FormViewProps<Q>) {
+function Form<Q extends FormFieldView[]>(
+  { questions, initialAnswers = {}, ...props }: FormViewProps<Q>,
+  ref: ForwardedRef<FormRef<Q>>
+) {
   const { mode = FormMode.WRITE } = props;
   const { showAllErrors = false } = props as FormViewProps<Q> & {
     mode: FormMode.WRITE;
@@ -30,6 +32,20 @@ export default function Form<Q extends FormFieldView[]>({
     if (props.mode !== FormMode.READ_ONLY)
       props.onFormUpdate(answers, isQuestionsAnswered && isFilesUploaded);
   }, [answers, isQuestionsAnswered, isFilesUploaded]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      setAnswer(id, val) {
+        onAnswerAction(
+          questions.find((q) => q.id === id)!.type,
+          id,
+          val as any
+        );
+      },
+    }),
+    []
+  );
 
   return (
     <>
@@ -46,3 +62,14 @@ export default function Form<Q extends FormFieldView[]>({
     </>
   );
 }
+
+/**
+ * Brainstorm:
+ * The answers must be externalized in some way because those answers will be manipulated
+ * There must be a way to disable non validation related errors
+ */
+
+/**
+ * A new and improved version of the one-ui design form
+ **/
+export default forwardRef(Form);

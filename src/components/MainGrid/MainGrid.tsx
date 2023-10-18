@@ -8,9 +8,6 @@ import React, {
 import UncontrolledTransition from "../UncontrolledTransition";
 import Styles from "./MainGrid.module.scss";
 
-/**
- * This layout provides 3 parts to compose screens
- **/
 function _MainGrid(
   {
     children,
@@ -21,7 +18,9 @@ function _MainGrid(
     rightContent?: React.ReactElement;
     children: React.ReactElement;
   },
-  ref: ForwardedRef<Pick<ElementRef<typeof UncontrolledTransition>, "setOrientation">>
+  ref: ForwardedRef<
+    Pick<ElementRef<typeof UncontrolledTransition>, "setOrientation">
+  >
 ) {
   const refs = [
     useRef<ElementRef<typeof UncontrolledTransition>>(null),
@@ -62,5 +61,8 @@ function _MainGrid(
   );
 }
 
+/**
+ * This layout divides the screen in 3 fragments and provides a responsive adaptation when on mobile
+ **/
 const MainGrid = forwardRef(_MainGrid);
 export default MainGrid;

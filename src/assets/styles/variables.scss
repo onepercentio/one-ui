@@ -12,11 +12,9 @@ $mainBackgroundColor: var(--bg-color, white);
 $primaryColor: var(--primary-color, var(--digital-blue));
 $elevation: var(--card-elevation, 0px 4px 10px rgba(0, 0, 0, 0.1));
 
-//FONTS
 $mainFontFamily: var(--main-font, Roboto);
 $secondaryFontFamily: var(--second-font, Manrope);
 
-// Component specific variables on the format --<component>-<element>-<category>
 $headerFillBackgroundColor: var(--header-background-color, $digitalBlue);
 $headerBackgroundColor: var(--header-divider-bg-color, #467eea);
 $headerTextColor: var(--header-text-color, #94b8ff);
@@ -43,7 +41,6 @@ $avatarBackgroundColor: var(--avatar-bg-color, $lightGray);
 
 $pixelatedGuideBackground: var(--pixelated-scan-bg, var(--digital-blue));
 
-// Animation speed variables
 $almostInstant: var(--animation--speed-almostInstant, 50ms);
 $veryFast: var(--animation--speed-veryfast, 125ms);
 $fast: var(--animation--speed-fast, 250ms);

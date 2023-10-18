@@ -75,3 +75,7 @@
   line-height: 20px;
   color: $sunsetPink;
 }
+
+.text[color="primary"] {
+  color: var(--digital-blue);
+}

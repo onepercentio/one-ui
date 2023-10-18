@@ -35,11 +35,12 @@ namespace OnepercentUtility {
       | "link"
       | "boldTitleBig"
       | "content";
+    type TextColors = "primary";
     type FormExtension = {
       fields:
         | {
             type: "phone";
-            country: string
+            country: string;
           }
         | {
             type: "date";

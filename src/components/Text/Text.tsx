@@ -2,9 +2,6 @@ import React, { ComponentProps, ForwardedRef, forwardRef } from "react";
 import { useOneUIConfig } from "../../context/OneUIProvider";
 import Styles from "./Text.module.scss";
 
-/**
- * A component to hold all text variantions
- **/
 export function _Text(
   {
     type,
@@ -15,7 +12,8 @@ export function _Text(
     {
       className?: string;
       type: OnepercentUtility.UIElements.TextVariants;
-    } & React.HTMLAttributes<HTMLParagraphElement>
+      color?: OnepercentUtility.UIElements.TextColors;
+    } & Omit<React.HTMLAttributes<HTMLParagraphElement>, "color">
   >,
   _ref?: ForwardedRef<HTMLParagraphElement>
 ) {
@@ -37,5 +35,8 @@ export function _Text(
   );
 }
 
+/**
+ * A component to hold all text variantions
+ **/
 const Text = forwardRef(_Text);
 export default Text;

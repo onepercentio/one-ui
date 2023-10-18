@@ -15,9 +15,6 @@ import {
   TransitionTypeDefinitions,
 } from "../Transition/Transition";
 
-/**
- * This component handles when a child changes and transition this child change, allowing the finest experiences
- **/
 function _UncontrolledTransition(
   {
     className = "",
@@ -133,5 +130,8 @@ function _UncontrolledTransition(
   );
 }
 
+/**
+ * This component handles when a child changes and transition this child change, allowing the finest experiences
+ **/
 const UncontrolledTransition = forwardRef(_UncontrolledTransition);
 export default UncontrolledTransition;

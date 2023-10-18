@@ -12,3 +12,4 @@ videos/
 examples/
 index.d.ts
 .firebaserc
+*.ai.ts

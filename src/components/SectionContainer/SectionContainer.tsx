@@ -11,17 +11,12 @@ export function createId(...args: string[]): string {
   return args.join("-");
 }
 
-type Props<S extends string> =
-  PropsWithChildren<{
-    decoration?: "dark" | "light";
-    section?: S;
-    className?: string;
-    onClick?: JSX.IntrinsicElements["div"]["onClick"];
-  }>;
-
-/**
- * This component wraps a section and limits it's content as well as defining an id to reference this section
- **/
+type Props<S extends string> = PropsWithChildren<{
+  decoration?: "dark" | "light";
+  section?: S;
+  className?: string;
+  onClick?: JSX.IntrinsicElements["div"]["onClick"];
+}>;
 function _SectionContainer<S extends string = OnepercentUtility.PageSections>(
   { children, section, className = "", decoration, onClick }: Props<S>,
   ref: ForwardedRef<HTMLDivElement>
@@ -45,5 +40,9 @@ function _SectionContainer<S extends string = OnepercentUtility.PageSections>(
   );
 }
 
-const SectionContainer = forwardRef<HTMLDivElement, Props<string>>(_SectionContainer);
+/**
+ * This component wraps a section and limits the width of it's content as well as requiring an id to reference to this section
+ **/
+const SectionContainer =
+  forwardRef<HTMLDivElement, Props<string>>(_SectionContainer);
 export default SectionContainer;

@@ -10,10 +10,6 @@ import Input from "../Input";
 export function validateEmail(email: string) {
   return /@.*\./.test(email);
 }
-
-/**
- * A Input based wrapper to handle inputs of email
- **/
 function _EmailInput(
   props: Omit<React.ComponentProps<typeof Input>, "onChange" | "value"> & {
     onChange: (email: string, isValid: boolean) => void;
@@ -48,5 +44,8 @@ function _EmailInput(
   );
 }
 
+/**
+ * A Input based wrapper to handle inputs of email
+ **/
 const EmailInput = forwardRef(_EmailInput);
 export default EmailInput;

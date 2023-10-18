@@ -1,13 +1,4 @@
-import { throttle } from "lodash";
-import React, {
-  PropsWithChildren,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { useTiltUpdates } from "../../hooks/ui/useTilt";
+import React, { PropsWithChildren, useMemo, useRef } from "react";
 import useLavaLampSetup from "./LavaLamp.data";
 import Styles from "./LavaLamp.module.scss";
 

@@ -31,7 +31,6 @@ it("Should be able to mount", () => {
     useEffect(() => {
       setShowAllErrors(false);
     }, [answers]);
-    console.log(answers);
     return (
       <>
         <Form

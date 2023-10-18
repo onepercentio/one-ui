@@ -34,10 +34,6 @@ export type InputProps = {
   React.HTMLProps<HTMLInputElement | HTMLTextAreaElement>,
   "ref" | "onChange"
 >;
-
-/**
- * A transparent input with some prebuilt states common to the application
- **/
 function _Input(
   {
     error,
@@ -131,5 +127,8 @@ export enum InputTestIds {
   ERROR = "error",
 }
 
+/**
+ * A transparent input with some prebuilt states common to the application
+ **/
 const Input = forwardRef(_Input);
 export default Input;

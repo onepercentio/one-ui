@@ -76,16 +76,21 @@ function triggerDynamicComponents(
   }
 }
 
+const ALWAYS_TRANSITION = ["top", "left"];
+
 /**
  * This hook implements the logic for a hero animation between 2 elements
  */
 export default function useHero(
   id: string,
   options: Partial<{
-    propsToTransition: Omit<
+    propsToTransition: Exclude<
       keyof CSSProperties,
       "width" | "height" | "top" | "left"
     >[];
+    /** If set, the default properties (width, height, etc...) will not transition, and propsToTransition will be the only ones that will be transitioned */
+    overridePropsToTransition: boolean;
+
     "data-preffix": string;
     /** This indicates this hero animation will probably be repeated multiple time */
     repeatable: boolean;
@@ -170,13 +175,9 @@ export default function useHero(
   }, [id]);
 
   function triggerHeroAnimation() {
-    const allPropsToTransition = [
-      "width",
-      "height",
-      "top",
-      "left",
-      ...propsToTransition,
-    ];
+    const allPropsToTransition = options.overridePropsToTransition
+      ? [...ALWAYS_TRANSITION, ...propsToTransition]
+      : ["width", "height", ...ALWAYS_TRANSITION, ...propsToTransition];
     const shouldHeroFn = events.onHeroDetect || ((...a: any[]) => true);
     const otherElements = getHerosOnScreen().filter((el) =>
       shouldHeroFn(el, heroRef.current!)
@@ -251,8 +252,10 @@ export default function useHero(
         clone.style.position = "fixed";
         clone.style.top = `${coordinates.top}px`;
         clone.style.left = `${coordinates.left}px`;
-        clone.style.width = `${coordinates.width}px`;
-        clone.style.height = `${coordinates.height}px`;
+        if (allPropsToTransition.includes("width"))
+          clone.style.width = `${coordinates.width}px`;
+        if (allPropsToTransition.includes("height"))
+          clone.style.height = `${coordinates.height}px`;
 
         return willMove;
       }
@@ -271,7 +274,13 @@ export default function useHero(
       otherElement.style.visibility = "hidden";
 
       clone.style.transition = `${allPropsToTransition
-        .map((prop) => `${prop} var(--animation--speed-fast, 250ms) ease-out`)
+        .map(
+          (prop) =>
+            `${prop.replace(
+              /[A-Z]/g,
+              (sub) => `-${sub.toLowerCase()}`
+            )} var(--animation--speed-fast, 250ms) ease-out`
+        )
         .join(", ")}`;
 
       setTimeout(() => {

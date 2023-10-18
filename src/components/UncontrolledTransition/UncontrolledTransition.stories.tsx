@@ -15,6 +15,7 @@ import PhysicsSquares from "../Transition/MasksFactory/PhysicsSquares";
 import SquareToBalls from "../Transition/MasksFactory/SquareToBalls";
 import { TransitionAnimationTypes } from "../Transition/Transition";
 import StoriesStyles from "./UncontrolledTransition.stories.module.scss";
+import DefaultSample from "./UncontrolledTransition.sample";
 
 export default {
   title: "Uncontrolled Transition",
@@ -449,6 +450,10 @@ export const MaskBasedTransitionWithPhysics = () => {
       )}
     </UncontrolledTransition>
   );
+};
+
+export const OneSuggests_ExampleSample = () => {
+  return <DefaultSample />;
 };
 
 export const BUGFIX_BackwardsInconsistency = () => {

@@ -56,10 +56,6 @@ export function getItemsFactory<T extends any>(
     );
   };
 }
-
-/**
- * Manages a set of divs that allows the effect of inifinite scrolling between pages
- **/
 function _InfinityScroll(
   {
     items,
@@ -177,6 +173,9 @@ function _InfinityScroll(
   );
 }
 
+/**
+ * Manages a set of divs that allows the effect of inifinite scrolling between elements
+ **/
 const InfinityScroll = forwardRef(_InfinityScroll);
 export default InfinityScroll;
 

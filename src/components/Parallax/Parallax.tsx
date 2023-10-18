@@ -57,9 +57,6 @@ type Props = PropsWithChildren<{
 }> &
   DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
 
-/**
- * It holds a children and animates it according to mouse position
- **/
 function _Parallax(
   {
     children,
@@ -244,5 +241,8 @@ function _Parallax(
   );
 }
 
+/**
+ * It holds a children and animates a tilt effect relative to mouse position
+ **/
 const Parallax = forwardRef(_Parallax);
 export default Parallax;

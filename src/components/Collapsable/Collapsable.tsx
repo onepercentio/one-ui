@@ -17,10 +17,6 @@ import {
   AnchoredTooltipAnchor,
   updateTooltipPosition,
 } from "../AnchoredTooltip/AnchoredTooltip";
-
-/**
- * Wrapps some content on a collapsable header
- **/
 function _Collapsable(
   {
     children,
@@ -242,5 +238,8 @@ export function CollapsableInterface(id: string) {
   return new _CollapsableInterface(id);
 }
 
+/**
+ * Allows collapsing and expanding the wrapped content
+ **/
 const Collapsable = forwardRef(_Collapsable);
 export default Collapsable;

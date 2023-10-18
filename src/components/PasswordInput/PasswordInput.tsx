@@ -36,9 +36,6 @@ const RULES = [
   ...BASE_VALIDATION,
 ] as const;
 
-/**
- * A Input based wrapper to handle inputing of password
- **/
 function _PasswordInput(
   props: ({
     value: string;
@@ -107,7 +104,11 @@ function _PasswordInput(
   }
 
   return (
-    <div className={`${Styles.inputContainer} ${Styles[props.mode]} ${Styles.icon}`}>
+    <div
+      className={`${Styles.inputContainer} ${Styles[props.mode]} ${
+        Styles.icon
+      }`}
+    >
       <Input
         value={props.value}
         onChange={_onChange}
@@ -146,5 +147,8 @@ function _PasswordInput(
   );
 }
 
+/**
+ * A Input based wrapper to handle inputing of password
+ **/
 const PasswordInput = forwardRef(_PasswordInput);
 export default PasswordInput;

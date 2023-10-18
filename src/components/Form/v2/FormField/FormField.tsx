@@ -348,6 +348,7 @@ export default function FormField<Q extends FormFieldView>({
         <>
           <OneText type={titleVariant}>{c.title}</OneText>
           <Input
+            multiline={"multiline" in c ? c.multiline : undefined}
             placeholder={c.title}
             value={val<typeof type>()}
             error={error as string}

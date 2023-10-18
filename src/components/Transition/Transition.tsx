@@ -153,10 +153,6 @@ function ChildrenWrapperFactory(
   (func as any).externalProps = externalPropsContainer;
   return func as unknown as ChildrenWrapper;
 }
-
-/**
- * Handles the transition between multiple children and recycling of elements
- **/
 function _Transition(
   {
     step,
@@ -413,7 +409,7 @@ function _Transition(
       containerRef.current!.style.overflow = "";
     }
   }, [childrenWrappers.length]);
-  
+
   const propsToSpread = { ...props } as any;
   delete propsToSpread.transitionType;
   delete propsToSpread.config;
@@ -471,5 +467,8 @@ export enum TransitionAnimationTypes {
   CUSTOM,
 }
 
+/**
+ * Handles the transition between multiple children and recycling of elements
+ **/
 const Transition = forwardRef(_Transition);
 export default Transition;

@@ -8,9 +8,6 @@ type ButtonProps = React.PropsWithChildren<
   }
 >;
 
-/**
- * A simple button with the new design
- **/
 export function _Button(
   {
     children,
@@ -39,5 +36,9 @@ export function _Button(
   );
 }
 
+
+/**
+ * A simple button that can be customized via the provider
+ **/
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(_Button);
 export default Button;

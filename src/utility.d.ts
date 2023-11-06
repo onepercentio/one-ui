@@ -22,6 +22,7 @@ namespace OnepercentUtility {
   }
   /** These are the extensible properties for the UI elements */
   namespace UIElements {
+    type AdaptiveDialogVariants = "default";
     type ButtonVariants = "transparent" | "filled" | "outline" | "link";
     type TextVariants =
       | "title"
@@ -35,7 +36,7 @@ namespace OnepercentUtility {
       | "link"
       | "boldTitleBig"
       | "content";
-    type TextColors = "primary";
+    type TextColors = "primary" | undefined;
     type FormExtension = {
       fields:
         | {

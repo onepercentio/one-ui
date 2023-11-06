@@ -117,6 +117,9 @@ export type OneUIContextSpecs = {
     adaptiveDialog: {
       dialogClassName: string;
       backdropClassName: string;
+      variant: {
+        [k in OnepercentUtility.UIElements.AdaptiveDialogVariants]: string;
+      };
     };
     adaptiveSidebar: {
       className: string;

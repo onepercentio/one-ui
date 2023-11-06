@@ -9,6 +9,7 @@ import { useOneUIConfig } from "../../context/OneUIProvider";
  * This component implements a generic drawer that displays it as a drawer on mobile and as a modal on desktop
  **/
 export default function AdaptiveDialog({
+  variant = "default",
   onClose,
   open = false,
   className = "",
@@ -16,6 +17,7 @@ export default function AdaptiveDialog({
   children,
   onClosed,
 }: PropsWithChildren<{
+  variant?: OnepercentUtility.UIElements.AdaptiveDialogVariants;
   className?: string;
   open: boolean;
   onClose?: () => void;
@@ -25,6 +27,10 @@ export default function AdaptiveDialog({
   const rootDivRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(open);
   const [expanded, setExpanded] = useState(false);
+  const variantClass = useOneUIConfig(
+    `component.adaptiveDialog.variant.${variant}`,
+    ""
+  );
 
   useEffect(() => {
     if (open) {
@@ -55,7 +61,7 @@ export default function AdaptiveDialog({
           ref={rootDivRef}
           className={`${Styles.backdrop} ${open ? Styles.open : Styles.close} ${
             expanded ? Styles.expanded : ""
-          } ${globalClassName.backdrop}`}
+          } ${globalClassName.backdrop} ${variantClass}`}
           onClick={onClickOut}
           onAnimationEnd={({ target, currentTarget }) => {
             if (target === currentTarget)

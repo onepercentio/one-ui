@@ -15,8 +15,18 @@ const baseConfig: Configuration = configFactory(
 
 baseConfig.output!.libraryTarget = "umd";
 baseConfig.plugins = baseConfig.plugins!.filter(
-  (a) => a.constructor.name !== "ModuleFederationPlugin"
+  (a) =>
+    ![
+      "ReactRefreshPlugin",
+      "ModuleFederationPlugin",
+      "SourceMapDevToolPlugin",
+    ].includes(a.constructor.name)
 );
+const plugins = ((baseConfig as any).module.rules[0].use.options.plugins as string[])
+plugins.shift()
+delete baseConfig.entry;
+// console.log()
+// process.exit(0)
 baseConfig.module!.rules!.push(
   {
     test: /\.m?js$/,

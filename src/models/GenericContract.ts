@@ -23,9 +23,9 @@ type ExtractEvents<A extends AllABIs[number]> = A extends {
 
 type TypeOrInternalType<T> = T['internalType'] extends unknown ? T['type'] : T['internalType']
 
-type MapTypeToJS<L, C> =
+export type MapTypeToJS<L, C> =
   L extends "tuple[]" ? TuplifyUnion<C[number], C[number]['name']>[] :
-  L extends "address" | "uint256" | "uint128" | "uint8" | "string" | "bytes32"
+  L extends "address" | "uint256" | "uint128" | "uint8" | "string" | "bytes32" | "uint64"
   ? string
   : L extends "uint256[]" | "string[]"
   ? string[]
@@ -109,7 +109,7 @@ export type TuplifyUnion<
     >
   >;
 
-export default class GenericContract<
+export class GenericContract<
   A extends AllABIs = AllABIs,
   E extends string = ExtractEvents<A[number]> | "allEvents"
   > extends Contract {
@@ -142,6 +142,8 @@ export default class GenericContract<
     return super.getPastEvents(event, options, callback) as any;
   }
 }
+
+export default GenericContract;
 
 export type GenericEventData<E extends AllABIs> = EventData & GenericEvent<E>;
 

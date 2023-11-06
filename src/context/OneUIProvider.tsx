@@ -25,6 +25,9 @@ type DeepPartial<T> = {
 
 export type OneUIContextSpecs = {
   component: {
+    collapsable: {
+      className: string;
+    };
     form: {
       titleVariant: OnepercentUtility.UIElements.TextVariants;
       labelVariant: OnepercentUtility.UIElements.TextVariants;

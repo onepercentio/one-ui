@@ -17,13 +17,14 @@ import {
   AnchoredTooltipAnchor,
   updateTooltipPosition,
 } from "../AnchoredTooltip/AnchoredTooltip";
+import { useOneUIConfig } from "../../context/OneUIProvider";
 function _Collapsable(
   {
     children,
     title,
     className,
-    onToggleOpen,
-    open,
+    onToggleOpen: _onToggleOpen,
+    open: _open,
     id,
     mode = "block",
     contentClassName,
@@ -36,8 +37,8 @@ function _Collapsable(
       title: React.ReactNode;
       className?: string;
       contentClassName?: string;
-      onToggleOpen: (isOpen: boolean) => void;
-      open: boolean;
+      onToggleOpen?: (isOpen: boolean) => void;
+      open?: boolean;
       id?: string | undefined;
       "data-testid"?: string;
       onContentClick?: HTMLAttributes<HTMLInputElement>["onClick"];
@@ -67,6 +68,12 @@ function _Collapsable(
     Omit<HTMLAttributes<HTMLDivElement>, "title">,
   ref: ForwardedRef<{ redimension: () => void }>
 ) {
+  const globalClassName = useOneUIConfig("component.collapsable.className", "");
+  const [localOpen, setLocalOpen] = useState(!!_open);
+  const open = _open === undefined ? localOpen : _open;
+  const onToggleOpen =
+    _onToggleOpen === undefined ? setLocalOpen : _onToggleOpen;
+
   const contentRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLDivElement>(null);
 
@@ -163,7 +170,7 @@ function _Collapsable(
     <div
       className={`${Styles.container} ${
         open ? Styles.open : Styles.closed
-      } ${className}`}
+      } ${className} ${globalClassName}`}
       {...propsToSpread}
     >
       <div

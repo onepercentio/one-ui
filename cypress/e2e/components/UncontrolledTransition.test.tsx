@@ -13,6 +13,7 @@ import Comp from "../../../src/components/UncontrolledTransition";
 import TestAnimation from "../../component/TestAnimation";
 import UncontrolledTransition from "components/UncontrolledTransition/UncontrolledTransition";
 
+const rand = require("color-seed");
 const animationDuration = 2000;
 
 const overrideStyle: CSSProperties = {
@@ -242,10 +243,44 @@ describe("BUGFIX", () => {
     chain.remount("Terceiro render", 1).wait(1000);
     chain.remount("Quarto render", 1).wait(1000);
   });
+  it.only("Should not bug when shifting through duplicate keys fast", () => {
+    const chain = cy.mountChain((key: string) => {
+      return (
+        <UncontrolledTransition
+          transitionType={TransitionAnimationTypes.COIN_FLIP}
+          style={{ "--animation-speed-transition": "1s" } as any}
+        >
+          <h1
+            key={key}
+            style={{ backgroundColor: rand.getColor(key), fontSize: 300 }}
+          >
+            Key is: {key}
+          </h1>
+        </UncontrolledTransition>
+      );
+    });
+    const k1 = "But not as big as my love for you",
+      k2 = "The space is big",
+      k3 = "What a cheesy pickup line";
+    chain.remount(k2).wait(1500);
+    chain.remount(k1).wait(1500);
+    chain.remount(k3).wait(1500);
+    chain.remount(k2).wait(1500);
+    // Now FAST
+    chain.remount(k1).wait(500);
+    chain.remount(k2).wait(500);
+
+    cy.wait(2000)
+      .get("body")
+      .then((a) => {
+        const body = a.get(0) as HTMLBodyElement;
+        expect(body.textContent!.trim()).to.eq(`Key is: ${k2}`);
+      });
+  });
 });
 
-describe.only("Features", () => {
-  it.only("Should be able to keep scroll when switching elements", () => {
+describe("Features", () => {
+  it("Should be able to keep scroll when switching elements", () => {
     cy.viewport(1000, 1000);
     const chain = cy.mountChain((bg: string, height: string) => {
       return (

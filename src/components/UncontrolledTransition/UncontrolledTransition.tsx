@@ -45,12 +45,12 @@ function _UncontrolledTransition(
 ) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [{ childStack, offset }, setChildStack] = useState<{
-    childStack: React.ReactElement[];
+    childStack: (React.ReactElement & { createdAt: number })[];
     offset: number;
-  }>({
-    childStack: [children],
+  }>(() => ({
+    childStack: [{ ...children, createdAt: Date.now() }],
     offset: 1,
-  });
+  }));
   const orientation = useRef<"forward" | "backward">("forward");
   function setOrientation(a: typeof orientation.current) {
     orientation.current = a;
@@ -74,12 +74,12 @@ function _UncontrolledTransition(
     if (orientation.current === "forward")
       setChildStack((p) => ({
         ...p,
-        childStack: [...p.childStack, children],
+        childStack: [...p.childStack, { ...children, createdAt: Date.now() }],
       }));
     else
       setChildStack((p) => ({
         ...p,
-        childStack: [children, ...p.childStack],
+        childStack: [{ ...children, createdAt: Date.now() }, ...p.childStack],
       }));
   }, [children.key]);
 
@@ -95,8 +95,11 @@ function _UncontrolledTransition(
   }, [childStack.length]);
 
   childStack.forEach((a, i, arr) => {
-    if (a.key === children.key) arr[i] = children;
+    if (a.key === children.key)
+      arr[i] = { ...children, createdAt: a.createdAt };
   });
+
+  const predictedStep = childStack.length - offset;
 
   return (
     <>
@@ -105,15 +108,15 @@ function _UncontrolledTransition(
           ref={sectionRef}
           contentStyle={contentStyle}
           className={className}
-          step={childStack.length - offset}
-          onDiscardStep={(discardedKey) => {
+          step={predictedStep}
+          onDiscardStep={(discardedKey, animatedAt) => {
             if (onDiscardStep) onDiscardStep(discardedKey);
             orientation.current = "forward";
             setChildStack((prev) => {
               return {
-                childStack: prev.childStack.filter(
-                  (a) => a.key !== discardedKey
-                ),
+                childStack: prev.childStack.filter((a) => {
+                  return a.key !== discardedKey || a.createdAt > animatedAt;
+                }),
                 offset: prev.offset === 1 ? 1 : prev.offset - 1,
               };
             });
@@ -131,7 +134,7 @@ function _UncontrolledTransition(
 }
 
 /**
- * This component handles when a child changes and transition this child change, allowing the finest experiences
+ * This component receives child with key and applies a transition when the key changes, allowing to swap elements with a fine transition.
  **/
 const UncontrolledTransition = forwardRef(_UncontrolledTransition);
 export default UncontrolledTransition;

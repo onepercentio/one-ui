@@ -45,7 +45,7 @@ export type TransitionProps = {
   contentStyle?: React.CSSProperties;
   contentClassName?: string;
   children: (React.ReactElement | undefined)[];
-  onDiscardStep?: (discardedKey: React.Key) => void;
+  onDiscardStep?: (discardedKey: React.Key, startedAnimationAt: number) => void;
   lockTransitionWidth?: boolean;
   lockTransitionHeight?: boolean;
 } & TransitionTypeDefinitions &
@@ -137,6 +137,7 @@ function TransitionClasses(
 type ChildrenWrapper = ((props: {
   children: TransitionProps["children"][number];
 }) => ReactElement) & {
+  createdAt: number;
   associatedKey: Key;
   toRemoveKeys?: Key[];
   externalProps: { [k: string]: any };
@@ -146,8 +147,11 @@ function ChildrenWrapperFactory(
   func: (p: { children: TransitionProps["children"] }) => ReactElement,
   key: Key,
   externalPropsContainer: { [k: string]: any },
+  /** This is used to prevent newer "duplicated" keys from being removed after the new element finished animation */
+  timestamp: number,
   toRemoveKeys?: Key[]
 ): ChildrenWrapper {
+  (func as any).createdAt = timestamp;
   (func as any).associatedKey = key;
   (func as any).toRemoveKeys = toRemoveKeys;
   (func as any).externalProps = externalPropsContainer;
@@ -188,6 +192,7 @@ function _Transition(
       ({ children }) => <div {...externalProps}>{children}</div>,
       children[step]!.key || step,
       externalProps,
+      Date.now(),
       []
     );
     return [func];
@@ -233,6 +238,7 @@ function _Transition(
       props.transitionType === TransitionAnimationTypes.MASK
         ? props.maskFactory(containerRef.current!)
         : "";
+    const insertedAt = Date.now();
 
     /** This runs on backwards */
     if (prevStep.current > step) {
@@ -264,16 +270,18 @@ function _Transition(
           );
           setChildrenWrappers((screensAfterTheCurrentStepEntered) => {
             if (onDiscardStep) {
-              if (isAnimationFromExpectedState) onDiscardStep(prevKeyToRemove);
+              if (isAnimationFromExpectedState)
+                onDiscardStep(prevKeyToRemove, insertedAt);
               if (FirstNextScreen && FirstNextScreen.toRemoveKeys)
                 FirstNextScreen.toRemoveKeys.forEach(onDiscardStep);
             }
             return screensAfterTheCurrentStepEntered.filter((s) => {
               const shouldKeep =
-                s?.associatedKey !== String(prevKeyToRemove) &&
-                !FirstNextScreen?.toRemoveKeys?.some(
-                  (k) => String(k) === String(s?.associatedKey)
-                );
+                (s?.associatedKey !== String(prevKeyToRemove) &&
+                  !FirstNextScreen?.toRemoveKeys?.some(
+                    (k) => String(k) === String(s?.associatedKey)
+                  )) ||
+                s!.createdAt! > insertedAt;
               return shouldKeep;
             });
           });
@@ -298,13 +306,19 @@ function _Transition(
           },
           key,
           propsContainer,
+          insertedAt,
           [prevKeyToRemove, ...(FirstNextScreen?.toRemoveKeys || [])]
         );
         if (FirstNextScreen)
           return [
             newWrapper,
             FirstNextScreen ||
-              ChildrenWrapperFactory(() => <React.Fragment />, "", {}),
+              ChildrenWrapperFactory(
+                () => <React.Fragment />,
+                "",
+                {},
+                insertedAt
+              ),
             ...restOfScreens,
           ];
         else return [newWrapper];
@@ -327,12 +341,13 @@ function _Transition(
                 nextScreenRef.current?.classList.remove(
                   transitionClasses.forward.elementEntering
                 );
-              if (onDiscardStep) onDiscardStep(prevKeyToRemove);
+              if (onDiscardStep) onDiscardStep(prevKeyToRemove, insertedAt);
               setChildrenWrappers((screensAfterTheCurrentStepEntered) => {
                 const nextState = screensAfterTheCurrentStepEntered.filter(
                   (s) => {
                     const shouldMantain =
-                      s?.associatedKey !== String(prevKeyToRemove);
+                      s?.associatedKey !== String(prevKeyToRemove) ||
+                      s.createdAt > insertedAt;
                     return shouldMantain;
                   }
                 );
@@ -355,12 +370,18 @@ function _Transition(
             return <div {...propsContainer}>{children}</div>;
           },
           key,
-          propsContainer
+          propsContainer,
+          insertedAt
         );
         return [
           ...screensBeforeChangingStep.slice(0, lastIndex),
           lastWrapper ||
-            ChildrenWrapperFactory(() => <React.Fragment />, "fallback", {}),
+            ChildrenWrapperFactory(
+              () => <React.Fragment />,
+              "fallback",
+              {},
+              insertedAt
+            ),
           newWrapper,
         ];
       });
@@ -447,7 +468,7 @@ function _Transition(
             (a, i) => (a?.key || i) === Wrapper?.associatedKey
           );
           return (
-            <Wrapper key={Wrapper?.associatedKey}>
+            <Wrapper key={`${Wrapper!.associatedKey} ${Wrapper.createdAt}`}>
               <>{childToRender}</>
             </Wrapper>
           );

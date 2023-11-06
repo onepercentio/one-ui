@@ -30,7 +30,10 @@ function Form<Q extends FormFieldView[]>(
 
   useEffect(() => {
     if (props.mode !== FormMode.READ_ONLY)
-      props.onFormUpdate(answers, isQuestionsAnswered && isFilesUploaded);
+      props.onFormUpdate(
+        answers as any,
+        isQuestionsAnswered && isFilesUploaded
+      );
   }, [answers, isQuestionsAnswered, isFilesUploaded]);
 
   useImperativeHandle(
@@ -55,7 +58,7 @@ function Form<Q extends FormFieldView[]>(
           config={q}
           onAnswer={onAnswerAction}
           value={answers[q.id] as any}
-          error={errors[q.id]}
+          error={(errors as any)[q.id]}
           mode={mode}
         />
       ))}

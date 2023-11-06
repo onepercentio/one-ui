@@ -90,7 +90,11 @@ export type FormViewProps<Q extends BaseQuestion[]> = {
     }
 );
 
-export type AnswersMap<Q extends Readonly<BaseQuestion[]> = []> = Partial<
+export type AnswersMap<
+  Q extends Readonly<BaseQuestion[]> = [
+    { type: BaseQuestion["type"]; id: string }
+  ]
+> = Partial<
   {
     [questionId in Q[number]["id"]]: AnswerByField<
       Q[number] & { id: questionId }

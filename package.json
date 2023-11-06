@@ -93,7 +93,8 @@
   "resolutions": {
     "**/html-webpack-plugin": "^5",
     "**/webpack": "^5",
-    "**/react-docgen-typescript": "^2"
+    "**/react-docgen-typescript": "^2",
+    "**/@types/react": "^18"
   },
   "scripts": {
     "storybook": "start-storybook -p 6006",

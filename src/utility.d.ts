@@ -36,7 +36,7 @@ namespace OnepercentUtility {
       | "link"
       | "boldTitleBig"
       | "content";
-    type TextColors = "primary" | undefined;
+    type TextColors = "primary" | "error" | undefined;
     type FormExtension = {
       fields:
         | {

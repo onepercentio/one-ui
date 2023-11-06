@@ -36,7 +36,7 @@ export type SelectItem = (
       value: string;
     }
 ) &
-  Omit<DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLElement>, "ref">;
+  Omit<DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLElement>, "ref" | "color">;
 
 /**
  * A dropdown select

@@ -140,7 +140,7 @@ export function useFieldErrors<
         type: T;
       }
     ) =>
-      answers[question.id] as unknown as AnswerByField<{
+      answers[question.id] as AnswerByField<{
         type: T;
       }>;
     const errorsMap: {
@@ -240,7 +240,7 @@ export function areAllQuestionsAnswered(
             return validationResult.isValid && answeredAll;
           default:
             return question.validator
-              ? question.validator(ans(question))
+              ? !!question.validator(ans(question))
               : !!ans(question);
         }
       })();

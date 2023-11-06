@@ -22,7 +22,7 @@ export type WalletConnectionProps = PropsWithChildren<
     isConnected: boolean;
     wallet?: string;
 
-    connect: () => void;
+    connect: () => Promise<void>;
     disconnect: () => void;
     changeChainId: () => void;
   }
@@ -103,7 +103,7 @@ function Content({
   const wallet = useWallet();
   const connectionAsyncWrapper = useAsyncControl();
   const connect = async () => {
-    connectionAsyncWrapper.process(async () => {
+    await connectionAsyncWrapper.process(async () => {
       await wallet.connect("injected");
       localStorage.setItem("auto_connect", "true");
     });

@@ -1,15 +1,15 @@
-import { useCallback, useMemo, useState } from "react";
+import { SetStateAction, useCallback, useMemo, useState } from "react";
 import { Primitive } from "type-fest";
 
-export default function useAsyncControl<
-  E = any,
-  F extends {
-    [f: string]: ((...args: any[]) => Promise<any>) | Object | Primitive;
-  } = {}
->(functionsToWrap?: F) {
-  const [error, setError] = useState<E | Error>();
-  const [loading, setLoading] = useState<boolean>(false);
-
+type Arr<X> = [X, React.Dispatch<SetStateAction<X>>];
+export type FunctionMap = {
+  [f: string]: ((...args: any[]) => Promise<any>) | Object | Primitive;
+};
+export function useRawAsynControl<E = any, F extends FunctionMap = {}>(
+  functionsToWrap: F | undefined,
+  [error, setError]: Arr<E | undefined>,
+  [loading, setLoading]: Arr<boolean>
+) {
   const _process = useCallback(async (asyncFn: () => Promise<any>) => {
     try {
       setLoading(true);
@@ -74,4 +74,16 @@ export default function useAsyncControl<
       {} as F
     ),
   };
+}
+
+export default function useAsyncControl<
+  E = any,
+  F extends {
+    [f: string]: ((...args: any[]) => Promise<any>) | Object | Primitive;
+  } = {}
+>(functionsToWrap?: F) {
+  const error = useState<E | Error>();
+  const loading = useState<boolean>(false);
+
+  return useRawAsynControl(functionsToWrap, error, loading);
 }

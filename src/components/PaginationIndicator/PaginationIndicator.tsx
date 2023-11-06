@@ -1,4 +1,5 @@
 import React, {
+  ComponentProps,
   ForwardedRef,
   forwardRef,
   RefObject,
@@ -6,6 +7,7 @@ import React, {
   useEffect,
   useImperativeHandle,
   useMemo,
+  useRef,
   useState,
 } from "react";
 
@@ -32,7 +34,7 @@ export function PaginationIndicatorView({
   size: number;
   page: number;
   pages: number;
-  className: string;
+  className?: string;
   onClickPage?: (page: number) => void;
   mode?: PaginationIndicatorMode;
 }) {
@@ -211,6 +213,44 @@ export function PaginationIndicatorView({
       )}
     </svg>
   );
+}
+
+export function AnimatedPaginationIndicator(
+  props: ComponentProps<typeof PaginationIndicatorView> & {
+    duration: number;
+  }
+) {
+  const prevPage = useRef(props.page);
+  const [pageProgress, setPageProgress] = useState(props.page);
+  useEffect(() => {
+    const diff = props.page - prevPage.current;
+    const diffPerStep = diff / 60;
+
+    const interval = setInterval(() => {
+      setPageProgress((prev) => {
+        const next = prev + diffPerStep;
+        if (diff < 0) {
+          if (next <= props.page) {
+            clearInterval(interval);
+            return props.page;
+          }
+        } else {
+          if (next >= props.page) {
+            clearInterval(interval);
+            return props.page;
+          }
+        }
+        return Number(next.toFixed(2));
+      });
+    }, props.duration / 60);
+
+    return () => {
+      prevPage.current = props.page;
+      clearInterval(interval)
+    };
+  }, [props.page]);
+
+  return <PaginationIndicatorView {...props} page={pageProgress} />;
 }
 
 function _PaginationIndicator(

@@ -1,0 +1,9 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "outDir": "ai",
+        "rootDir": "./src_ai",
+        "emitDeclarationOnly": false,
+    },
+    "include": ["./src_ai"]
+}

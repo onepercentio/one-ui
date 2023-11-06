@@ -3,6 +3,7 @@ import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
 } from "react";
 import ownEvent from "../utils/ownEvent";
@@ -19,9 +20,10 @@ const DATA_TAG_HERO_COMPONENT = "data-hero-component";
 
 function triggerDynamicComponents(
   clone: HTMLDivElement,
-  componentsThatWillAppear: HTMLDivElement[]
+  componentsFromOriginThatWillAppear: HTMLDivElement[],
+  origin: HTMLDivElement
 ) {
-  const idsThatWillAppear = componentsThatWillAppear.map((a) =>
+  const idsThatWillAppear = componentsFromOriginThatWillAppear.map((a) =>
     a.getAttribute(DATA_TAG_HERO_COMPONENT)
   );
   const preexistingComponents = Array.from(
@@ -42,32 +44,66 @@ function triggerDynamicComponents(
     }
   }, 0);
 
-  for (let componentThatWillAppear of componentsThatWillAppear) {
+  for (let componentThatWillAppear of componentsFromOriginThatWillAppear) {
     const alreadyInjectedElement = !!clone.querySelector(
       `[${DATA_TAG_HERO_COMPONENT}="${componentThatWillAppear.getAttribute(
         DATA_TAG_HERO_COMPONENT
       )}"]`
     );
     if (!alreadyInjectedElement) {
+      function recursiveBuildPath(
+        fromElement: HTMLElement,
+        pathSuffix: string = ""
+      ): string | undefined {
+        if (fromElement === origin) return pathSuffix;
+        const parent = fromElement.parentElement!;
+        const parentChilds = Array.from(parent.children);
+        const elChildSelector = `:nth-child(${
+          parentChilds.indexOf(fromElement) + 1
+        })`;
+
+        if (
+          componentThatWillAppear.getAttribute(DATA_TAG_HERO_COMPONENT) ===
+          "7-insideDiv"
+        ) {
+          console.log(pathSuffix, fromElement, fromElement !== origin);
+        }
+
+        if (fromElement !== origin)
+          return recursiveBuildPath(
+            parent,
+            `${elChildSelector}${pathSuffix ? `>${pathSuffix}` : ""}`
+          );
+        else return pathSuffix;
+      }
+      const whatIsTheElementPathFromCloneElement = recursiveBuildPath(
+        componentThatWillAppear.parentElement!
+      );
+      const insertAtIndex = Array.from(
+        componentThatWillAppear.parentElement!.children
+      ).indexOf(componentThatWillAppear);
+
       const targetElementClone = componentThatWillAppear.cloneNode(
         true
       ) as HTMLDivElement;
       targetElementClone.style.height = "0px";
-      const shouldBeInsrtedAtIndex = Array.from(
-        componentThatWillAppear.parentElement!.children
-      ).indexOf(componentThatWillAppear);
-      const remainingIndexes = Array.from(clone.children)
+      const shouldBeInsertedAtElement = whatIsTheElementPathFromCloneElement
+        ? clone.querySelector(whatIsTheElementPathFromCloneElement)!
+        : clone;
+      const remainingIndexes = Array.from(shouldBeInsertedAtElement.children)
         .map((el, i) =>
           removedElements.includes(el as HTMLDivElement) ? undefined : i
         )
         .filter((e) => e !== undefined) as number[];
 
-      if (shouldBeInsrtedAtIndex === remainingIndexes.length)
-        clone.append(targetElementClone);
+      if (insertAtIndex === remainingIndexes.length)
+        shouldBeInsertedAtElement.append(targetElementClone);
       else
-        clone.insertBefore(
+        shouldBeInsertedAtElement.insertBefore(
           targetElementClone,
-          clone.childNodes.item(remainingIndexes[shouldBeInsrtedAtIndex])
+          shouldBeInsertedAtElement.childNodes.item(
+            remainingIndexes[insertAtIndex]
+          )
         );
       setTimeout(() => {
         targetElementClone.style.height = `${componentThatWillAppear.clientHeight}px`;
@@ -79,7 +115,7 @@ function triggerDynamicComponents(
 const ALWAYS_TRANSITION = ["top", "left"];
 
 /**
- * This hook implements the logic for a hero animation between 2 elements
+ * This hook implements the logic for a hero animation between 2 elements sharing the same id
  */
 export default function useHero(
   id: string,
@@ -153,10 +189,15 @@ export default function useHero(
   } = {}
 ) {
   const {
-    propsToTransition = [],
+    propsToTransition: _p = [],
     "data-preffix": dataPreffix,
     repeatable,
   } = options;
+  const propsToTransition = useMemo(
+    () =>
+      _p.map((p) => p.replace(/([A-Z])/g, (_, val) => `-${val.toLowerCase()}`)),
+    [_p]
+  );
   const _dataPreffix = dataPreffix ? `-${dataPreffix}` : "";
   const dataProperty = `data${_dataPreffix}-hero`;
   const heroRef = useRef<HTMLDivElement>(null);
@@ -182,7 +223,8 @@ export default function useHero(
     const otherElements = getHerosOnScreen().filter((el) =>
       shouldHeroFn(el, heroRef.current!)
     );
-    const currentElCoordinates = heroRef.current!.getBoundingClientRect();
+    const currentElement = heroRef.current!;
+    const currentElCoordinates = currentElement.getBoundingClientRect();
 
     if (process.env.NODE_ENV === "development" && otherElements.length > 2)
       console.warn(
@@ -302,7 +344,8 @@ export default function useHero(
           clone,
           Array.from(
             heroRef.current!.querySelectorAll(`[${DATA_TAG_HERO_COMPONENT}]`)
-          ) as HTMLDivElement[]
+          ) as HTMLDivElement[],
+          currentElement
         );
         if (!el) {
           cleanup();

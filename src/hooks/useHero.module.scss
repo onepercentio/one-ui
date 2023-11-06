@@ -35,6 +35,6 @@ $timing: cubic-bezier(0.5, -0.45, 0.44, 1.37);
 }
 
 .component {
-  transition: height $fast linear, opacity $fast linear;
+  transition: height $fast linear, opacity $fast linear !important;
   overflow: hidden;
 }

@@ -1,4 +1,4 @@
-import { CSSProperties, Fragment, PropsWithChildren } from "react";
+import { CSSProperties, Fragment, PropsWithChildren, useMemo } from "react";
 import { TransitionAnimationTypes } from "../../../src/components/Transition";
 import UncontrolledTransition from "../../../src/components/UncontrolledTransition";
 import useHero, { TRANSITION_FACTORY } from "../../../src/hooks/useHero";
@@ -414,7 +414,7 @@ it("Should be able to apply centrifuge force effect", () => {
   goTo([0, 0]);
 });
 
-it.only("Should be able to hide/show dynamic elements between heroes", () => {
+it("Should be able to hide/show dynamic elements between heroes", () => {
   function Wrapper({ cenario }: { cenario: "a" | "b" }) {
     const { heroRef, heroComponentRef } = useHero("test-composition");
     const RESET = { margin: "0px" };
@@ -478,4 +478,65 @@ it.only("Should be able to hide/show dynamic elements between heroes", () => {
   chain.remount("a");
   cy.pause();
   chain.remount("b");
+});
+
+it.only("Should be able to animate deep items between heroes", () => {
+  cy.viewport(600, 600);
+  const RESET = { margin: "0px" };
+  const NO_WRAP: CSSProperties = {
+    ...RESET,
+    whiteSpace: "nowrap",
+  };
+  function Wrapper({ flag, x, y }: { flag: boolean; x: number; y: number }) {
+    const { heroRef, heroComponentRef } = useHero("test");
+
+    return (
+      <div
+        ref={heroRef}
+        style={
+          {
+            backgroundColor: "red",
+            position: "fixed",
+            top: y,
+            left: x,
+            "--animation--speed-fast": "10s",
+          } as any
+        }
+      >
+        <p style={RESET}>1. I keep</p>
+        <div>
+          <p style={RESET}>2. I also keep</p>
+          {flag && (
+            <p style={NO_WRAP} ref={heroComponentRef("3-insideDiv")}>
+              3. I enter when there is the flag
+            </p>
+          )}
+          <p style={RESET}>4. Should I stay or should I go</p>
+        </div>
+        {flag && (
+          <p style={NO_WRAP} ref={heroComponentRef("5")}>
+            5. Did you miss me?
+          </p>
+        )}
+        <div>
+          <p style={RESET}>8. 🎶🎶🎶</p>
+          <p style={RESET}>6. Another</p>
+          {flag && (
+            <p style={NO_WRAP} ref={heroComponentRef("7-insideDiv")}>
+              7. one bites the dust
+            </p>
+          )}
+          <p style={RESET}>8. 🎶🎶🎶</p>
+        </div>
+      </div>
+    );
+  }
+  const chain = cy.mountChain((flag: boolean, x: number, y: number) => (
+    <UncontrolledTransition>
+      <Wrapper flag={flag} key={String(flag)} x={x} y={y} />
+    </UncontrolledTransition>
+  ));
+
+  chain.remount(false, 100, 100).wait(1000).pause();
+  chain.remount(true, 200, 100);
 });

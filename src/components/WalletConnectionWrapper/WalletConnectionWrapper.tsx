@@ -16,7 +16,7 @@ import useAsyncControl from "../../hooks/useAsyncControl";
 export type WalletConnectionProps = PropsWithChildren<
   Omit<ReturnType<typeof useAsyncControl>, "process"> & {
     chainId?: number;
-    isChainIdValid: boolean;
+    isChainIdValid: boolean | undefined;
     isProviderAvailable: boolean;
     isConnectedAndValidChain: boolean;
     isConnected: boolean;
@@ -32,7 +32,7 @@ type Props = {
   /**
    * The chain id that the user is expected to connect to
    */
-  chain: {
+  chain?: {
     id: number;
     rpcUrl: string;
     explorerUrl: string;
@@ -125,9 +125,20 @@ function Content({
     [wallet]
   );
   const [isProviderAvailable] = useState(() => !!window.ethereum);
+  /**
+   * true - Mostrar o conteudo (ex: form de transferencia)
+   * false - Mostrar o botão de trocar a chain
+   *
+   * undefined ???
+   */
   const isChainIdValid = useMemo(
-    () => (wallet.isConnected() ? wallet.chainId === chain.id : true),
-    [wallet, chain.id]
+    () =>
+      chain
+        ? wallet.isConnected()
+          ? wallet.chainId === chain.id
+          : true
+        : undefined,
+    [wallet, chain?.id]
   );
 
   async function changeChainId() {
@@ -136,7 +147,7 @@ function Content({
         method: "wallet_switchEthereumChain",
         params: [
           {
-            chainId: `0x${chain.id.toString(16).padStart(2, "0")}`,
+            chainId: `0x${chain!.id.toString(16).padStart(2, "0")}`,
           },
         ],
       });
@@ -147,12 +158,12 @@ function Content({
             method: "wallet_addEthereumChain",
             params: [
               {
-                chainId: `0x${chain.id.toString(16).padStart(2, "0")}`,
-                chainName: chain.name,
-                rpcUrls: [chain.rpcUrl],
-                blockExplorerUrls: [chain.explorerUrl],
+                chainId: `0x${chain!.id.toString(16).padStart(2, "0")}`,
+                chainName: chain!.name,
+                rpcUrls: [chain!.rpcUrl],
+                blockExplorerUrls: [chain!.explorerUrl],
                 nativeCurrency: {
-                  symbol: chain.currency,
+                  symbol: chain!.currency,
                   decimals: 18,
                 },
               },

@@ -22,9 +22,22 @@ baseConfig.plugins = baseConfig.plugins!.filter(
       "SourceMapDevToolPlugin",
     ].includes(a.constructor.name)
 );
-const plugins = ((baseConfig as any).module.rules[0].use.options.plugins as string[])
-plugins.shift()
+const plugins = (baseConfig as any).module.rules[0].use.options
+  .plugins as string[];
+plugins.shift();
 delete baseConfig.entry;
+
+baseConfig.module!.rules![0] = {
+  test: /\.m?[j|t]sx?$/,
+  exclude: /node_modules/,
+  use: {
+    loader: "esbuild-loader",
+    options: {
+      target: "es2015",
+    },
+  },
+};
+
 // console.log()
 // process.exit(0)
 baseConfig.module!.rules!.push(

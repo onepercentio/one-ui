@@ -24,7 +24,7 @@ export type WalletConnectionProps = PropsWithChildren<
 
     connect: () => Promise<void>;
     disconnect: () => void;
-    changeChainId: () => void;
+    changeChainId: () => Promise<void>;
   }
 >;
 
@@ -154,7 +154,7 @@ function Content({
     } catch (e: any) {
       switch (e.code) {
         case 4902:
-          window.ethereum!.request({
+          await window.ethereum!.request({
             method: "wallet_addEthereumChain",
             params: [
               {

@@ -1,5 +1,5 @@
 import React from "react";
-import LavaLamp from "./LavaLamp";
+import LavaLamp from "./v2/LavaLamp";
 import StoriesStyles from "./LavaLamp.stories.module.scss";
 
 export default {

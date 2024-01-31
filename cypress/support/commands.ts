@@ -1,5 +1,5 @@
 /// <reference types="cypress" />
-import "@muritavo/cypress-toolkit/dist/support/essentials"
+import "@muritavo/cypress-toolkit/dist/support/essentials";
 // ***********************************************
 // This example commands.ts shows you how to
 // create various custom commands and overwrite
@@ -26,24 +26,30 @@ import "@muritavo/cypress-toolkit/dist/support/essentials"
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 //
-// declare global {
-//   namespace Cypress {
-//     interface Chainable {
-//       login(email: string, password: string): Chainable<void>
-//       drag(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       dismiss(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       visit(originalFn: CommandOriginalFn, url: string, options: Partial<VisitOptions>): Chainable<Element>
-//     }
-//   }
-// }
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      needsMetamask(): Cypress.Chainable<void>;
+    }
+  }
+}
 
 beforeEach(() => {
-    const w = window.parent;
-    const style = w.document.createElement("style");
-    style.innerHTML = `.collapsible-content ul {
+  const w = window.parent;
+  const style = w.document.createElement("style");
+  style.innerHTML = `.collapsible-content ul {
         display: flex;
         flex-direction: column-reverse;
     }
-    `
-    w.document.head.appendChild(style)
-})
+    `;
+  w.document.head.appendChild(style);
+});
+
+Cypress.Commands.add("needsMetamask", () => {
+  cy.window().then((w) => {
+    if (!w.ethereum)
+      throw new Error(
+        `This test requires metamask to be installed and configured.`
+      );
+  });
+});

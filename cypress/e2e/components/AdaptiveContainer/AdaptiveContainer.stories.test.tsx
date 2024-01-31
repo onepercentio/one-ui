@@ -2,8 +2,7 @@ import React, { Fragment, useEffect, useRef } from "react";
 import { mount } from "cypress/react";
 import * as AllExamples from "../../../../src/components/AdaptiveContainer/AdaptiveContainer.stories";
 import AdaptiveContainer from "components/AdaptiveContainer/AdaptiveContainer";
-
-const { getColor } = require("color-seed");
+import { randomColor } from "../../../utility/color";
 
 it("All examples mount at least", () => {
   for (let ExampleName in AllExamples) {
@@ -23,7 +22,7 @@ it.only("Should transition correctly", () => {
             style={{
               width: "100%",
               height: `${height}px`,
-              backgroundColor: getColor(height + "px"),
+              backgroundColor: randomColor(height + "px"),
             }}
           />
         </Fragment>

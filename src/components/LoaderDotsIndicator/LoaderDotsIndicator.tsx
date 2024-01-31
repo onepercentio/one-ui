@@ -5,8 +5,11 @@ import React, { useEffect, useState } from "react";
  **/
 export default function LoaderDotsIndicator({
   dotsCount = 3,
+  lockSize = false,
 }: {
   dotsCount?: number;
+  /** Makes the dots so that they do not affect layout size */
+  lockSize?: boolean;
 }) {
   const [text, setText] = useState(".");
   useEffect(() => {
@@ -18,5 +21,14 @@ export default function LoaderDotsIndicator({
     return () => clearInterval(intervalId);
   }, [dotsCount]);
 
-  return <>{text}</>;
+  return (
+    <>
+      {text}
+      {lockSize && (
+        <span style={{ color: "#0000" }}>
+          {new Array(dotsCount - text.length).fill(".")}
+        </span>
+      )}
+    </>
+  );
 }

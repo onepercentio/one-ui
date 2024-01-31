@@ -5,6 +5,10 @@ type Arr<X> = [X, React.Dispatch<SetStateAction<X>>];
 export type FunctionMap = {
   [f: string]: ((...args: any[]) => Promise<any>) | Object | Primitive;
 };
+export type Control<E extends any = any> = {
+  error?: E;
+  loading: boolean;
+};
 export function useRawAsynControl<E = any, F extends FunctionMap = {}>(
   functionsToWrap: F | undefined,
   [error, setError]: Arr<E | undefined>,

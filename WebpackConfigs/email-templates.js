@@ -5,10 +5,14 @@ process.env.NODE_ENV =
     : "production");
 const Module = require("module").Module;
 function resolveFromMainContext(module) {
-  return Module._resolveFilename(module, require.main);
+  try {
+    return Module._resolveFilename(module, require.main);
+  } catch (e) {
+    return require(resolve("node_modules", module));
+  }
 }
 const { join, relative, resolve } = require("path");
-const HTMLPlugin = require.main.require("html-webpack-plugin");
+const HTMLPlugin = resolveFromMainContext("html-webpack-plugin");
 const {
   writeFileSync,
   readdirSync,
@@ -20,6 +24,7 @@ const {
 const lodash = require("lodash");
 const { findPathDeep } = require("deepdash")(lodash);
 const chalk = require("chalk");
+const { createRequire } = require("module");
 
 function findAllStaticGeneration() {
   const glob = require("glob");
@@ -42,8 +47,17 @@ function parseResultsrToEntries(results) {
 let configGenerator;
 async function loadGenerator() {
   try {
-    configGenerator = require(resolve("./webpack-email-config-factory"));
-    return configGenerator(resolve("."), process.env.NODE_ENV);
+    configGenerator = await (async () => {
+      try {
+        return require(resolve("./webpack-email-config-factory.js"));
+      } catch (e) {
+        return await import(resolve("./webpack-email-config-factory.js"));
+      }
+    })();
+    return await (configGenerator.default || configGenerator)(
+      resolve("."),
+      process.env.NODE_ENV
+    );
   } catch (e) {
     switch (e.code) {
       case "MODULE_NOT_FOUND":
@@ -263,6 +277,7 @@ function createConfig(
       for (let [htmlFilePath, subfileName] of mainHtml)
         htmlEntries.push(HTMLPluginEntry(htmlFilePath, `/${subfileName}`));
 
+        console.log(htmlEntries[0])
     baseConfig.plugins.push(...htmlEntries);
   });
 

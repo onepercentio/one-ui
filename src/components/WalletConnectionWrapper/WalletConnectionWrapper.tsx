@@ -169,6 +169,8 @@ function Content({
               },
             ],
           });
+        default:
+          throw e
       }
     }
   }

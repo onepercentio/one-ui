@@ -8,11 +8,11 @@ function resolveFromMainContext(module) {
   try {
     return Module._resolveFilename(module, require.main);
   } catch (e) {
-    return require(resolve("node_modules", module));
+    return require.resolve(resolve("node_modules", module));
   }
 }
 const { join, relative, resolve } = require("path");
-const HTMLPlugin = resolveFromMainContext("html-webpack-plugin");
+const HTMLPlugin = require(resolveFromMainContext("html-webpack-plugin"));
 const {
   writeFileSync,
   readdirSync,

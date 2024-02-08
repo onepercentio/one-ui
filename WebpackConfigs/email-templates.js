@@ -277,7 +277,6 @@ function createConfig(
       for (let [htmlFilePath, subfileName] of mainHtml)
         htmlEntries.push(HTMLPluginEntry(htmlFilePath, `/${subfileName}`));
 
-        console.log(htmlEntries[0])
     baseConfig.plugins.push(...htmlEntries);
   });
 

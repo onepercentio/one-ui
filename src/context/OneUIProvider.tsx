@@ -25,6 +25,11 @@ type DeepPartial<T> = {
 
 export type OneUIContextSpecs = {
   component: {
+    spacing: {
+      variants: {
+        [k in OnepercentUtility.UIElements.SpacingVariants]: string;
+      };
+    };
     collapsable: {
       className: string;
     };

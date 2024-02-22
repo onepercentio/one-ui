@@ -16,7 +16,7 @@ export default function useAsyncMemo<T>(
 
   useEffect(() => {
     process(funcToMemoize)
-      .then(setMemo)
+      .then((whatToStore) => setMemo(() => whatToStore))
       .catch(() => setMemo(null));
   }, depArr);
 

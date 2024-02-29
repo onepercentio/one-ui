@@ -8,7 +8,11 @@ export default function useAlternating<X>(list: X[]) {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrent((prev) => list[list.indexOf(prev) + 1] || list[0]);
+      setCurrent((prev) => {
+        const currentIndex = list.indexOf(prev);
+        if (list[currentIndex + 1]) return list[currentIndex + 1];
+        else return list[0];
+      });
     }, 5000);
 
     return () => clearInterval(interval);

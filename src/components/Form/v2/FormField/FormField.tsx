@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import Styles from "./FormField.module.scss";
 import {
   AnswerAction,
@@ -101,7 +101,7 @@ export default function FormField<Q extends FormFieldView>({
           </>
         );
       default:
-        const answer = val<typeof type>();
+        const answer = val<typeof type>() as ReactNode;
         return (
           <>
             <OneText type={titleVariant}>{c.title}</OneText>

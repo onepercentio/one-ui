@@ -23,9 +23,10 @@ export default function usePaginationControls(
     "data-testid"?: [left: string, right: string];
   } = {}
 ) {
-  const [[leftControl, rightControl], setControls] = useState<
+  const [controlsState, setControls] = useState<
     [leftControl: boolean, rightControl: boolean]
   >([false, false]);
+  const [leftControl, rightControl] = controlsState;
   const LeftControl = useOneUIConfig(
     "hook.ui.usePaginationControls.LeftControl"
   );
@@ -93,15 +94,20 @@ export default function usePaginationControls(
   }
 
   function checkControlsRequirement() {
+    const updateFunc =
+      (next: typeof controlsState) => (prev: typeof controlsState) => {
+        if (prev[0] !== next[0] || prev[1] !== next[1]) return next;
+        return prev;
+      };
     const el = containerRef.current!;
     const shouldHaveAnyControl = el.scrollWidth > el.clientWidth;
-    if (!shouldHaveAnyControl) setControls([false, false]);
+    if (!shouldHaveAnyControl) setControls(updateFunc([false, false]));
     else {
       const shouldHaveRightControl =
         el.scrollLeft < el.scrollWidth - el.clientWidth;
       const shouldHaveLeftControl = el.scrollLeft > 0;
 
-      setControls([shouldHaveLeftControl, shouldHaveRightControl]);
+      setControls(updateFunc([shouldHaveLeftControl, shouldHaveRightControl]));
     }
   }
   useEffect(() => {

@@ -69,8 +69,8 @@ export default function usePagination<I extends any>(
   const _requestPage = useCallback(
     function (page: number, pageSize: number | "all") {
       const id = paginationIdFactory();
+      if (paginationData[id]?.finished) return;
       process(async () => {
-        if (paginationData[id]?.finished) return;
         const result = await request(
           page,
           pageSize,
@@ -153,7 +153,8 @@ export function useContainerPagination(
     const scrollElement =
       (el as unknown as typeof window.document).scrollingElement || el;
     const calculateIfReachedLimit = throttle(
-      () => {
+      (e: Event) => {
+        if (e.target !== el) return;
         const { offsetBottom = 0, offsetLeft = 0 } =
           customOptionsRef.current?.() || {};
         const offsetLimit =

@@ -29,6 +29,9 @@
     background: $mainBackgroundColor;
     overflow: auto;
   }
+  &.block {
+    box-sizing: initial;
+  }
   &.transitionMarginTop {
     transition: height $fast ease-in, margin-top $fast ease-in;
   }

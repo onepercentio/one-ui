@@ -10,7 +10,9 @@ export default function useElementFit(
   baseHeight?: number
 ): {
   /** The amount of items that are able to fit in the available width */
-  itemsToShow?: number;
+  howManyItemsFit?: number;
+  /** How many items until it overflows width */
+  anItemMore?: number;
 
   /** The ref to be sent to the element that will receive the items */
   ref: RefObject<HTMLDivElement>;
@@ -19,7 +21,7 @@ export default function useElementFit(
   function calculateDimension() {
     function howManyItemsStackVertically() {
       if (!ref.current || baseHeight === undefined) return 1;
-      return Math.ceil(ref.current!.clientHeight / baseHeight);
+      return Math.floor(ref.current!.clientHeight / baseHeight);
     }
     if ((window as any).PRERENDER) return 4;
 
@@ -48,7 +50,8 @@ export default function useElementFit(
   }, []);
 
   return {
-    itemsToShow,
+    howManyItemsFit: itemsToShow,
+    anItemMore: itemsToShow ? itemsToShow + 1 : undefined,
     ref,
   };
 }

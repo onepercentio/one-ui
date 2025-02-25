@@ -12,6 +12,9 @@ module.exports = {
   core: {
     builder: "webpack5",
   },
+  typescript: {
+    reactDocgen: "react-docgen-typescript-plugin",
+  },
   webpackFinal: (config) => {
     config.module.rules[3].use[1].options = {
       modules: {

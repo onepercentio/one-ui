@@ -16,6 +16,7 @@ export default function AdaptiveDialog({
   onClickOut,
   children,
   onClosed,
+  inline = false,
 }: PropsWithChildren<{
   variant?: OnepercentUtility.UIElements.AdaptiveDialogVariants;
   className?: string;
@@ -23,6 +24,10 @@ export default function AdaptiveDialog({
   onClose?: () => void;
   onClickOut?: () => void;
   onClosed?: () => void;
+  /**
+   * Indicates this rendering will write the html inside the current position on dom.
+   * If omitted or false, it will render on the document body, to prevent style bleeding */
+  inline?: boolean;
 }>) {
   const rootDivRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(open);
@@ -53,38 +58,40 @@ export default function AdaptiveDialog({
     backdrop: useOneUIConfig("component.adaptiveDialog.backdropClassName", ""),
     dialog: useOneUIConfig("component.adaptiveDialog.dialogClassName", ""),
   };
+  const content = (
+    <div
+      ref={rootDivRef}
+      className={`${Styles.backdrop} ${open ? Styles.open : Styles.close} ${
+        expanded ? Styles.expanded : ""
+      } ${globalClassName.backdrop} ${variantClass}`}
+      onClick={onClickOut}
+      onAnimationEnd={({ target, currentTarget }) => {
+        if (target === currentTarget)
+          (target as HTMLDivElement).style.pointerEvents = "initial";
+      }}
+    >
+      <div
+        className={`${Styles.container} ${className} ${globalClassName.dialog}`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <ScrollAndFocusLock open={open}>
+          {onClose && (
+            <button className={Styles.closeBtn} onClick={onClose}>
+              <MutableHamburgerButton state="closed" size={24} />
+            </button>
+          )}
+          <div onClick={() => setExpanded((p) => !p)} />
+          {children}
+        </ScrollAndFocusLock>
+      </div>
+    </div>
+  );
 
   return isVisible || open ? (
-    <>
-      {ReactDOM.createPortal(
-        <div
-          ref={rootDivRef}
-          className={`${Styles.backdrop} ${open ? Styles.open : Styles.close} ${
-            expanded ? Styles.expanded : ""
-          } ${globalClassName.backdrop} ${variantClass}`}
-          onClick={onClickOut}
-          onAnimationEnd={({ target, currentTarget }) => {
-            if (target === currentTarget)
-              (target as HTMLDivElement).style.pointerEvents = "initial";
-          }}
-        >
-          <div
-            className={`${Styles.container} ${className} ${globalClassName.dialog}`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <ScrollAndFocusLock open={open}>
-              {onClose && (
-                <button className={Styles.closeBtn} onClick={onClose}>
-                  <MutableHamburgerButton state="closed" size={24} />
-                </button>
-              )}
-              <div onClick={() => setExpanded((p) => !p)} />
-              {children}
-            </ScrollAndFocusLock>
-          </div>
-        </div>,
-        document.body
-      )}
-    </>
+    inline ? (
+      content
+    ) : (
+      <>{ReactDOM.createPortal(content, document.body)}</>
+    )
   ) : null;
 }

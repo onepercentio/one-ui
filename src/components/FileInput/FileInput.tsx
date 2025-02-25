@@ -1,4 +1,9 @@
-import React, { ChangeEventHandler, useCallback, useRef } from "react";
+import React, {
+  ChangeEventHandler,
+  ReactElement,
+  useCallback,
+  useRef,
+} from "react";
 import { useOneUIView } from "../../context/OneUIProvider";
 import Styles from "./FileInput.module.scss";
 
@@ -6,7 +11,7 @@ export type FileInputProps = {
   states: {
     waitingFile: {
       /** The reason why this file is being requested */
-      title: string;
+      title: string | ReactElement;
       /** Shown below the title */
       description?: string;
       /** The label to show on the button */
@@ -14,7 +19,7 @@ export type FileInputProps = {
     };
     fileProvided: {
       /** Text show when the file has been provided */
-      title: string;
+      title: string | ReactElement;
       /** Shown below the title */
       description?: string;
       /** Shown on the button to remove the file */
@@ -67,4 +72,4 @@ function FileInput({ onFile, ...props }: FileInputProps) {
   );
 }
 
-export default FileInput
+export default FileInput;

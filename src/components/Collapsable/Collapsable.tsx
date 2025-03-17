@@ -34,7 +34,7 @@ function _Collapsable(
     ...props
   }: PropsWithChildren<
     {
-      title: React.ReactNode;
+      title: React.ReactNode | ((isOpen: boolean) => React.ReactNode);
       className?: string;
       contentClassName?: string;
       onToggleOpen?: (isOpen: boolean) => void;
@@ -181,7 +181,7 @@ function _Collapsable(
         }}
         id={_collapsableId("header", id)}
       >
-        {title}
+        {typeof title === "function" ? title(open) : title}
       </div>
       <div
         onClick={(e) => {

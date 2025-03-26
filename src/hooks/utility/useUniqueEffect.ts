@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useInsertionEffect, useMemo } from "react";
 import { useShareState } from "../../context/ContextAsyncControl";
 
 export default function useUniqueEffect(
@@ -11,11 +11,11 @@ export default function useUniqueEffect(
     "unique-effect",
     id
   );
-  useEffect(() => {
+  useInsertionEffect(() => {
     if (currLock === lockId) effect();
   }, [...deps, currLock]);
 
-  useEffect(() => {
+  useInsertionEffect(() => {
     if (currLock === undefined) setCurrLock(lockId);
     if (currLock === lockId) return () => setCurrLock(undefined);
   }, [currLock]);

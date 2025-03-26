@@ -62,7 +62,7 @@ export default function usePagination<I extends any>(
 
   const derivateCurrentPage = (pageSize: number) => {
     if (items === undefined) return 0;
-    const currentPage = Math.ceil((items?.[1].length ?? 0) / pageSize) - 1;
+    const currentPage = Math.floor((items?.[1].length ?? 0) / pageSize) - 1;
     return currentPage;
   };
 

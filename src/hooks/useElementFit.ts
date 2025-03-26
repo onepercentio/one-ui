@@ -11,6 +11,10 @@ export default function useElementFit(
 ): {
   /** The amount of items that are able to fit in the available width */
   howManyItemsFit?: number;
+  /** The amount of items that are able to fit in the available visible space + a row more so it can be scrollable */
+  howManyItemsFitWithExtraRow?: number;
+  /** How many items would fit a single row */
+  howManyItemsByRow?: number;
   /** How many items until it overflows width */
   anItemMore?: number;
 
@@ -23,7 +27,11 @@ export default function useElementFit(
       if (!ref.current || baseHeight === undefined) return 1;
       return Math.floor(ref.current!.clientHeight / baseHeight);
     }
-    if ((window as any).PRERENDER) return 4;
+    if ((window as any).PRERENDER)
+      return {
+        howManyItemsWillBeVisible: 4,
+        byRow: 4,
+      };
 
     const width = ref.current?.clientWidth || window.visualViewport!.width;
     const maxItemsHorizontally = Math.floor(width / baseWidth) || 1;
@@ -33,10 +41,21 @@ export default function useElementFit(
         `${useElementFit.name}:clientWidth`,
         ref.current?.clientWidth
       );
-    return maxItemsHorizontally * howManyItemsStackVertically();
+    return {
+      howManyItemsWillBeVisible:
+        maxItemsHorizontally * howManyItemsStackVertically(),
+      byRow: maxItemsHorizontally,
+    };
   }
-  const [itemsToShow, setItemsToShow] = useState(
-    (window as any).PRERENDER ? 4 : undefined
+  const [itemsToShow, setItemsToShow] = useState<
+    ReturnType<typeof calculateDimension> | undefined
+  >(
+    (window as any).PRERENDER
+      ? {
+          byRow: 4,
+          howManyItemsWillBeVisible: 4,
+        }
+      : undefined
   );
   useEffect(() => {
     setItemsToShow(calculateDimension());
@@ -50,8 +69,14 @@ export default function useElementFit(
   }, []);
 
   return {
-    howManyItemsFit: itemsToShow,
-    anItemMore: itemsToShow ? itemsToShow + 1 : undefined,
+    howManyItemsFit: itemsToShow?.howManyItemsWillBeVisible,
+    howManyItemsFitWithExtraRow: itemsToShow
+      ? itemsToShow.howManyItemsWillBeVisible + itemsToShow.byRow
+      : undefined,
+    anItemMore: itemsToShow
+      ? itemsToShow.howManyItemsWillBeVisible + 1
+      : undefined,
+    howManyItemsByRow: itemsToShow?.byRow,
     ref,
   };
 }

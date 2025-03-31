@@ -111,6 +111,7 @@ export type OneUIContextSpecs = {
         dropdown?: string;
         item?: string;
         selectedItem?: string;
+        input?: string;
       };
     };
     header: {
@@ -179,7 +180,7 @@ function OneUIProvider({
   return <Context.Provider value={mergedConfig}>{children}</Context.Provider>;
 }
 
-export default OneUIProvider
+export default OneUIProvider;
 
 function pathToJson(
   path: string,

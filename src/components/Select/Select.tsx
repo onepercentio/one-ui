@@ -36,7 +36,10 @@ export type SelectItem = (
       value: string;
     }
 ) &
-  Omit<DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLElement>, "ref" | "color">;
+  Omit<
+    DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLElement>,
+    "ref" | "color"
+  >;
 
 /**
  * A dropdown select
@@ -95,7 +98,7 @@ function Select<I extends SelectItem>({
     if (open) setFilterTerm("");
   }, [open]);
 
-  const dropdownClassNames = _drop
+  const selectClasses = _drop
     ? ({
         dropdown: _drop,
       } as NonNullable<OneUIContextSpecs["component"]["select"]["className"]>)
@@ -116,7 +119,9 @@ function Select<I extends SelectItem>({
       title={
         <Input
           {...otherProps}
-          className={`${Styles.input} ${!items.length ? Styles.empty : ""}`}
+          className={`${Styles.input} ${selectClasses.input} ${
+            !items.length ? Styles.empty : ""
+          }`}
           value={
             _selected
               ? "labelStr" in _selected
@@ -139,7 +144,7 @@ function Select<I extends SelectItem>({
         if (items.length) setOpen(open);
       }}
       className={`${otherProps.disabled ? "disabled" : ""} ${rootClassName}`}
-      contentClassName={`${Styles.optionsContainer} ${dropdownClassNames.dropdown}`}
+      contentClassName={`${Styles.optionsContainer} ${selectClasses.dropdown}`}
       alignTo={alignTo}
       ref={collapsableRef}
       anchorTo={AnchoredTooltipAnchor.BOTTOM}
@@ -170,9 +175,9 @@ function Select<I extends SelectItem>({
             key={i.value}
             className={`${
               i === _selected
-                ? `${Styles.selected} ${dropdownClassNames.selectedItem}`
+                ? `${Styles.selected} ${selectClasses.selectedItem}`
                 : ""
-            } ${dropdownClassNames.item || ""}`}
+            } ${selectClasses.item || ""}`}
             onClick={() => onClick(i)}
             {...i}
           >

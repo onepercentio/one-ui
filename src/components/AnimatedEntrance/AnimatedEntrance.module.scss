@@ -66,6 +66,7 @@ $duration: 1s;
   transition: max-height math.div($duration, 2) $duration * 0.2;
   min-height: initial;
   align-items: flex-start !important;
+  flex-shrink: 0;
   > * {
     justify-content: flex-start !important;
   }

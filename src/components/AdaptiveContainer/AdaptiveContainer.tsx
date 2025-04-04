@@ -6,6 +6,7 @@ import React, {
   HTMLProps,
   ReactElement,
   useEffect,
+  useMemo,
   useRef,
 } from "react";
 import { TransitionAnimationTypes } from "../Transition";
@@ -22,6 +23,7 @@ export default function AdaptiveContainer<
   className = "",
   containerElement: _Wrapper = "div" as any,
   direction = "h",
+  strict = true,
   ...otherProps
 }: {
   containerElement?: E;
@@ -34,7 +36,26 @@ export default function AdaptiveContainer<
    */
   direction?: "h" | "v";
   className?: string;
+  contentClassName?: string;
+  /**
+   * true: It will animate restricting to the height when it was rendered
+   * false: It will animate trying to reach the height when it was rendered, growing in size if the content inside it changes */
+  strict?: boolean;
 } & ComponentProps<E>) {
+  const animatedProperty = useMemo(() => {
+    switch (direction) {
+      case "h":
+        return strict
+          ? (() => {
+              throw new Error(
+                `Strict only works with direction "v" at the moment`
+              );
+            })()
+          : ("width" as const);
+      case "v":
+        return strict ? ("height" as const) : ("minHeight" as const);
+    }
+  }, [direction, strict]);
   const uncontrolledRef =
     useRef<ElementRef<typeof UncontrolledTransition>>(null);
   const buttonRef = useRef<HTMLElement>(null);
@@ -44,9 +65,9 @@ export default function AdaptiveContainer<
     if (sectionDiv)
       if (direction === "h") {
         sectionDiv.style.width = `${sectionDiv.clientWidth}px`;
-        sectionDiv.style.height = ``;
+        sectionDiv.style[animatedProperty] = ``;
       } else {
-        sectionDiv.style.height = `${sectionDiv.clientHeight}px`;
+        sectionDiv.style[animatedProperty] = `${sectionDiv.clientHeight}px`;
         sectionDiv.style.width = ``;
       }
     const t = setTimeout(() => {
@@ -55,7 +76,10 @@ export default function AdaptiveContainer<
         if (sectionDiv) {
           const lastChild = sectionDiv.lastChild as HTMLDivElement;
           if (lastChild) {
-            function resetFactory(param: "height" | "width", target: number) {
+            function resetFactory(
+              param: "minHeight" | "height" | "width",
+              target: number
+            ) {
               const instance = (e: Pick<TransitionEvent, "propertyName">) => {
                 if (e.propertyName !== param) return;
                 setTimeout(() => {
@@ -79,10 +103,11 @@ export default function AdaptiveContainer<
             } else {
               const contentHeight = lastChild.scrollHeight;
               const targetHeight = `${contentHeight}px`;
-              const prevHeight = sectionDiv.style.height;
-              sectionDiv.style.height = targetHeight;
-              const func = resetFactory("height", contentHeight);
-              if (targetHeight === prevHeight) func({ propertyName: "height" });
+              const prevHeight = sectionDiv.style[animatedProperty];
+              sectionDiv.style[animatedProperty] = targetHeight;
+              const func = resetFactory(animatedProperty, contentHeight);
+              if (targetHeight === prevHeight)
+                func({ propertyName: animatedProperty });
               else sectionDiv.addEventListener("transitionend", func);
             }
           }
@@ -112,6 +137,7 @@ export default function AdaptiveContainer<
             },
           }}
           className={`${Styles.resetSection} ${directionClass}`}
+          contentClassName={otherProps.contentClassName}
         >
           {children}
         </UncontrolledTransition>

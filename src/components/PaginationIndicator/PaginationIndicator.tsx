@@ -30,6 +30,7 @@ export function PaginationIndicatorView({
   className,
   onClickPage,
   mode = PaginationIndicatorMode.CENTERED,
+  infinite,
 }: {
   size: number;
   page: number;
@@ -37,7 +38,9 @@ export function PaginationIndicatorView({
   className?: string;
   onClickPage?: (page: number) => void;
   mode?: PaginationIndicatorMode;
+  infinite?: boolean;
 }) {
+  const maxBalls = useMemo(() => (infinite ? 5 : MAX_BALLS), [infinite]);
   const page = useMemo(() => {
     const floor = Math.floor(decimalPages);
     const modulus = decimalPages % floor;
@@ -55,12 +58,15 @@ export function PaginationIndicatorView({
   const pageIndex = page - 1;
   const pages = useMemo(() => Math.ceil(decimalPages), [decimalPages]);
   const numBalls = useMemo(() => {
-    const numBalls = pages >= MAX_BALLS ? MAX_BALLS : Math.ceil(pages);
+    const numBalls = pages >= maxBalls ? maxBalls : Math.ceil(pages);
 
     return numBalls;
   }, [pages]);
 
-  const indexForTheBallsCenter = useMemo(() => (numBalls - 1) / 2, [numBalls]);
+  const indexForTheBallsCenter = useMemo(
+    () => (infinite ? numBalls - 5 : numBalls - 1) / 2,
+    [numBalls, infinite]
+  );
   const balls = useMemo(() => {
     const indexForLastPages = pages + 1 - indexForTheBallsCenter;
     /**
@@ -68,7 +74,7 @@ export function PaginationIndicatorView({
      * after the first pages and
      * before the last pages */
     const isCenterPage =
-      numBalls >= MAX_BALLS &&
+      numBalls >= maxBalls &&
       pageIndex > indexForTheBallsCenter &&
       pageIndex < indexForLastPages - 1;
     let modulus =
@@ -76,7 +82,7 @@ export function PaginationIndicatorView({
       (1 + (indexForTheBallsCenter - Math.floor(indexForTheBallsCenter)));
     const resetPageIndex = isCenterPage
       ? indexForTheBallsCenter + modulus
-      : pages < MAX_BALLS
+      : pages < maxBalls
       ? pageIndex
       : pageIndex >= indexForLastPages - 1
       ? numBalls - (pages - pageIndex)
@@ -85,7 +91,7 @@ export function PaginationIndicatorView({
     const { pushBallsToRightBy, pushBallsToLeftBy, pushGuideToRightBy } =
       mode === PaginationIndicatorMode.CENTERED
         ? {
-            pushBallsToRightBy: Math.min(pages, MAX_BALLS) * eachBallWidthEm,
+            pushBallsToRightBy: Math.min(pages, maxBalls) * eachBallWidthEm,
             pushBallsToLeftBy: left,
             pushGuideToRightBy: 0,
           }
@@ -119,7 +125,7 @@ export function PaginationIndicatorView({
         }
 
         const ballSize =
-          numBalls < MAX_BALLS
+          numBalls < maxBalls
             ? 0.5
             : page <= indexForTheBallsCenter + 1 && isLastBall
             ? 0
@@ -167,7 +173,7 @@ export function PaginationIndicatorView({
       });
   }, [indexForTheBallsCenter, pageIndex, pages]);
   const [guideBall, ...pageBalls] = balls.reverse();
-  let width = eachBallWidthEm * Math.min(pages, MAX_BALLS) * 2;
+  let width = eachBallWidthEm * Math.min(pages, maxBalls) * 2;
   if (mode === PaginationIndicatorMode.START) width /= 2;
 
   return (
@@ -246,7 +252,7 @@ export function AnimatedPaginationIndicator(
 
     return () => {
       prevPage.current = props.page;
-      clearInterval(interval)
+      clearInterval(interval);
     };
   }, [props.page]);
 
@@ -260,13 +266,15 @@ function _PaginationIndicator(
     size,
     className = "",
     onClickPage,
+    mode,
+    infinite,
   }: {
     scrollableRef: RefObject<HTMLDivElement>;
     estimatedWidth?: number;
     size: number;
     className?: string;
     onClickPage?: (page: number) => void;
-  },
+  } & Pick<ComponentProps<typeof PaginationIndicatorView>, "mode" | "infinite">,
   ref: ForwardedRef<{
     refreshPages: () => void;
   }>
@@ -288,9 +296,9 @@ function _PaginationIndicator(
     const pages = maxWidth / scrollableRef.current!.clientWidth;
     if (pages > 1)
       setDefs({
-        pages,
+        pages: infinite ? pages + 2 : pages,
       });
-  }, [estimatedWidth]);
+  }, [estimatedWidth, infinite]);
 
   useEffect(() => refreshPages(), [refreshPages]);
 
@@ -305,9 +313,10 @@ function _PaginationIndicator(
       const diffToMax = maximumProgress - lastPageProgress;
       const currentProgressOnDiff = page - lastPageProgress;
 
-      if (page > lastPageProgress)
-        setCurrentPage(lastPageProgress + currentProgressOnDiff / diffToMax);
-      else setCurrentPage(page);
+      if (page > lastPageProgress) {
+        const p = lastPageProgress + currentProgressOnDiff / diffToMax;
+        setCurrentPage(p);
+      } else setCurrentPage(page);
     },
     []
   );
@@ -343,6 +352,8 @@ function _PaginationIndicator(
       size={size}
       className={className}
       onClickPage={onClickPage}
+      mode={mode}
+      infinite={infinite}
     />
   );
 }

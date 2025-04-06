@@ -25,7 +25,8 @@ export default function PingPongText({
       let scrollingInterval: NodeJS.Timeout;
       let scrollStartTimeout: NodeJS.Timeout;
       scrollStartTimeout = setTimeout(() => {
-        const textEl = textRef.current!;
+        const textEl = textRef.current;
+        if (!textEl) return;
         const overflowWidth = textEl.scrollWidth;
         const viewWidth = textEl.clientWidth;
         const secondsPerFrame = 1000 / 60;
@@ -38,8 +39,8 @@ export default function PingPongText({
             return setInterval(() => {
               const reachedEnd =
                 direction === "r"
-                  ? textEl.scrollLeft >= overflowWidth - viewWidth
-                  : textEl.scrollLeft === 0;
+                  ? textEl!.scrollLeft >= overflowWidth - viewWidth
+                  : textEl!.scrollLeft === 0;
               if (reachedEnd) {
                 clearInterval(scrollingInterval);
                 scrollStartTimeout = setTimeout(
@@ -52,10 +53,10 @@ export default function PingPongText({
                 );
               } else {
                 if (direction === "r")
-                  textEl.scrollTo(textEl.scrollLeft + howMuchToMove, 0);
+                  textEl!.scrollTo(textEl!.scrollLeft + howMuchToMove, 0);
                 else {
-                  textEl.scrollTo(
-                    textEl.scrollLeft - howMuchToMove * RIGHT_TEXT_MULTIPLIER,
+                  textEl!.scrollTo(
+                    textEl!.scrollLeft - howMuchToMove * RIGHT_TEXT_MULTIPLIER,
                     0
                   );
                 }
@@ -74,7 +75,7 @@ export default function PingPongText({
   return (
     <Text
       ref={textRef}
-      {...uiEvents as any}
+      {...(uiEvents as any)}
       {...props}
       className={`${Styles.pingPong} ${props.className || ""}`}
     />

@@ -46,12 +46,12 @@ export default function AdaptiveContainer<
     switch (direction) {
       case "h":
         return strict
-          ? (() => {
+          ? ("width" as const)
+          : (() => {
               throw new Error(
-                `Strict only works with direction "v" at the moment`
+                `Strict false only works with direction "v" at the moment`
               );
-            })()
-          : ("width" as const);
+            })();
       case "v":
         return strict ? ("height" as const) : ("minHeight" as const);
     }

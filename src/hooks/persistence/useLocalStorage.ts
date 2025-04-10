@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 const DUD = typeof "";
 type AvailablePrimitives = typeof DUD;
 const toString = (val: any) => {
@@ -35,7 +35,11 @@ export default function useLocalStorage<T extends any>(
     return fromString(typeof defaultValue, persistedValue) as T;
   });
   useEffect(() => {
-    localStorage.setItem(id, toString(val));
+    if (val !== defaultValue) localStorage.setItem(id, toString(val));
   }, [val]);
-  return [val, setVal] as const;
+  const del = useCallback(() => {
+    localStorage.removeItem(id);
+    setVal(defaultValue);
+  }, []);
+  return [val, setVal, del] as const;
 }

@@ -19,7 +19,11 @@ export default function useAsyncMemo<T>(
   const { process, error, ...control } = useAsyncControl();
   const [memo, setMemo] = useState<T | null>();
 
-  useEffect(() => {}, depArr);
+  useEffect(() => {
+    process(funcToMemoize)
+      .then((whatToStore) => setMemo(() => whatToStore))
+      .catch(() => setMemo(null));
+  }, depArr);
 
   return [
     memo,

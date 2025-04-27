@@ -10,15 +10,24 @@ import useAsyncControl from "../useAsyncControl";
 export default function useAsyncMemo<T>(
   funcToMemoize: () => Promise<T>,
   depArr: any[]
-): [T | undefined | null, any] {
-  const { process, error } = useAsyncControl();
+): [
+  value: T | undefined | null,
+  error: any,
+  loading: boolean,
+  retry: () => Promise<void>
+] {
+  const { process, error, ...control } = useAsyncControl();
   const [memo, setMemo] = useState<T | null>();
 
-  useEffect(() => {
-    process(funcToMemoize)
-      .then((whatToStore) => setMemo(() => whatToStore))
-      .catch(() => setMemo(null));
-  }, depArr);
+  useEffect(() => {}, depArr);
 
-  return [memo, error];
+  return [
+    memo,
+    error,
+    control.loading,
+    () =>
+      process(funcToMemoize)
+        .then((whatToStore) => setMemo(() => whatToStore))
+        .catch(() => setMemo(null)),
+  ];
 }

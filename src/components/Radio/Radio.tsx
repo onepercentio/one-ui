@@ -46,7 +46,7 @@ export default function Radio({
           label ? Styles.wContent : ""
         }`}
       />
-      <input type="radio" name={groupId} id={value} checked={checked} />
+      <input type="radio" name={groupId} id={value} checked={checked} readOnly/>
       {label}
     </label>
   );

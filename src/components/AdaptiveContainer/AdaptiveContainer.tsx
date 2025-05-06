@@ -61,54 +61,68 @@ export default function AdaptiveContainer<
   const buttonRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const sectionDiv = uncontrolledRef.current!.sectionRef.current;
-    if (sectionDiv)
+    const transitionContainer = uncontrolledRef.current!.sectionRef.current;
+    if (transitionContainer)
       if (direction === "h") {
-        sectionDiv.style.width = `${sectionDiv.clientWidth}px`;
-        sectionDiv.style[animatedProperty] = ``;
+        transitionContainer.style.width = `${transitionContainer.clientWidth}px`;
+        transitionContainer.style[animatedProperty] = ``;
       } else {
-        sectionDiv.style[animatedProperty] = `${sectionDiv.clientHeight}px`;
-        sectionDiv.style.width = ``;
+        transitionContainer.style[
+          animatedProperty
+        ] = `${transitionContainer.clientHeight}px`;
+        transitionContainer.style.width = ``;
       }
     const t = setTimeout(() => {
       if (uncontrolledRef.current) {
-        const sectionDiv = uncontrolledRef.current.sectionRef.current;
-        if (sectionDiv) {
-          const lastChild = sectionDiv.lastChild as HTMLDivElement;
-          if (lastChild) {
+        const transitionContainer = uncontrolledRef.current.sectionRef.current;
+        if (transitionContainer) {
+          const screenThatWillEnter =
+            transitionContainer.lastChild as HTMLDivElement;
+          if (screenThatWillEnter) {
             function resetFactory(
               param: "minHeight" | "height" | "width",
               target: number
             ) {
-              const instance = (e: Pick<TransitionEvent, "propertyName">) => {
+              const resetPropertyInstance = (e: Pick<TransitionEvent, "propertyName">) => {
                 if (e.propertyName !== param) return;
                 setTimeout(() => {
-                  if (sectionDiv?.style[param] === `${target}px`)
-                    sectionDiv!.style[param] = "";
+                  if (transitionContainer?.style[param] === `${target}px`) {
+                    transitionContainer!.style[param] = "";
+                  }
                 }, 100);
 
-                if (sectionDiv)
-                  sectionDiv.removeEventListener("transitionend", instance);
+                if (transitionContainer)
+                  transitionContainer.removeEventListener(
+                    "transitionend",
+                    resetPropertyInstance
+                  );
               };
-              return instance;
+              return resetPropertyInstance;
             }
             if (direction === "h") {
-              const contentWidth = lastChild.clientWidth;
+              const contentWidth = screenThatWillEnter.clientWidth;
               const targetWidth = `${contentWidth}px`;
-              const prevWidth = sectionDiv.style.width;
-              sectionDiv.style.width = targetWidth;
+              const prevWidth = transitionContainer.style.width;
+              transitionContainer.style.width = targetWidth;
               const func = resetFactory("width", contentWidth);
               if (targetWidth === prevWidth) func({ propertyName: "width" });
-              else sectionDiv.addEventListener("transitionend", func);
+              else transitionContainer.addEventListener("transitionend", func);
             } else {
-              const contentHeight = lastChild.scrollHeight;
+              const contentHeight = screenThatWillEnter.scrollHeight;
               const targetHeight = `${contentHeight}px`;
-              const prevHeight = sectionDiv.style[animatedProperty];
-              sectionDiv.style[animatedProperty] = targetHeight;
-              const func = resetFactory(animatedProperty, contentHeight);
+              const prevHeight = transitionContainer.style[animatedProperty];
+              transitionContainer.style[animatedProperty] = targetHeight;
+              const resetProperty = resetFactory(
+                animatedProperty,
+                contentHeight
+              );
               if (targetHeight === prevHeight)
-                func({ propertyName: animatedProperty });
-              else sectionDiv.addEventListener("transitionend", func);
+                resetProperty({ propertyName: animatedProperty });
+              else
+                transitionContainer.addEventListener(
+                  "transitionend",
+                  resetProperty
+                );
             }
           }
         }

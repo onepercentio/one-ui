@@ -11,6 +11,11 @@
       min-width: auto !important;
     }
   }
+  &.v {
+    > * {
+      min-height: initial;
+    }
+  }
 }
 
 @keyframes fadeInDelayed {

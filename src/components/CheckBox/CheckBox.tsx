@@ -46,7 +46,7 @@ export default function CheckBox({
           label ? Styles.wContent : ""
         }`}
       />
-      <input type="checkbox" name={groupId} id={value} checked={checked} />
+      <input type="checkbox" name={groupId} id={value} checked={checked} readOnly/>
 
       {label}
     </label>

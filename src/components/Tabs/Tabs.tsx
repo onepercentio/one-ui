@@ -75,7 +75,7 @@ export default function Tabs<O extends string | number>(
     <>
       <div className={`${Styles.container} ${className} ${tabNativeCls}`}>
         {options.map((o) => (
-          <p
+          <div
             ref={selected === o.id ? selectedRef : undefined}
             onClick={() => onSelect(o.id)}
             className={`${
@@ -89,7 +89,7 @@ export default function Tabs<O extends string | number>(
             data-testid="tab-option"
           >
             {o.label}
-          </p>
+          </div>
         ))}
         {TabType.CLASS !== props.type && (
           <div

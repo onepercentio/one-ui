@@ -5,7 +5,7 @@
   display: flex;
   position: relative;
   align-items: flex-start;
-  p {
+  > div {
     cursor: pointer;
     &.selected {
       font-weight: bold;
@@ -13,7 +13,7 @@
   }
   &.FULL {
     overflow: visible;
-    p {
+    > div {
       transition: color 250ms linear;
       padding: 0.4em 1em;
       z-index: 1;

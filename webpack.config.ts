@@ -87,15 +87,15 @@ baseConfig.module!.rules!.push(
     },
   }
 );
-baseConfig.plugins.push(
-  new ReactDocgenTypescriptPlugin({
-    shouldExtractLiteralValuesFromEnum: true,
-    shouldRemoveUndefinedFromOptional: true,
-    propFilter: function (prop) {
-      return prop.parent ? !/node_modules/.test(prop.parent.fileName) : true;
-    },
-    // NOTE: this default cannot be changed
-    savePropValueAsString: true,
-  })
-);
+// baseConfig.plugins.push(
+//   new ReactDocgenTypescriptPlugin({
+//     shouldExtractLiteralValuesFromEnum: true,
+//     shouldRemoveUndefinedFromOptional: true,
+//     propFilter: function (prop) {
+//       return prop.parent ? !/node_modules/.test(prop.parent.fileName) : true;
+//     },
+//     // NOTE: this default cannot be changed
+//     savePropValueAsString: true,
+//   })
+// );
 export default baseConfig;

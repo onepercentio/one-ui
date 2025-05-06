@@ -6,6 +6,7 @@ import React, {
   RefObject,
   useEffect,
   useImperativeHandle,
+  useLayoutEffect,
   useRef,
   useState,
 } from "react";
@@ -65,7 +66,7 @@ function _UncontrolledTransition(
     []
   );
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (process.env.NODE_ENV !== "production" && !children.key)
       throw new Error(
         "The provided child should have a key property, please provide it"

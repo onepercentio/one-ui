@@ -6,7 +6,7 @@
   display: flex;
   align-items: center;
   cursor: pointer;
-  button {
+  .button {
     margin-right: 24px;
   }
 }
@@ -17,7 +17,7 @@
     pointer-events: none;
     cursor: initial;
   }
-  button {
+  .button {
     padding: 0px;
     min-width: initial;
   }

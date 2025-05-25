@@ -1,4 +1,9 @@
-import React, { ReactElement, useMemo } from "react";
+import React, {
+  PropsWithChildren,
+  ReactElement,
+  ReactNode,
+  useMemo,
+} from "react";
 import Styles from "./Compact.module.scss";
 import { FileInputViewProps } from "../View.types";
 import _UncontrolledTransition from "../../../UncontrolledTransition/UncontrolledTransition";
@@ -55,8 +60,10 @@ export function ProgressIndicator({
   progress,
   file,
   defaultIcon,
+  Wrapper = Button,
 }: Pick<FileInputViewProps, "progress" | "file"> & {
   defaultIcon?: ReactElement;
+  Wrapper?: (p: PropsWithChildren<any>) => ReactNode;
 }) {
   const statusClass =
     progress !== undefined && progress < 100
@@ -84,7 +91,7 @@ export function ProgressIndicator({
       transitionType={TransitionAnimationTypes.COIN_FLIP}
       className={Styles.icon}
     >
-      <Button variant="transparent" key={statusClass}>
+      <Wrapper variant="transparent" key={`${Styles.button} ${statusClass}`}>
         <svg
           viewBox="0 0 46 47"
           className={Styles[statusClass]}
@@ -136,7 +143,7 @@ export function ProgressIndicator({
             )
           )}
         </svg>
-      </Button>
+      </Wrapper>
     </_UncontrolledTransition>
   );
 }

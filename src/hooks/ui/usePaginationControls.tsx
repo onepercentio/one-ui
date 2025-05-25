@@ -99,7 +99,8 @@ export default function usePaginationControls(
         if (prev[0] !== next[0] || prev[1] !== next[1]) return next;
         return prev;
       };
-    const el = containerRef.current!;
+    const el = containerRef.current;
+    if (!el) return;
     const shouldHaveAnyControl = el.scrollWidth > el.clientWidth;
     if (!shouldHaveAnyControl) setControls(updateFunc([false, false]));
     else {

@@ -165,6 +165,7 @@ function _Collapsable(
 
   const propsToSpread = { ...props } as any;
   delete propsToSpread.alignTo;
+  delete propsToSpread.anchorTo;
 
   return (
     <div

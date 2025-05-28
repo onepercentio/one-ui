@@ -23,9 +23,12 @@ export default function CheckBox({
   groupId: string;
   value: string;
 }> &
-  React.DetailedHTMLProps<
-    React.HTMLAttributes<HTMLSpanElement>,
-    HTMLSpanElement
+  Omit<
+    React.DetailedHTMLProps<
+      React.HTMLAttributes<HTMLSpanElement>,
+      HTMLSpanElement
+    >,
+    "onToggle"
   >) {
   const Checkbox = useOneUIConfig(
     "component.checkbox.Component",
@@ -46,7 +49,13 @@ export default function CheckBox({
           label ? Styles.wContent : ""
         }`}
       />
-      <input type="checkbox" name={groupId} id={value} checked={checked} readOnly/>
+      <input
+        type="checkbox"
+        name={groupId}
+        id={value}
+        checked={checked}
+        readOnly
+      />
 
       {label}
     </label>

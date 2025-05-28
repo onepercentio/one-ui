@@ -33,7 +33,7 @@ export default function CodeInput({
     }
   }, [Monaco]);
   const editorRef =
-    useRef<import("monaco-editor").editor.IStandaloneCodeEditor>();
+    useRef<import("monaco-editor").editor.IStandaloneCodeEditor>(undefined);
   useEffect(() => {
     if (Monaco) {
       Monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({

@@ -19,7 +19,7 @@ export default function useElementFit(
   anItemMore?: number;
 
   /** The ref to be sent to the element that will receive the items */
-  ref: RefObject<HTMLDivElement>;
+  ref: RefObject<HTMLDivElement | null>;
 } {
   const ref = useRef<HTMLDivElement>(null);
   function calculateDimension() {

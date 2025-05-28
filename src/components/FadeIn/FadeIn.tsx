@@ -34,7 +34,7 @@ function _FadeIn(
     divRef = createRef();
   }
   const [, trigger] = useState(0);
-  const prevChildren = useRef<typeof children>();
+  const prevChildren = useRef<typeof children>(undefined);
   prevChildren.current = children || prevChildren.current;
 
   useEffect(() => {

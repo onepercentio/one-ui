@@ -72,7 +72,7 @@ function _Parallax(
   const parallaxableRef = useRef<HTMLDivElement>(null);
   const reflectionRef = useRef<HTMLDivElement>(null);
   const multiplierRef = useRef<number>(1);
-  const initialPositionRef = useRef<string>();
+  const initialPositionRef = useRef<string>(undefined);
   useEffect(() => {
     if (ref)
       (ref as MutableRefObject<HTMLDivElement>).current =

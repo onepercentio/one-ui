@@ -26,7 +26,10 @@ export default function useZoomable(id: string) {
         const bd = getBackdrop();
         const removeCb = ({ currentTarget, target }: TransitionEvent) => {
           if (target === currentTarget) {
-            ReactDOM.unmountComponentAtNode(bd);
+            if (("unmountComponentAtNode" in ReactDOM) as any)
+              (ReactDOM as any).unmountComponentAtNode(bd);
+            else
+              console.error("This component doesn't work with the new versions of react yet...")
             bd.remove();
           }
         };

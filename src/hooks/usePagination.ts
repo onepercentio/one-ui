@@ -144,9 +144,9 @@ export function useContainerPagination(
   pageSize: number,
   direction: "h" | "v" = "v"
 ) {
-  const scrollableRef = useRef<HTMLDivElement>();
+  const scrollableRef = useRef<HTMLDivElement>(undefined);
   const customOptionsRef =
-    useRef<() => { offsetBottom?: number; offsetLeft?: number }>();
+    useRef<() => { offsetBottom?: number; offsetLeft?: number }>(undefined);
 
   useEffect(() => {
     const el = scrollableRef.current!;

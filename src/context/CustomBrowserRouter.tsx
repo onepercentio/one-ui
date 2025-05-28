@@ -51,5 +51,5 @@ export default function CustomBrowserRouter({
     overrideFunction("push");
     overrideFunction("replace");
   }, [historyCustom]);
-  return <Router history={historyCustom}>{children}</Router>;
+  return <Router history={historyCustom}>{children as any}</Router>;
 }

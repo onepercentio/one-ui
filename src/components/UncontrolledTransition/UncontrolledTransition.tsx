@@ -41,7 +41,7 @@ function _UncontrolledTransition(
     >,
   ref: ForwardedRef<{
     setOrientation: (orientation: "forward" | "backward") => void;
-    sectionRef: RefObject<HTMLDivElement>;
+    sectionRef: RefObject<HTMLDivElement | null>;
   }>
 ) {
   const sectionRef = useRef<HTMLDivElement>(null);

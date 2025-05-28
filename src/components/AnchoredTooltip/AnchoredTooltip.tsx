@@ -17,7 +17,7 @@ import useFreeze from "../../hooks/useFreeze";
 
 type Props = {
   children: JSX.Element;
-  anchorRef: RefObject<HTMLElement>;
+  anchorRef: RefObject<HTMLElement | null>;
   open: boolean;
   className?: string;
   /**
@@ -164,7 +164,7 @@ export function updateTooltipPosition(
 }
 function _AnchoredTooltip(
   { containInViewport = true, alignment, ...props }: Props,
-  ref: ForwardedRef<{ updatePosition: () => void }>
+  ref: ForwardedRef<{ updatePosition: () => void } | null>
 ) {
   const { open, children, anchorRef } = props;
   const tooltipRef = useRef<HTMLDivElement>(null);

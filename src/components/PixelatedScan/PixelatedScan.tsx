@@ -120,7 +120,9 @@ function GridRow({
     >
       {squares.map((_, i) => (
         <GridItem
-          ref={(refNode) => (gridItemsRefs.current[i] = refNode)}
+          ref={(refNode) => {
+            gridItemsRefs.current[i] = refNode;
+          }}
           key={i}
           size={size}
           baseColor={baseColor}

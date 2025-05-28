@@ -13,7 +13,7 @@ export default function useLavaLampSetup(
   const [d, setDim] = useState<{ width: number; height: number }>();
   const relativeTo = useRef<HTMLDivElement>(null);
 
-  const prevTilt = useRef<{ x: number; y: number }>();
+  const prevTilt = useRef<{ x: number; y: number }>(undefined);
 
   useEffect(() => {
     const baseWidth = Math.min(relativeTo.current!.clientWidth, 1440);

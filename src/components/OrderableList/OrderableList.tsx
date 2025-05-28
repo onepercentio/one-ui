@@ -96,7 +96,7 @@ export default function OrderableList({
   const { current: anchorsList } = useRef<HTMLDivElement[]>([]);
   const eventEmitter = useEvents<Events, { [k in Events]: [] }>();
   const currentClone = useRef<HTMLDivElement | null>(null);
-  const currentWorkingKey = useRef<string>();
+  const currentWorkingKey = useRef<string>(undefined);
   const rootRef = useRef<HTMLDivElement>(null as any);
   const [_order, setOrder] = useState(initializeOrder);
   useEffect(() => setOrder(initializeOrder()), [initializeOrder]);

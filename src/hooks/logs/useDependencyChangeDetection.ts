@@ -5,7 +5,7 @@ export default function useDependencyChangeDetection(
   dependencyArray: any[]
 ) {
   for (let dependencyIndex in dependencyArray) {
-    const prevValue = useRef<any>();
+    const prevValue = useRef<any>(undefined);
     useEffect(() => {
       if (!prevValue.current) return;
       if (process.env.NODE_ENV === "development")

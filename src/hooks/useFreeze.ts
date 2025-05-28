@@ -5,7 +5,7 @@ import { useRef } from "react";
  * it returns the previous valid value
  */
 export default function useFreeze<T>(something: T) {
-    const currChildOrPrev = useRef<T>();
+    const currChildOrPrev = useRef<T>(undefined);
     currChildOrPrev.current = something || currChildOrPrev.current;
     return currChildOrPrev.current || null;
 }

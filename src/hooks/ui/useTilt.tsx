@@ -19,7 +19,7 @@ type Options = {
 
 export function useTiltUpdates(
   active: boolean,
-  relativeToEl: RefObject<HTMLDivElement>,
+  relativeToEl: RefObject<HTMLDivElement | null>,
   onTilt: (p: { x: number; y: number }) => void,
   onInverseMatrix?: (updateFunc: (matrix: number[]) => number[]) => void,
   sensorScale: number = 1,

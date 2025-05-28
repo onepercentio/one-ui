@@ -6,8 +6,8 @@ import usePooling from "./usePooling";
  * A toolkit hook to trigger an request to start a process and execute a pooling operation to validate when the operation is finished
  */
 export default function usePooledOperation() {
-  const requestOperation = useRef<() => Promise<void>>();
-  const poolingOperation = useRef<() => Promise<boolean>>();
+  const requestOperation = useRef<() => Promise<void>>(undefined);
+  const poolingOperation = useRef<() => Promise<boolean>>(undefined);
   const requestControl = useAsyncControl();
   const pollingControl = usePooling();
 

@@ -96,7 +96,7 @@
     "**/webpack": "^5",
     "**/react-docgen-typescript": "^2",
     "**/cssom": "^0.5",
-    "**/@types/react": "^18"
+    "**/@types/react": "^19"
   },
   "scripts": {
     "storybook": "start-storybook -p 6006",

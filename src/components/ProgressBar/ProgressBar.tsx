@@ -105,12 +105,12 @@ export function BalancedProgressBar({
   max,
   current,
   size,
-  mode,
+  ...props
 }: {
   min: number;
   max: number;
   current: number;
-} & Pick<ComponentProps<typeof ProgressBar>, "size" | "mode">) {
+} & Omit<ComponentProps<typeof ProgressBar>, "progress">) {
   const progress = useMemo(() => {
     const progressVal = current - min;
     const maxVal = max - min;
@@ -120,5 +120,5 @@ export function BalancedProgressBar({
     return currProgress;
   }, [min, max, current]);
 
-  return <ProgressBar size={size} progress={progress} mode={mode} />;
+  return <ProgressBar size={size} progress={progress} {...props as any} />;
 }

@@ -75,7 +75,8 @@ export default function usePaginationControls(
         });
       } else {
         const rest =
-          containerRef.current!.scrollLeft % containerRef.current!.clientWidth;
+          Math.round(containerRef.current!.scrollLeft) %
+          containerRef.current!.clientWidth;
         const snapOffset = snapToPage
           ? direction === "l"
             ? rest

@@ -19,9 +19,9 @@ export default function useElementFit(
   anItemMore?: number;
 
   /** The ref to be sent to the element that will receive the items */
-  ref: RefObject<HTMLDivElement | null>;
+  ref: RefObject<HTMLDivElement | undefined>;
 } {
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement>(undefined);
   function calculateDimension() {
     function howManyItemsStackVertically() {
       if (!ref.current || baseHeight === undefined) return 1;

@@ -80,6 +80,11 @@ export function useRawAsynControl<E = any, F extends FunctionMap = {}>(
   };
 }
 
+/**
+ * This hook provides a way to handle async operations storing the loading state, or the error when if fails
+ * @param functionsToWrap The functions to wrap in control. The wrapped functions can be called from the returned control object as control.functionName
+ * @returns
+ */
 export default function useAsyncControl<
   E = any,
   F extends {

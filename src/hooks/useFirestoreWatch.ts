@@ -15,6 +15,11 @@ export default function useFirestoreWatch<D extends { id: string }, P extends an
         const unsub = queryFactory(...params)((changes) => {
             updateList((prevList = []) => {
                 for (let docChange of changes) {
+                    if (docChange.type === undefined) {
+                      const existing = prevList.find((f) => f.id === docChange.doc.id);
+                      if (existing) docChange.type = "modified"
+                      else docChange.type = "added"
+                    }
                     switch (docChange.type) {
                         case 'added':
                             if (!prevList.find((f) => f.id === docChange.doc.id)) {

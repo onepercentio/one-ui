@@ -1,6 +1,7 @@
 **/__snapshot__/*
 **/*.test.tsx
 **/*.md
+!**/*.ai.md
 **/*.stories.tsx
 **/*.test.ts
 **/*.test.js

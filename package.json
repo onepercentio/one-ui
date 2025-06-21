@@ -5,7 +5,14 @@
   "repository": "git@github.com:onepercentio/one-ui.git",
   "author": "Murilo Oliveira de Araujo <murilo.araujo@onepercent.io>",
   "license": "MIT",
-  "types": "src/types.ts",
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "devDependencies": {
     "@babel/cli": "^7.22.9",
     "@babel/core": "^7.22.9",

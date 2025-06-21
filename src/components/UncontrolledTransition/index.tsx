@@ -1,1 +1,2 @@
-export { default } from './UncontrolledTransition';
+export { default } from "./UncontrolledTransition";
+export * from "./UncontrolledTransition";

@@ -5,9 +5,21 @@ const control = useAsyncControl()
 control.process(() => anAsyncFunction());
 ```
 
-# Using an async function directly
+# Using multiple async functions
 ```tsx
-const control = useAsyncControl({anAsyncFunction})
+const control = useAsyncControl({
+    asyncFunctionOne,
+    asyncFunctionTwo,
+})
 
-control.anAsyncFunction();
+control.asyncFunctionOne();
+control.asyncFunctionTwo();
+```
+
+# Storing data
+```tsx
+const [result, setResult] = useState()
+const control = useAsyncControl({anAsyncFunctionThatReturnsData})
+
+control.anAsyncFunctionThatReturnsData().then(setResult);
 ```

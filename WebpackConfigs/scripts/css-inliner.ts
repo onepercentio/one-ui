@@ -50,8 +50,8 @@ function getTextNodesIn(elem: HTMLElement): ChildNode[] {
   return textNodes;
 }
 
-export default function inlineCSS() {
-  if (process.env.NODE_ENV === "development") return;
+export default function inlineCSS(force: boolean = false) {
+  if (process.env.NODE_ENV === "development" && force === false) return;
   const allEls = Array.from(document.querySelectorAll("*")) as HTMLElement[];
   const elstyles: [HTMLElement, string][] = [];
 
@@ -71,7 +71,9 @@ export default function inlineCSS() {
     }
 
     const inlined = Array.from(styles)
-      .map((k) => `${k}: ${styles.getPropertyValue(k)}`)
+      .map((k) => {
+        return `${k}: ${styles.getPropertyValue(k)}`
+      })
       .join("; ")
       .concat(";");
     if (inlined !== ";") elstyles.push([el, inlined]);
@@ -82,19 +84,16 @@ export default function inlineCSS() {
     el.setAttribute("style", s);
   });
 
-  getTextNodesIn(document.body).forEach((n) => {
-    n.replaceWith(
-      ...n
-        .textContent!.split(/\n/g)
-        .reduce(
-          (r, txt, i, arr) =>
-            arr.length - 1 === i
-              ? [...r, txt]
-              : [...r, txt, document.createElement("br")],
-          [] as (Node | string)[]
-        )
-    );
-  });
+  if (force === false)
+    getTextNodesIn(document.body).forEach((n) => {
+      n.replaceWith(
+        ...n.textContent!.split(/\n/g).reduce((r, txt, i, arr) => {
+          return arr.length - 1 === i
+            ? [...r, txt]
+            : [...r, txt, document.createElement("br")];
+        }, [] as (Node | string)[])
+      );
+    });
 
   if (process.env.NODE_ENV !== "test")
     document.querySelectorAll("style").forEach((e) => e.remove());

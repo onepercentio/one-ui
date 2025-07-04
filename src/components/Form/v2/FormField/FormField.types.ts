@@ -108,6 +108,8 @@ export type FormField = {
   | UnresolvableOr<OnepercentUtility.UIElements.FormExtension["fields"], {}>
 >;
 
+export type FormFieldTypes = FormField['type'] | 'accept'
+
 type ExternalQuestionFields = UnresolvableOr<
   OnepercentUtility.UIElements.FormExtension["fieldAnswer"],
   {}
@@ -125,16 +127,3 @@ export type AnswerByField<F extends Pick<FormField, "type">> =
     : unknown;
 
 type O = FormField["type"];
-type TestAnswerByField = [
-  AnswerByField<{ type: "number" }>,
-  AnswerByField<{ type: "check" }>,
-  AnswerByField<{ type: "rawcheck" }>,
-  AnswerByField<{ type: "file" }>,
-  AnswerByField<{ type: "accept" }>,
-  AnswerByField<{ type: "radio" }>,
-  AnswerByField<{ type: "text" }>,
-  AnswerByField<{ type: "select" }>,
-  AnswerByField<{ type: "phone" }>,
-  AnswerByField<{ type: "date" }>,
-  AnswerByField<{ type: O }>
-];

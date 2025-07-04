@@ -7,6 +7,7 @@ import {
   AnswerAction,
   AnswerByField,
   FormField,
+  FormFieldTypes,
   FormFieldView,
   FormMode,
 } from "./FormField/FormField.types";
@@ -44,7 +45,7 @@ export function useFormState(
     );
   }, [answers, currentQuestions]);
 
-  const onAnswerAction = <T extends FormField["type"]>(
+  const onAnswerAction = <T extends FormFieldTypes>(
     questionType: T,
     id: string,
     answer:
@@ -303,7 +304,7 @@ export function areAllQuestionsAnswered(
 }
 
 export const isValidated = (
-    _answer: AnswerByField<{ type: FormField["type"] }>,
+    _answer: AnswerByField<{ type: FormFieldTypes }>,
   isOptional: boolean,
   validator: ((val: any) => string | boolean) | undefined,
   requiredFieldLabel: string

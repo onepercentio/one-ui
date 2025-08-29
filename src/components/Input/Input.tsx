@@ -30,9 +30,11 @@ export type InputProps = {
   Icon?: React.ReactElement;
   onChange?: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
   containerProps?: Omit<React.HTMLProps<HTMLDivElement>, "ref">;
+  value?: string;
+  'data-testid'?: string;
 } & Omit<
   React.HTMLProps<HTMLInputElement | HTMLTextAreaElement>,
-  "ref" | "onChange"
+  "ref" | "onChange" | 'value'
 >;
 function _Input(
   {

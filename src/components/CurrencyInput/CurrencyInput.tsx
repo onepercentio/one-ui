@@ -2,8 +2,8 @@ import { ComponentProps } from "react"
 import Input from "../Input"
 import { useCurrencyInput } from "./CurrencyInput.hook"
 
-export default function CurrencyInput({ value: amount, currency, onChange, placeholder, error, ...props }: Omit<ComponentProps<typeof Input>, 'onChange'> & { currency: string, onChange?: (formatted: string) => void }) {
-    const { inputRef, moneyFormat, lastPosition } = useCurrencyInput(amount, currency, onChange)
+export default function CurrencyInput({ locale, value: amount, currency, onChange, placeholder, error, ...props }: Omit<ComponentProps<typeof Input>, 'onChange'> & { currency: string, onChange?: (formatted: string) => void, locale: string }) {
+    const { inputRef, moneyFormat, lastPosition } = useCurrencyInput(amount, locale, currency, onChange)
     return (
         <>
             <Input

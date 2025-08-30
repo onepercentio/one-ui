@@ -3,10 +3,14 @@ import { currencyFormatterFactory } from "../../utils/formatters";
 
 export function useCurrencyInput(
   amount: string | undefined,
+  locale: string,
   currency: string,
   onChange?: (formattedCurrency: string) => void
 ) {
-  const formatter = useMemo(() => currencyFormatterFactory(currency), []);
+  const formatter = useMemo(
+    () => currencyFormatterFactory(locale, currency),
+    []
+  );
   const number = useMemo(
     () => Number(amount?.replace(/[^0-9]/g, "") || 0) / 100,
     [amount]

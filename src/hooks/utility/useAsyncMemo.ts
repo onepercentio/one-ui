@@ -20,9 +20,13 @@ export default function useAsyncMemo<T>(
   const [memo, setMemo] = useState<T | null>();
 
   useEffect(() => {
+    let depBasedSet: typeof setMemo | undefined = setMemo;
     process(funcToMemoize)
-      .then((whatToStore) => setMemo(() => whatToStore))
-      .catch(() => setMemo(null));
+      .then((whatToStore) => depBasedSet?.(() => whatToStore))
+      .catch(() => depBasedSet?.(null));
+    return () => {
+      depBasedSet = undefined;
+    };
   }, depArr);
 
   return [

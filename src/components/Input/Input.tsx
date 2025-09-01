@@ -1,10 +1,8 @@
 import React, {
   ChangeEventHandler,
-  ComponentProps,
   DetailedHTMLProps,
   ForwardedRef,
   forwardRef,
-  HTMLAttributes,
   ReactElement,
   useEffect,
   useImperativeHandle,
@@ -12,7 +10,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useOneUIConfig, useOneUIContext } from "../../context/OneUIProvider";
+import { useOneUIConfig } from "../../context/OneUIProvider";
 import Text from "../Text";
 import Styles from "./Input.module.scss";
 

@@ -1,4 +1,4 @@
-import { ComponentProps } from "react"
+import React, { ComponentProps } from "react"
 import Input from "../Input"
 import { useCurrencyInput } from "./CurrencyInput.hook"
 

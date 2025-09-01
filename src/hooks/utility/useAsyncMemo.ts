@@ -14,7 +14,8 @@ export default function useAsyncMemo<T>(
   value: T | undefined | null,
   error: any,
   loading: boolean,
-  retry: () => Promise<void>
+  retry: () => Promise<void>,
+  setValue: (value: T) => void
 ] {
   const { process, error, ...control } = useAsyncControl();
   const [memo, setMemo] = useState<T | null>();
@@ -37,5 +38,6 @@ export default function useAsyncMemo<T>(
       process(funcToMemoize)
         .then((whatToStore) => setMemo(() => whatToStore))
         .catch(() => setMemo(null)),
+    setMemo,
   ];
 }

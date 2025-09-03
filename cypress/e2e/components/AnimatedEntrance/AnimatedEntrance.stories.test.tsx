@@ -1,4 +1,4 @@
-import React, { Fragment, ReactElement } from "react";
+import React, { createRef, ElementRef, Fragment, ReactElement, ReactNode, useInsertionEffect, useLayoutEffect } from "react";
 import { mount } from "cypress/react";
 
 import { InitialImplementation as Component } from "../../../../src/components/AnimatedEntrance/AnimatedEntrance.stories";
@@ -7,6 +7,7 @@ import AnimatedEntrance, {
   AnimatedEntranceItem,
   EntranceType,
 } from "../../../../src/components/AnimatedEntrance/AnimatedEntrance";
+import { UncontrolledTransition } from "index";
 
 function renderScreen(props: React.ComponentProps<typeof Component>) {
   return mount(<Component {...props} />);
@@ -64,17 +65,26 @@ it.only("Should animate an item enter and exiting", () => {
     <h1 key="3">Third element</h1>,
     <h1 key="4">Fourth element</h1>,
   ];
-  cy.mountChain((children: ReactElement[]) => (
-    <AnimatedEntrance>{children}</AnimatedEntrance>
-  ))
-    .remount(A)
-    .wait(1200)
+  const C = [
+    <h1 key="1">First element</h1>,
+    <h1 key="2">Second element</h1>,
+    <h1 key="3">Third element</h1>,
+    <h1 key="5">Fifth element</h1>,
+  ];
+  function Wrapper() {
+    useLayoutEffect(() => console.log("\n\n>>>>>>>>>>>\n\n"))
+    return null;
+  }
+  cy.mountChain((children: ReactElement[]) => {
+    return (<>
+      <Wrapper />
+      <AnimatedEntrance>{children}</AnimatedEntrance>
+    </>
+    )
+  })
+    // .remount(A)
+    // .pause()
     .remount(B)
-    .wait(500)
-    .window()
-    .then((w) => {
-      w.console.clear();
-    })
     .pause()
     .remount(A)
     .pause()
@@ -139,3 +149,17 @@ it("Should transition between elements out of order", () => {
       <h1 key="5">Fifth element</h1>,
     ]);
 });
+
+it("U", () => {
+  console.log("akdlkanda")
+  const u = createRef<ElementRef<typeof UncontrolledTransition>>()
+  const rerender = cy.mountChain((child: ReactElement) => {
+    return <UncontrolledTransition ref={u}>
+      {child}
+    </UncontrolledTransition>
+  })
+
+  rerender.remount(<h1 key={"b"}>BEFORE</h1>).pause().then(() => {
+    u.current!.setOrientation("backward")
+  }).remount(<h1 key={"a"}>AFTER</h1>)
+})

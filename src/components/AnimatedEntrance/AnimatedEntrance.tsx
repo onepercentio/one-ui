@@ -57,6 +57,7 @@ export function AnimatedEntranceItem({
   const [screen, setScreen] = useState<ReactElement | string | null>(
     noEntranceAnimation ? children : <Fragment key={"null"} />
   );
+  console.log(screen, children.key)
   useLayoutEffect(() => {
     if (String(children.key).includes("-nullated") && uncontRef.current) {
       uncontRef.current!.setOrientation("backward");
@@ -72,16 +73,14 @@ export function AnimatedEntranceItem({
     const x = setTimeout(() => {
       const key = String(typeof screen === "string" ? screen : screen.key!);
       if (key === "null" || key.includes("-nullated")) {
-        uncontRef.current!.sectionRef.current!.style.maxHeight = `${
-          uncontRef.current!.sectionRef.current!.scrollHeight
-        }px`;
+        uncontRef.current!.sectionRef.current!.style.maxHeight = `${uncontRef.current!.sectionRef.current!.scrollHeight
+          }px`;
         setTimeout(() => {
           uncontRef.current!.sectionRef.current!.style.maxHeight = `0px`;
         }, 100);
       } else {
-        uncontRef.current!.sectionRef.current!.style.maxHeight = `${
-          uncontRef.current!.sectionRef.current!.scrollHeight
-        }px`;
+        uncontRef.current!.sectionRef.current!.style.maxHeight = `${uncontRef.current!.sectionRef.current!.scrollHeight
+          }px`;
         if (!noEntranceAnimation) {
           const restoreAutoHeight = ({
             target,
@@ -141,7 +140,9 @@ export function AnimatedEntranceItem({
       {screen === null ? (
         <Fragment key={"null"} />
       ) : typeof screen === "string" ? (
-        children
+        (children.key?.endsWith("-nullated") && screen.endsWith("-nullated"))
+          ? <Fragment key={children.key + "-null"} />
+          : children
       ) : (
         screen
       )}
@@ -177,7 +178,9 @@ export default function AnimatedEntrance({
           key={
             String(c.key).includes("-nullated") ? c.key : `${c.key}-nullated`
           }
-        />
+        >
+          {prevChildren.current.find(a => a.key === c.key)}
+        </Fragment>
       );
     });
 
@@ -198,6 +201,9 @@ export default function AnimatedEntrance({
   }, [children]);
   prevChildren.current = childrenDelayed;
 
+  console.log(childrenDelayed.map(a => a.key));
+
+
   return (
     <>
       {childrenDelayed.map((child) => (
@@ -205,10 +211,12 @@ export default function AnimatedEntrance({
           key={String(child.key!).replace("-nullated", "")}
           noEntranceAnimation={firstRef.current}
           entranceType={entranceType}
-          onRemoveChildren={(k) =>
+          onRemoveChildren={(k) => {
+
             (prevChildren.current = prevChildren.current.filter(
               (a) => a.key !== String(k) + "-nullated"
             ))
+          }
           }
         >
           {children.find((c) => c.key === child.key) || child}

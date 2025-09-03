@@ -111,16 +111,18 @@ function _UncontrolledTransition(
           className={className}
           step={predictedStep}
           onDiscardStep={(discardedKey, animatedAt) => {
-            if (onDiscardStep) onDiscardStep(discardedKey);
-            orientation.current = "forward";
-            setChildStack((prev) => {
-              return {
-                childStack: prev.childStack.filter((a) => {
-                  return a.key !== discardedKey || a.createdAt > animatedAt;
-                }),
-                offset: prev.offset === 1 ? 1 : prev.offset - 1,
-              };
-            });
+            setTimeout(() => {
+              if (onDiscardStep) onDiscardStep(discardedKey);
+              orientation.current = "forward";
+              setChildStack((prev) => {
+                return {
+                  childStack: prev.childStack.filter((a) => {
+                    return a.key !== discardedKey || a.createdAt > animatedAt;
+                  }),
+                  offset: prev.offset === 1 ? 1 : prev.offset - 1,
+                };
+              });
+            }, 0)
           }}
           lockTransitionWidth={lockTransitionWidth}
           lockTransitionHeight={lockTransitionHeight}

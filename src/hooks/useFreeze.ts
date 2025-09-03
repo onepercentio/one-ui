@@ -8,5 +8,5 @@ export default function useFreeze<T>(something: T) {
   const currChildOrPrev = useRef<T>(undefined);
   currChildOrPrev.current =
     something === undefined ? currChildOrPrev.current : something;
-  return currChildOrPrev.current || something;
+  return currChildOrPrev.current;
 }

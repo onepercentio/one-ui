@@ -7,11 +7,11 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { createPortal } from "react-dom";
 import MutableHamburgerButton from "../MutableHamburgerButton";
 import ScrollAndFocusLock from "../utilitary/ScrollAndFocusLock";
 import Styles from "./AdaptiveSidebar.module.scss";
 import useBreakpoint from "../../hooks/ui/useBreakpoint";
-import { createPortal } from "react-dom";
 import { useOneUIConfig } from "../../context/OneUIProvider";
 
 const DefaultVisibilityControl = ({ open }: { open: boolean }) => (

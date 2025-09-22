@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { act, render, waitFor } from "@testing-library/react";
 
-import Component from "./PasswordInput";
 import userEvent from "@testing-library/user-event";
+import Component from "./PasswordInput";
 import TextStyles from "../Text/Text.module.scss";
 
 const passwordInputRulesDescription = {

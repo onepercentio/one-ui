@@ -1,8 +1,8 @@
 import React, { ChangeEvent, useState } from "react";
 import { act, render } from "@testing-library/react";
 
-import Component from "./EmailInput";
 import userEvent from "@testing-library/user-event";
+import Component from "./EmailInput";
 
 function Wrapper(props: React.ComponentProps<typeof Component>) {
   const [s, ss] = useState("");

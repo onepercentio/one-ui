@@ -4,9 +4,10 @@ import clone from "lodash/cloneDeep";
 import { Get } from "type-fest";
 import React, { ComponentProps, ReactElement, ReactNode, useMemo } from "react";
 import { createContext, PropsWithChildren, useContext } from "react";
+import { ImageScales } from "@muritavo/webpack-microfrontend-scripts/bin/types/ImageScales";
+import { UploadTask } from "firebase/storage";
 import { FieldPath } from "../type-utils";
 import useAdaptiveImage from "../hooks/ui/useAdaptiveImage";
-import { ImageScales } from "@muritavo/webpack-microfrontend-scripts/bin/types/ImageScales";
 import Button from "../components/Button";
 import CheckBox from "../components/CheckBox";
 import Radio from "../components/Radio/Radio";
@@ -15,7 +16,6 @@ import {
   AnswerByField,
   GenericFormFieldProps,
 } from "../components/Form/v2/FormField/FormField.types";
-import { UploadTask } from "firebase/storage";
 import { BaseQuestion } from "../components/Form/v2/Form.types";
 
 type DeepPartial<T> = {

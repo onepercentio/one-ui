@@ -1,8 +1,8 @@
 import React from "react";
 import { findByText, render } from "@testing-library/react";
 
-import Component from "./InstantCounter";
 import { IntlProvider } from "react-intl";
+import Component from "./InstantCounter";
 
 function renderScreen(props: React.ComponentProps<typeof Component>) {
   return render(

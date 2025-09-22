@@ -1,7 +1,7 @@
 import React from "react";
+import { useState } from "react";
 import UncontrolledTransition from "../UncontrolledTransition";
 import Button from "../Button";
-import { useState } from "react";
 
 function colorGen() {
   return [255 * Math.random(), 255 * Math.random(), 255 * Math.random()];

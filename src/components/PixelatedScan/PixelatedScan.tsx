@@ -9,8 +9,8 @@ import React, {
   useRef,
   useState,
 } from "react";
-import Styles from "./PixelatedScan.module.scss";
 import chromajs from "chroma-js";
+import Styles from "./PixelatedScan.module.scss";
 
 const AnimDuration = Number(Styles.animationDuration);
 

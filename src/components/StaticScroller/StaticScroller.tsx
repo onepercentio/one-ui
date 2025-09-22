@@ -10,8 +10,8 @@ import React, {
   useMemo,
   useRef,
 } from "react";
-import Styles from "./StaticScroller.module.scss";
 import { debounce, throttle } from "lodash";
+import Styles from "./StaticScroller.module.scss";
 
 function _StaticScroller(
   {

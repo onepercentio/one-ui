@@ -8,8 +8,8 @@ import React, {
   useEffect,
   useRef,
 } from "react";
-import Styles from "./Parallax.module.scss";
 import { throttle } from "lodash";
+import Styles from "./Parallax.module.scss";
 import {
   flattenMatrix,
   generateMatrixFromOperations,

@@ -8,11 +8,11 @@ import React, {
   useRef,
   useState,
 } from "react";
+import throttle from "lodash/throttle";
 import { ChartViewProps } from "./Chart.types";
 import Styles from "./Chart.module.scss";
 import { ChartDataTestIds } from "./Chart.e2e";
 import AnchoredTooltip from "../AnchoredTooltip";
-import throttle from "lodash/throttle";
 
 const DEFAULT_STYLE = {
   lineColor: "#000",

@@ -1,6 +1,6 @@
 import React from "react";
-import StaticScroller from "./StaticScroller";
 import chroma from "chroma-js";
+import StaticScroller from "./StaticScroller";
 
 export default {
   component: StaticScroller,

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import Styles from "./CodeInput.module.scss";
 import { Uri } from "monaco-editor";
+import Styles from "./CodeInput.module.scss";
 import Loader from "../Loader";
 import useModule from "../../hooks/utility/useModule";
 

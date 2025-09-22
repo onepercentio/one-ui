@@ -1,4 +1,3 @@
-import FadeIn from "../FadeIn";
 import React, {
   ForwardedRef,
   HTMLAttributes,
@@ -11,6 +10,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import FadeIn from "../FadeIn";
 import Styles from "./Collapsable.module.scss";
 import {
   AnchoredTooltipAlignment,

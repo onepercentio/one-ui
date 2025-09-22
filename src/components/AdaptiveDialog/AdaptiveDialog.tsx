@@ -1,8 +1,8 @@
 import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
+import ReactDOM from "react-dom";
 import Styles from "./AdaptiveDialog.module.scss";
 import MutableHamburgerButton from "../MutableHamburgerButton";
 import ScrollAndFocusLock from "../utilitary/ScrollAndFocusLock";
-import ReactDOM from "react-dom";
 import { useOneUIConfig } from "../../context/OneUIProvider";
 
 /**

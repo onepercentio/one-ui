@@ -1,8 +1,8 @@
 import React, { createRef } from "react";
 import { render } from "@testing-library/react";
 
-import _InfinityScroll, { keys, shouldIncrementPage } from "./InfinityScroll";
 import { act } from "@testing-library/react";
+import _InfinityScroll, { keys, shouldIncrementPage } from "./InfinityScroll";
 
 HTMLElement.prototype.scrollTo = jest.fn();
 Object.defineProperty(HTMLElement.prototype, "offsetLeft", {

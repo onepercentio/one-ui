@@ -9,10 +9,10 @@ import React, {
   useRef,
   useState,
 } from "react";
+import ReactDOM from "react-dom";
 import { useOneUIConfig } from "../../context/OneUIProvider";
 import FadeIn from "../FadeIn";
 import Styles from "./AnchoredTooltip.module.scss";
-import ReactDOM from "react-dom";
 import useFreeze from "../../hooks/useFreeze";
 
 type Props = {

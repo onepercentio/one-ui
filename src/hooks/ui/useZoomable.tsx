@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import Styles from "./useZoomable.module.scss";
 import { createRoot } from "react-dom/client";
 import ReactDOM from "react-dom";
+import Styles from "./useZoomable.module.scss";
 import useHero from "../useHero";
 import { useMergeRefsFunc } from "../useMergeRefs";
 import ownEvent from "../../utils/ownEvent";

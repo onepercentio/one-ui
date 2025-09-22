@@ -1,6 +1,4 @@
 import throttle from "lodash/throttle";
-import UncontrolledTransition from "../UncontrolledTransition";
-import TransitionStyles from "../Transition/Transition.module.scss";
 import React, {
   createContext,
   DetailedHTMLProps,
@@ -16,6 +14,8 @@ import React, {
   useRef,
   useState,
 } from "react";
+import UncontrolledTransition from "../UncontrolledTransition";
+import TransitionStyles from "../Transition/Transition.module.scss";
 import useHero from "../../hooks/useHero";
 import AnimatedEntrance from "../AnimatedEntrance";
 import { TransitionAnimationTypes } from "../Transition";

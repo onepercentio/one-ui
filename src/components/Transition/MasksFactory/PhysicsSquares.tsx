@@ -1,5 +1,5 @@
-import buildGrid from "./utils";
 import Matter from "matter-js";
+import buildGrid from "./utils";
 /**
  * DO NOT DARE TO USE THIS IF YOU HAVE A MINIMAL RESPECT FOR PERFORMANCE
  * 

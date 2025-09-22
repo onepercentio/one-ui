@@ -129,15 +129,13 @@ export default function AdaptiveContainer<
                     prop,
                     contentSize[prop]
                   );
-                  console.log(prop, [targetSize[prop], prevSize[prop]]);
-
-                  // if (targetSize[prop] === prevSize[prop])
-                  //   resetProperty({ propertyName: prop });
-                  // else
-                  transitionContainer.addEventListener(
-                    "transitionend",
-                    resetProperty
-                  );
+                  if (targetSize[prop] === prevSize[prop])
+                    resetProperty({ propertyName: prop });
+                  else
+                    transitionContainer.addEventListener(
+                      "transitionend",
+                      resetProperty
+                    );
                 }
             } else if (direction === "h") {
               const contentWidth = screenThatWillEnter.clientWidth;

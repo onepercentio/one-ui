@@ -56,7 +56,6 @@ baseConfig.module!.rules!.push(
           // Allow customization from babelrc from the application folder
           babelrcRoots: ["./"],
           presets: [
-            ["@babel/preset-env", { targets: "defaults" }],
             [
               "@babel/preset-react",
               {

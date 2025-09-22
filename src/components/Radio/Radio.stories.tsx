@@ -7,7 +7,7 @@ import BaseText, { _Text } from "../Text/Text";
 import Radio from "./Radio";
 
 export default {
-  title: Radio.name,
+  title: "Radio",
   component: Radio,
 };
 

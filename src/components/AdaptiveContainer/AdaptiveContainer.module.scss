@@ -6,12 +6,12 @@
   transition-timing-function: linear;
   overflow: hidden;
   align-items: flex-start;
-  &.h {
+  &.h,&.both {
     > * {
       min-width: auto !important;
     }
   }
-  &.v {
+  &.v,&.both {
     > * {
       min-height: initial;
     }
@@ -42,6 +42,7 @@
 }
 
 .fadeInDelayed {
+  position: absolute;
   animation-name: fadeInDelayed;
   animation-duration: 500ms !important;
 }

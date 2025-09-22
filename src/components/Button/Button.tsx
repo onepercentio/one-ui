@@ -1,6 +1,5 @@
 import React, { ElementRef, ForwardedRef, forwardRef } from "react";
 import { useOneUIConfig } from "../../context/OneUIProvider";
-import Styles from "./Button.module.scss";
 
 type ButtonProps = React.PropsWithChildren<
   React.ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -22,13 +21,10 @@ export function _Button(
     "component.button.Component",
     "button" as any
   );
-  const nativeClass = variant in Styles ? Styles[variant] : "";
   return (
     <Component
       ref={ref}
-      className={`${Styles.button} ${nativeClass} ${className} ${
-        classNameType[variant] || ""
-      }`}
+      className={`${className} ${classNameType[variant] || ""}`}
       variant={variant}
       {...otherProps}
     >

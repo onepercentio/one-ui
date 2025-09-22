@@ -1,45 +1,20 @@
-const { ProvidePlugin } = require("webpack");
-const getCSSModuleLocalIdent = require("react-dev-utils/getCSSModuleLocalIdent");
-
-module.exports = {
-  stories: ["../src/**/*.stories.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
-  addons: [
-    "@storybook/preset-scss",
-    "@storybook/addon-links",
-    "@storybook/addon-essentials",
-  ],
-  framework: "@storybook/react",
-  core: {
-    builder: "webpack5",
+/** @type { import('@storybook/react-webpack5').StorybookConfig } */
+const config = {
+  stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
+  addons: ["@storybook/preset-create-react-app", "@storybook/addon-docs"],
+  framework: {
+    name: "@storybook/react-webpack5",
+    options: {},
   },
-  typescript: {
-    reactDocgen: "react-docgen-typescript-plugin",
-  },
-  webpackFinal: (config) => {
-    config.module.rules[3].use[1].options = {
-      modules: {
-        getLocalIdent: getCSSModuleLocalIdent,
-      },
+  webpackFinal(c) {
+    c.resolve.fallback = {
+      stream: "stream-browserify",
+      crypto: "crypto-browserify",
+      http: "stream-http",
+      https: "https-browserify",
+      os: "os-browserify/browser"
     };
-    config.resolve.fallback = {
-      fs: false,
-      zlib: false,
-      stream: require.resolve("stream-browserify"),
-      buffer: require.resolve("buffer/index"),
-      crypto: require.resolve("crypto-browserify"),
-      http: require.resolve("stream-http"),
-      url: require.resolve("url/url"),
-      https: require.resolve("https-browserify"),
-      assert: require.resolve("assert/build/assert"),
-      os: require.resolve("os-browserify/browser"),
-    };
-    config.plugins.push(
-      new ProvidePlugin({
-        Buffer: ["buffer", "Buffer"],
-        process: "process/browser",
-      })
-    );
-
-    return config;
+    return c;
   },
 };
+export default config;

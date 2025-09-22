@@ -7,7 +7,7 @@ import BaseText, { _Text } from "../Text/Text";
 import CheckBox from "./CheckBox";
 
 export default {
-  title: CheckBox.name,
+  title: "CheckBox",
   component: CheckBox,
 };
 

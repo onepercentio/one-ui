@@ -4,6 +4,7 @@ import React, {
   FunctionComponent,
   HTMLAttributes,
   HTMLProps,
+  JSX,
   ReactElement,
   useEffect,
   useMemo,
@@ -34,7 +35,7 @@ export default function AdaptiveContainer<
    *     "h" // When the content will change in width
    *     "v" // When the content will change in height
    */
-  direction?: "h" | "v";
+  direction?: "h" | "v" | "both";
   className?: string;
   contentClassName?: string;
   /**
@@ -43,15 +44,15 @@ export default function AdaptiveContainer<
   strict?: boolean;
 } & ComponentProps<E>) {
   const animatedProperty = useMemo(() => {
+    if (!strict && direction !== "v")
+      throw new Error(
+        `Strict false only works with direction "v" at the moment`
+      );
     switch (direction) {
+      case "both":
+        return ["width", "height"] as const
       case "h":
-        return strict
-          ? ("width" as const)
-          : (() => {
-              throw new Error(
-                `Strict false only works with direction "v" at the moment`
-              );
-            })();
+        return ("width" as const);
       case "v":
         return strict ? ("height" as const) : ("minHeight" as const);
     }
@@ -63,12 +64,15 @@ export default function AdaptiveContainer<
   useEffect(() => {
     const transitionContainer = uncontrolledRef.current!.sectionRef.current;
     if (transitionContainer)
-      if (direction === "h") {
+      if (direction === "both") {
         transitionContainer.style.width = `${transitionContainer.clientWidth}px`;
-        transitionContainer.style[animatedProperty] = ``;
+        transitionContainer.style.height = `${transitionContainer.clientHeight}px`;
+      } else if (direction === "h") {
+        transitionContainer.style.width = `${transitionContainer.clientWidth}px`;
+        transitionContainer.style[animatedProperty as "width"] = ``;
       } else {
         transitionContainer.style[
-          animatedProperty
+          animatedProperty as "height"
         ] = `${transitionContainer.clientHeight}px`;
         transitionContainer.style.width = ``;
       }
@@ -78,6 +82,7 @@ export default function AdaptiveContainer<
         if (transitionContainer) {
           const screenThatWillEnter =
             transitionContainer.lastChild as HTMLDivElement;
+
           if (screenThatWillEnter) {
             function resetFactory(
               param: "minHeight" | "height" | "width",
@@ -99,7 +104,42 @@ export default function AdaptiveContainer<
               };
               return resetPropertyInstance;
             }
-            if (direction === "h") {
+            if (direction === "both") {
+              const contentSize = {
+                width: screenThatWillEnter.clientWidth,
+                height: screenThatWillEnter.scrollHeight
+              };
+
+              const targetSize = {
+                width: `${contentSize.width}px`,
+                height: `${contentSize.height}px`
+              };
+
+              const prevSize = {
+                width: transitionContainer.style.width,
+                height: transitionContainer.style.height
+              };
+
+              transitionContainer.style.width = targetSize.width;
+              transitionContainer.style.height = targetSize.height;
+
+              if (Array.isArray(animatedProperty))
+                for (let prop of animatedProperty as ('width' | 'height')[]) {
+                  const resetProperty = resetFactory(
+                    prop,
+                    contentSize[prop]
+                  );
+                  console.log(prop, [targetSize[prop], prevSize[prop]]);
+
+                  // if (targetSize[prop] === prevSize[prop])
+                  //   resetProperty({ propertyName: prop });
+                  // else
+                  transitionContainer.addEventListener(
+                    "transitionend",
+                    resetProperty
+                  );
+                }
+            } else if (direction === "h") {
               const contentWidth = screenThatWillEnter.clientWidth;
               const targetWidth = `${contentWidth}px`;
               const prevWidth = transitionContainer.style.width;
@@ -108,16 +148,17 @@ export default function AdaptiveContainer<
               if (targetWidth === prevWidth) func({ propertyName: "width" });
               else transitionContainer.addEventListener("transitionend", func);
             } else {
+              const _animatedProperty = animatedProperty as "width"
               const contentHeight = screenThatWillEnter.scrollHeight;
               const targetHeight = `${contentHeight}px`;
-              const prevHeight = transitionContainer.style[animatedProperty];
-              transitionContainer.style[animatedProperty] = targetHeight;
+              const prevHeight = transitionContainer.style[_animatedProperty];
+              transitionContainer.style[_animatedProperty] = targetHeight;
               const resetProperty = resetFactory(
-                animatedProperty,
+                _animatedProperty,
                 contentHeight
               );
               if (targetHeight === prevHeight)
-                resetProperty({ propertyName: animatedProperty });
+                resetProperty({ propertyName: _animatedProperty });
               else
                 transitionContainer.addEventListener(
                   "transitionend",

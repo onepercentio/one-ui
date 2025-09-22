@@ -17,6 +17,7 @@ export default function AdaptiveButton({
     <AdaptiveContainer
       containerElement={Button}
       className={`${Styles.resetButton} ${className}`}
+      direction="both"
       {...buttonProps}
     >
       {children}

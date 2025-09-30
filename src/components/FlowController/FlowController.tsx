@@ -1,4 +1,4 @@
-import React, { MouseEvent, useEffect, useMemo, useRef, useState } from "react";
+import React, { JSX, MouseEvent, useEffect, useMemo, useRef, useState } from "react";
 import Button from "../Button";
 import HeaderCloseBtn from "../HeaderCloseBtn";
 import Transition from "../Transition";

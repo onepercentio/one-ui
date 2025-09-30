@@ -1,6 +1,7 @@
 import React, {
   ForwardedRef,
   forwardRef,
+  JSX,
   ReactNode,
   RefObject,
   useEffect,
@@ -13,7 +14,6 @@ import ReactDOM from "react-dom";
 import { useOneUIConfig } from "../../context/OneUIProvider";
 import FadeIn from "../FadeIn";
 import Styles from "./AnchoredTooltip.module.scss";
-import useFreeze from "../../hooks/useFreeze";
 
 type Props = {
   children: JSX.Element;

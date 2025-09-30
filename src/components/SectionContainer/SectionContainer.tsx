@@ -2,6 +2,7 @@ import React, {
   createRef,
   ForwardedRef,
   forwardRef,
+  JSX,
   PropsWithChildren,
   RefObject,
 } from "react";

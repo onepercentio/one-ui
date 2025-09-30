@@ -1,3 +1,4 @@
+import { JSX } from "react";
 import get from "lodash/get";
 import merge from "lodash/merge";
 import clone from "lodash/cloneDeep";
@@ -20,8 +21,8 @@ import { BaseQuestion } from "../components/Form/v2/Form.types";
 
 type DeepPartial<T> = {
   [P in keyof T]?: NonNullable<T[P]> extends Function
-    ? T[P]
-    : DeepPartial<T[P]>;
+  ? T[P]
+  : DeepPartial<T[P]>;
 };
 
 export type OneUIContextSpecs = {
@@ -263,10 +264,10 @@ import OneUIProvider from "@onepercentio/one-ui/dist/context/OneUIProvider";
 
   ...
 ${`<OneUIProvider config={${JSON.stringify(
-  pathToJson(oneuiConfigPath, undefined, "SomeView"),
-  null,
-  4
-)}}>
+      pathToJson(oneuiConfigPath, undefined, "SomeView"),
+      null,
+      4
+    )}}>
 ...
 </OneUIProvider>`.replace(/[ ]/g, "-")}`);
   }

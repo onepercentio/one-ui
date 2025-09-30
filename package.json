@@ -1,6 +1,6 @@
 {
   "name": "@onepercentio/one-ui",
-  "version": "0.28.7",
+  "version": "0.28.8",
   "description": "A set of reusable components created through the development of Onepercent projects",
   "repository": "git@github.com:onepercentio/one-ui.git",
   "author": "Murilo Oliveira de Araujo <murilo.araujo@onepercent.io>",
@@ -87,7 +87,9 @@
     "type-fest": "^2.13.1",
     "typescript": "^5",
     "url": "^0.11.0",
-    "use-wallet": "0.13.5"
+    "use-wallet": "0.13.5",
+    "sharp": "^0.30.3",
+    "webpack": "^5"
   },
   "dependencies": {
     "@types/lodash": "^4.14.177",
@@ -96,9 +98,7 @@
     "eslint-plugin-import-helpers": "^1.2.1",
     "identity-obj-proxy": "^3.0.0",
     "kill-port": "^2.0.0",
-    "lodash": "^4.17.21",
-    "sharp": "^0.30.3",
-    "webpack": "^5"
+    "lodash": "^4.17.21"
   },
   "resolutions": {
     "**/html-webpack-plugin": "^5",

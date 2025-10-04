@@ -26,7 +26,7 @@ export function combineTestIds(...t: ReturnType<typeof testIDFactory>[]) {
  * @returns A function to set the IDs that this created instance will provide
  */
 export function testIDFactory(moduleOrId: Pick<Module, "id"> | string) {
-  const moduleId = typeof module === "string" ? module : module.id;
+  const moduleId = typeof moduleOrId === "string" ? moduleOrId : moduleOrId.id;
   return <const IDS extends PossibleT>(...idsArr: IDS[]) =>
     idsArr.reduce(
       (acc, ids) => ({

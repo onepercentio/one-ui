@@ -16,3 +16,4 @@ ai/
 build/
 templates/
 *storybook.log
+dist-ts/

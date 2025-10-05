@@ -6,9 +6,12 @@ function toSrcPath(str: string) {
   return modName.replace("appclientecmascript", "");
 }
 
+/** Try to make the string follow the snake case pattern (e.g. "SOME_ELEMENT") */
+type IDENTIFIER = string
+
 type PossibleT = (
-  | string
-  | readonly [id: string, func: (n: number) => `${string}-${number}`]
+  | IDENTIFIER 
+  | readonly [id: IDENTIFIER, func: (n: number) => `${string}-${number}`]
 )[];
 
 type T<IDS extends PossibleT> = {
@@ -27,8 +30,8 @@ export function combineTestIds(...t: ReturnType<typeof testIDFactory>[]) {
  */
 export function testIDFactory(moduleOrId: Pick<Module, "id"> | string) {
   const moduleId = typeof moduleOrId === "string" ? moduleOrId : moduleOrId.id;
-  return <const IDS extends PossibleT>(...idsArr: IDS[]) =>
-    idsArr.reduce(
+  return <const IDS extends PossibleT>(idsArr: IDS) =>
+    [idsArr].reduce(
       (acc, ids) => ({
         ...acc,
         ...ids.reduce(

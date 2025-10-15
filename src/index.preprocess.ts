@@ -9,7 +9,8 @@ import {
 import { join } from "path";
 
 function preProcessIndex(indexPath: string) {
-  const [_index, componentName] = indexPath.split("/").reverse();
+  let [_index, componentName] = indexPath.split("/").reverse();
+  if (indexPath.includes("/v2/index.ts")) componentName = "Form";
   writeFileSync(
     indexPath,
     `export { default } from "./${componentName}";

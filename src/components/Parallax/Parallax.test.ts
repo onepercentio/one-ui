@@ -1,7 +1,7 @@
 import {
   calculateDistanceRelativeToBounds,
   givenTheRelativePositionHowMuchToRotate,
-} from "./Parallax";
+} from "../../hooks/ui/useTilt";
 
 const ELEMENT_POSITION_SIZE = [130, 500];
 
@@ -18,7 +18,8 @@ it.each([
       calculateDistanceRelativeToBounds(
         mousePosition,
         elementPosition,
-        elementSize
+        elementSize,
+        true
       )
     ).toEqual(expectedResult);
   }

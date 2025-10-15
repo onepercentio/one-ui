@@ -6,10 +6,11 @@
   "author": "Murilo Oliveira de Araujo <murilo.araujo@onepercent.io>",
   "license": "MIT",
   "types": "./dist/index.d.ts",
-  "main": "./dist/index.ts",
+  "main": "./dist/index.js",
   "exports": {
     "./*": "./dist-ts/*.js",
-    "./components/*": "./dist-ts/components/*/index.js"
+    "./components/*": "./dist-ts/components/*/index.js",
+    ".": "./dist-ts/index.js"
   },
   "devDependencies": {
     "@babel/cli": "^7.22.9",
@@ -121,7 +122,9 @@
     "build:ts:scss": "babel src --ignore \"**/*.tsx,**/*.ts\" --out-dir dist-ts --extensions \".ts,.tsx\" --copy-files --no-copy-ignored --config-file=./.prod.babelrc",
     "postbuild": "tsc",
     "copy-css": "cpy --cwd=\"src\" \"**/*.{scss,svg}\" \"../dist\" --parents",
-    "dev:ts": "tsc --watch",
+    "dev:ts": "yarn dev:ts-dist; yarn dev:ts-types;",
+    "dev:ts-dist": "tsc --project tsconfig.prod.json --watch",
+    "dev:ts-types": "tsc --watch",
     "dev:vite": "tsc -p ./tsconfig.vite.json --watch",
     "dev:ai": "tsc --watch --project ./tsconfig-ai.json",
     "dev": "babel src --ignore \"**/*.e2e.ts,**/*.test.ts,**/*.test.tsx,**/*.stories.tsx\" --out-dir dist --extensions \".ts,.tsx\" --copy-files --no-copy-ignored --config-file=./.prod.babelrc -w",

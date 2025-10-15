@@ -30,3 +30,4 @@ scripts/*
 storybook-static/
 .firebase/
 cypress/**/*
+.preprocess.*

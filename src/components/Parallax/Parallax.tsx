@@ -15,35 +15,12 @@ import {
   generateMatrixFromOperations,
   invertMatrix,
 } from "./math/helpers";
+import { calculateDistanceRelativeToBounds, givenTheRelativePositionHowMuchToRotate } from "../../hooks/ui/useTilt";
 
 const MAXIMUM_PARALLAX = {
   x: 20,
   y: 20,
 };
-
-export function calculateDistanceRelativeToBounds(
-  mousePosition: number,
-  elementInitialPosition: number,
-  elementSizeDimension: number
-) {
-  const normalizeInitialPosition = mousePosition - elementInitialPosition;
-  const doNotAllowGoingBeyondLowerLimit = Math.max(normalizeInitialPosition, 0);
-  const doNotAllowHoingBeyondHigherLimit = Math.min(
-    doNotAllowGoingBeyondLowerLimit,
-    elementSizeDimension
-  );
-  const threeRule =
-    (doNotAllowHoingBeyondHigherLimit * 100) / elementSizeDimension;
-  const result = Math.round(threeRule) / 100;
-  return result;
-}
-
-export function givenTheRelativePositionHowMuchToRotate(
-  relativePosition: number,
-  maxRotation: number
-) {
-  return relativePosition * maxRotation - maxRotation / 2;
-}
 
 type Props = PropsWithChildren<{
   className?: string;
@@ -102,12 +79,14 @@ function _Parallax(
         const distanceOffRight = calculateDistanceRelativeToBounds(
           relativeToX,
           x0,
-          xW
+          xW,
+          true
         );
         const distanceOffBottom = calculateDistanceRelativeToBounds(
           relativeToY,
           y0,
-          yH
+          yH,
+          true
         );
         const howMuchToRotateY =
           givenTheRelativePositionHowMuchToRotate(
@@ -128,11 +107,9 @@ function _Parallax(
           Math.abs(Math.abs(distanceOffBottom - 0.5) / 0.5)
         );
 
-        el.style.transform = `${
-          initialPositionRef.current
-        } rotateY(${howMuchToRotateY}deg) rotateX(${-howMuchToRotateX}deg) translateZ(${
-          multiplierRef.current === 1 ? 0 : -30
-        }px)`;
+        el.style.transform = `${initialPositionRef.current
+          } rotateY(${howMuchToRotateY}deg) rotateX(${-howMuchToRotateX}deg) translateZ(${multiplierRef.current === 1 ? 0 : -30
+          }px)`;
 
         if (reflectionRef.current) {
           reflectionRef.current.style.left = `${(1 - distanceOffRight) * 100}%`;

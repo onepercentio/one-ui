@@ -1,1 +1,2 @@
-export { default } from './PingPongText';
+export { default } from "./PingPongText";
+export * from "./PingPongText";

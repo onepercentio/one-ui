@@ -1,1 +1,2 @@
-export { default } from './BigFactory';
+export { default } from "./BigFactory";
+export * from "./BigFactory";

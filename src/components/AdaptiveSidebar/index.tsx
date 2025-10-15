@@ -1,1 +1,2 @@
-export { default } from './AdaptiveSidebar';
+export { default } from "./AdaptiveSidebar";
+export * from "./AdaptiveSidebar";

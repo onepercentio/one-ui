@@ -1,1 +1,2 @@
-export { default } from './Collapsable';
+export { default } from "./Collapsable";
+export * from "./Collapsable";

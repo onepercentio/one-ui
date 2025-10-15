@@ -1,4 +1,5 @@
 import React, {
+  ComponentRef,
   ElementRef,
   PropsWithChildren,
   ReactNode,
@@ -39,7 +40,7 @@ function FloatingTooltip({
   >;
 }) {
   const [ope, setOpen] = useState(() => (hoverOnly ? false : true));
-  const ref = useRef<ElementRef<typeof AnchoredTooltip>>(null);
+  const ref = useRef<ComponentRef<typeof AnchoredTooltip>>(null);
   const circleRef = useRef<SVGCircleElement>(null);
   useEffect(() => {
     const animateEl = circleRef.current!.children.item(0) as SVGAnimateElement;

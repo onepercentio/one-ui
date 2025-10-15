@@ -1,1 +1,2 @@
-export { default } from './ScrollAndFocusLock';
+export { default } from "./ScrollAndFocusLock";
+export * from "./ScrollAndFocusLock";

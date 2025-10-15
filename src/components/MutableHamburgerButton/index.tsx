@@ -1,1 +1,2 @@
-export { default } from './MutableHamburgerButton';
+export { default } from "./MutableHamburgerButton";
+export * from "./MutableHamburgerButton";

@@ -1,1 +1,2 @@
-export { default, validateEmail } from './EmailInput';
+export { default } from "./EmailInput";
+export * from "./EmailInput";

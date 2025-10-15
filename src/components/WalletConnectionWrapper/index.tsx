@@ -1,1 +1,2 @@
-export { default, BaseWalletConnectionWrapper } from './WalletConnectionWrapper';
+export { default } from "./WalletConnectionWrapper";
+export * from "./WalletConnectionWrapper";

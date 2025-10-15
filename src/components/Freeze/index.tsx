@@ -1,1 +1,2 @@
-export { default } from './Freeze';
+export { default } from "./Freeze";
+export * from "./Freeze";

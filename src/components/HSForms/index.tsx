@@ -1,1 +1,2 @@
-export { default } from './HSForms';
+export { default } from "./HSForms";
+export * from "./HSForms";

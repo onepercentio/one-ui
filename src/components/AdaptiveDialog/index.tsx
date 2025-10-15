@@ -1,1 +1,2 @@
-export { default } from './AdaptiveDialog';
+export { default } from "./AdaptiveDialog";
+export * from "./AdaptiveDialog";

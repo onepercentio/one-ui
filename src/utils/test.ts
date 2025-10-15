@@ -1,5 +1,6 @@
 type Func = (...args: any[]) => string
 
+/** @deprecated Preffer ./e2e.ts's test ids generator  */
 export const preffixTestIds =
   (preffix: string) =>
   <

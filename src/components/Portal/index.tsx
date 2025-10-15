@@ -1,1 +1,2 @@
-export { default, PortalReceiver } from './Portal';
+export { default } from "./Portal";
+export * from "./Portal";

@@ -1,1 +1,2 @@
-export { default, ProgressIndicator } from './Compact';
+export { default } from "./Compact";
+export * from "./Compact";

@@ -1,1 +1,2 @@
-export { default } from './Parallax';
+export { default } from "./Parallax";
+export * from "./Parallax";

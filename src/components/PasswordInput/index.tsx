@@ -1,1 +1,2 @@
-export { default } from './PasswordInput';
+export { default } from "./PasswordInput";
+export * from "./PasswordInput";

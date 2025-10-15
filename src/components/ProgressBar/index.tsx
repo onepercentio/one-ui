@@ -1,1 +1,2 @@
-export { default, BalancedProgressBar } from "./ProgressBar";
+export { default } from "./ProgressBar";
+export * from "./ProgressBar";

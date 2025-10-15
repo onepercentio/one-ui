@@ -1,1 +1,2 @@
-export { default, scrollToId } from './LinkToId';
+export { default } from "./LinkToId";
+export * from "./LinkToId";

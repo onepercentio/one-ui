@@ -1,1 +1,2 @@
-export { default, TransitionAnimationTypes } from "./Transition";
+export { default } from "./Transition";
+export * from "./Transition";

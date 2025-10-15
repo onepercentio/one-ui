@@ -1,1 +1,2 @@
-export { default } from './LoaderDotsIndicator';
+export { default } from "./LoaderDotsIndicator";
+export * from "./LoaderDotsIndicator";

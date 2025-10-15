@@ -1,1 +1,2 @@
-export { default } from './Chart.logic';
+export { default } from "./Chart";
+export * from "./Chart";

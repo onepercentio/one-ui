@@ -1,1 +1,2 @@
-export { default } from './PixelatedScan';
+export { default } from "./PixelatedScan";
+export * from "./PixelatedScan";

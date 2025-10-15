@@ -1,1 +1,2 @@
-export { default } from './AnchoredTooltip';
+export { default } from "./AnchoredTooltip";
+export * from "./AnchoredTooltip";

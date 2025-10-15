@@ -1,1 +1,2 @@
-export { default } from './InfinityScroll';
+export { default } from "./InfinityScroll";
+export * from "./InfinityScroll";

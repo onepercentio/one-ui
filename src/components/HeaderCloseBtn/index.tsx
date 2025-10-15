@@ -1,1 +1,2 @@
-export { default } from './HeaderCloseBtn';
+export { default } from "./HeaderCloseBtn";
+export * from "./HeaderCloseBtn";

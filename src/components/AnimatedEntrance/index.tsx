@@ -1,5 +1,2 @@
-export {
-  default,
-  AnimatedEntranceItem,
-  EntranceType,
-} from "./AnimatedEntrance";
+export { default } from "./AnimatedEntrance";
+export * from "./AnimatedEntrance";

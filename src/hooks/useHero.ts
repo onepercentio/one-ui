@@ -274,12 +274,14 @@ export default function useHero(
         otherElement.removeAttribute(dataProperty);
 
       function willTheHeroMove(origin: DOMRect, target: DOMRect) {
-        return !(
-          origin.top === target.top &&
-          origin.left === target.left &&
-          origin.width === target.width &&
-          origin.height === target.height
+        const willItMove = !(
+          Math.trunc(origin.top) === Math.trunc(target.top) &&
+          Math.trunc(origin.left) === Math.trunc(target.left) &&
+          Math.trunc(origin.width) === Math.trunc(target.width) &&
+          Math.trunc(origin.height) === Math.trunc(target.height)
         );
+        
+        return willItMove;
       }
 
       /**

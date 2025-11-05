@@ -21,7 +21,7 @@ export default function Switch({
   disabled?: boolean;
 } & Omit<
   DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>,
-  "ref"
+  "ref" | "onToggle"
 >) {
   return (
     <>

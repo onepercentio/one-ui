@@ -14,6 +14,11 @@ import Styles from "./Portal.module.scss";
 
 /**
  * A react portal implementation with current page fallback
+ * 
+ * Usage
+ * <PortalReceiver name="receive"/>
+ * 
+ * <Portal to="receive">CHILD</Portal>
  **/
 export default function Portal({
   to,

@@ -31,3 +31,5 @@ storybook-static/
 .firebase/
 cypress/**/*
 .preprocess.*
+
+src/**/*

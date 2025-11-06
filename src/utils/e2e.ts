@@ -7,11 +7,11 @@ function toSrcPath(str: string) {
 }
 
 /** Try to make the string follow the snake case pattern (e.g. "SOME_ELEMENT") */
-type IDENTIFIER = string
+type IDENTIFIER = string;
 
 type PossibleT = (
-  | IDENTIFIER 
-  | readonly [id: IDENTIFIER, func: (n: number) => `${string}-${number}`]
+  | IDENTIFIER
+  | readonly [id: IDENTIFIER, func: <X>(n: X) => string]
 )[];
 
 type T<IDS extends PossibleT> = {

@@ -15,7 +15,6 @@ export * from "./utils/formatters";
 export * from "./utils/flatten";
 export * from "./models/DebugLogger";
 export * from "./models/Orbs";
-export * from "./models/GenericContract";
 export * from "./components/Tabs/index";
 export {default as Tabs} from "./components/Tabs/index"
 export * from "./components/FlowController/index";
@@ -96,8 +95,6 @@ export * from "./components/MainGrid/index";
 export {default as MainGrid} from "./components/MainGrid/index"
 export * from "./components/Button/index";
 export {default as Button} from "./components/Button/index"
-export * from "./components/HSForms/index";
-export {default as HSForms} from "./components/HSForms/index"
 export * from "./components/Table/index";
 export {default as Table} from "./components/Table/index"
 export * from "./components/Loader/index";
@@ -134,8 +131,6 @@ export * from "./components/UncontrolledTransition/index";
 export {default as UncontrolledTransition} from "./components/UncontrolledTransition/index"
 export * from "./components/PaginationIndicator/index";
 export {default as PaginationIndicator} from "./components/PaginationIndicator/index"
-export * from "./components/WalletConnectionWrapper/index";
-export {default as WalletConnectionWrapper} from "./components/WalletConnectionWrapper/index"
 export * from "./components/CurrencyInput/index";
 export {default as CurrencyInput} from "./components/CurrencyInput/index"
 export * from "./components/FileInput/index";

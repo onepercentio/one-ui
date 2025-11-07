@@ -49,6 +49,9 @@ function parseDir(path: string) {
       folder.endsWith(".svg") ||
       folder.endsWith(".md") ||
       folder.includes(".stories.") ||
+      folder.includes("WalletConnectionWrapper") ||
+      folder.includes("HSForms") ||
+      folder.includes("GenericContract") ||
       folder.includes(".test.") ||
       folder.includes("ObjectWatchShim") ||
       folder.includes("MasksFactory")

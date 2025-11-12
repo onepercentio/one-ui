@@ -84,6 +84,7 @@ export function useTiltUpdates(
         beta,
         gamma,
       }) => {
+        if ((beta ?? 0) + (gamma ?? 0) === 0) return;
         beta = beta! * 0.5;
         gamma = gamma! * 0.5;
         if (!_inverseMatrix) {

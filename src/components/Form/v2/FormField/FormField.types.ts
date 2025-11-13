@@ -105,7 +105,7 @@ export type FormField = {
         optional?: true;
       }[];
     }
-  | UnresolvableOr<OnepercentUtility.UIElements.FormExtension["fields"], {}>
+  | UnresolvableOr<OnepercentUtility.UIElements.FormExtension["fields"], BasicFormFields>
 >;
 
 export type FormFieldTypes = FormField['type'] | 'accept'

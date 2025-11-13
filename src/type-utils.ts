@@ -45,5 +45,5 @@ export declare type FieldPathValues<TFieldValues extends FieldValues, TPath exte
  * Returns the type U when this type is resolved
  * Or the fallback type F when type is no resolved
  */
-export declare type UnresolvableOr<U, F> = keyof U extends U ? F : U
+export declare type UnresolvableOr<U, F> = keyof any extends keyof U ? F : U
 export {};

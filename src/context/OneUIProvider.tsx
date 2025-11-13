@@ -16,8 +16,8 @@ import { FileInputViewProps } from "../components/FileInput/View/View.types";
 import {
   AnswerByField,
   GenericFormFieldProps,
-} from "../components/Form/v2/FormField/FormField.types";
-import { BaseQuestion } from "../components/Form/v2/Form.types";
+} from "../components/Form/FormField/FormField.types";
+import { BaseQuestion } from "../components/Form/Form.types";
 
 type DeepPartial<T> = {
   [P in keyof T]?: NonNullable<T[P]> extends Function

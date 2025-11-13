@@ -1,10 +1,10 @@
 import React, { ReactNode } from "react";
 import InputMask from "react-input-mask";
 import Styles from "./DateField.module.scss";
-import Text from "../../../../../Text";
-import { useOneUIConfig } from "../../../../../../context/OneUIProvider";
+import Text from "../../../../Text";
+import { useOneUIConfig } from "../../../../../context/OneUIProvider";
 import { AnswerByField, GenericFormFieldProps } from "../../FormField.types";
-import Input from "../../../../../Input";
+import Input from "../../../../Input";
 import { isValidated } from "../../../Form.hook";
 
 /**

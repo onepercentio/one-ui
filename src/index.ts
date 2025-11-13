@@ -21,14 +21,12 @@ export * from "./components/FlowController/index";
 export {default as FlowController} from "./components/FlowController/index"
 export * from "./components/Transition/index";
 export {default as Transition} from "./components/Transition/index"
-export * from "./components/Form/v2/index";
-export {default as FormV2} from "./components/Form/v2/index"
-export * from "./components/Form/v2/FormField/index";
-export {default as FormField} from "./components/Form/v2/FormField/index"
-export * from "./components/Form/v2/FormField/Extensions/PhoneField/index";
-export {default as PhoneField} from "./components/Form/v2/FormField/Extensions/PhoneField/index"
-export * from "./components/Form/v2/FormField/Extensions/DateField/index";
-export {default as DateField} from "./components/Form/v2/FormField/Extensions/DateField/index"
+export * from "./components/Form/FormField/index";
+export {default as FormField} from "./components/Form/FormField/index"
+export * from "./components/Form/FormField/Extensions/PhoneField/index";
+export {default as PhoneField} from "./components/Form/FormField/Extensions/PhoneField/index"
+export * from "./components/Form/FormField/Extensions/DateField/index";
+export {default as DateField} from "./components/Form/FormField/Extensions/DateField/index"
 export * from "./components/Form/index";
 export {default as Form} from "./components/Form/index"
 export * from "./components/InstantCounter/index";
@@ -170,8 +168,6 @@ export * from "./hooks/ui/useCustomScrollbar";
 export {default as useCustomScrollbar} from "./hooks/ui/useCustomScrollbar";
 export * from "./hooks/useAsyncControl";
 export {default as useAsyncControl} from "./hooks/useAsyncControl";
-export * from "./hooks/useForm";
-export {default as useForm} from "./hooks/useForm";
 export * from "./hooks/useMergeRefs";
 export {default as useMergeRefs} from "./hooks/useMergeRefs";
 export * from "./hooks/usePooledOperation";

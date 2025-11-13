@@ -21,7 +21,6 @@ export type InputProps = {
   placeholder?: string;
   disclaimer?: string | ReactElement;
   multiline?: number;
-  border?: boolean;
   icon?: {
     onClick?: () => void;
   } & DetailedHTMLProps<React.ImgHTMLAttributes<HTMLImageElement>, any>;
@@ -45,7 +44,6 @@ function _Input(
     disclaimer,
     multiline,
     decoration = null,
-    border: propBorder,
     containerProps,
     className: localClassName,
     ...otherProps
@@ -53,7 +51,6 @@ function _Input(
   ref: ForwardedRef<any>
 ) {
   const className = useOneUIConfig("component.input.className");
-  const globalBorder = useOneUIConfig("component.input.border");
   const [focused, setFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
   useImperativeHandle(ref, () => inputRef.current, []);
@@ -70,16 +67,12 @@ function _Input(
     }
   }, [autoFocus]);
   const Component = multiline ? "textarea" : "input";
-  const withBorder = useMemo(() => {
-    if (propBorder !== undefined) return propBorder;
-    return globalBorder;
-  }, [propBorder, globalBorder]);
   return (
     <div
-      className={`${Styles.inputContainer} ${
-        false ? Styles.withIcon : ""
-      } ${className} ${localClassName}`}
+      className={`${Styles.inputContainer} ${false ? Styles.withIcon : ""
+        } ${className} ${localClassName}`}
       {...containerProps}
+      data-testid={otherProps['data-testid']}
     >
       {decoration}
       <Component
@@ -96,11 +89,9 @@ function _Input(
           if (otherProps.onBlur) otherProps.onBlur(e);
         }}
       />
-      {withBorder && <div className={Styles.border} />}
       {error && shouldShowError ? (
         <Text
           title={typeof error === "string" ? error : ""}
-          data-testid={InputTestIds.ERROR}
           className={Styles.caption}
           type="error"
         >
@@ -111,7 +102,6 @@ function _Input(
           title={typeof disclaimer === "string" ? disclaimer : ""}
           type="caption"
           className={Styles.caption}
-          data-testid={InputTestIds.DISCLAIMER}
         >
           {disclaimer}
         </Text>
@@ -120,11 +110,6 @@ function _Input(
       {icon && <img className={Styles.icon} {...icon} />}
     </div>
   );
-}
-
-export enum InputTestIds {
-  DISCLAIMER = "disclaimer",
-  ERROR = "error",
 }
 
 /**

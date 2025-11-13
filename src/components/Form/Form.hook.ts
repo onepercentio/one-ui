@@ -2,7 +2,7 @@ import { useLayoutEffect, useMemo, useState } from "react";
 import {
   OneUIContextSpecs,
   useOneUIConfig,
-} from "../../../context/OneUIProvider";
+} from "../../context/OneUIProvider";
 import {
   AnswerAction,
   AnswerByField,

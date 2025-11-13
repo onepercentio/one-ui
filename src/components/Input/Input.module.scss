@@ -28,8 +28,6 @@
     width: 100%;
     font-size: inherit;
     line-height: inherit;
-    font-family: $mainFontFamily;
-    color: var(--input-text-color, $spaceBlue);
     margin-bottom: 18px;
     outline: none;
     &:placeholder-shown ~ .border {
@@ -39,15 +37,6 @@
       animation-delay: $slow;
     }
   }
-  & .border {
-    position: absolute;
-    left: 0px;
-    right: 0px;
-    bottom: 18px;
-    height: 1px;
-    background-color: $spaceBlue;
-    opacity: 0;
-  }
   .caption {
     position: absolute;
     bottom: 0px;
@@ -55,17 +44,5 @@
     text-overflow: ellipsis;
     overflow: hidden;
     max-width: 100%;
-  }
-}
-
-@keyframes pulse {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 0.1;
-  }
-  100% {
-    opacity: 0;
   }
 }

@@ -164,7 +164,6 @@ function Select<I extends SelectItem>({
               containerProps={{
                 onClick: (e) => e.stopPropagation(),
               }}
-              border={false}
               value={filterTerm}
             />
           </div>

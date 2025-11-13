@@ -1,6 +1,5 @@
 import { ReactNode, useEffect, useState } from "react";
 import debounce from "lodash/debounce";
-import Styles from "./FormField.module.scss";
 import {
   AnswerAction,
   AnswerByField,
@@ -8,16 +7,16 @@ import {
   FormFieldView,
   FormMode,
 } from "./FormField.types";
-import Select from "../../../Select/Select";
-import Input from "../../../Input";
-import OneText from "../../../Text";
-import Button from "../../../Button";
-import Radio from "../../../Radio";
-import { AnchoredTooltipAlignment } from "../../../AnchoredTooltip/AnchoredTooltip";
-import FileInput from "../../../FileInput/FileInput";
-import CheckBox from "../../../CheckBox/CheckBox";
-import Spacing from "../../../Spacing";
-import { useOneUIConfig } from "../../../../context/OneUIProvider";
+import Select from "../../Select/Select";
+import Input from "../../Input";
+import OneText from "../../Text";
+import Button from "../../Button";
+import Radio from "../../Radio";
+import { AnchoredTooltipAlignment } from "../../AnchoredTooltip/AnchoredTooltip";
+import FileInput from "../../FileInput/FileInput";
+import CheckBox from "../../CheckBox/CheckBox";
+import Spacing from "../../Spacing";
+import { useOneUIConfig } from "../../../context/OneUIProvider";
 // import InputMask from "react-input-mask";
 
 /**
@@ -117,7 +116,7 @@ export default function FormField<Q extends FormFieldView>({
       const checks = val<typeof type>() || [];
       return (
         <>
-          <div className={Styles.acceptInput}>
+          <div>
             <div>
               <OneText type={titleVariant}>{c.title}</OneText>
               <br />

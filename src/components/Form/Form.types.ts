@@ -1,4 +1,4 @@
-import { SelectItem } from "../../Select/Select";
+import { SelectItem } from "../Select/Select";
 import { UploadTask } from "firebase/storage";
 import { ReactElement } from "react";
 

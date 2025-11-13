@@ -6,10 +6,10 @@ import {
   FormFieldView,
   GenericFormFieldProps,
 } from "../../FormField.types";
-import useModule from "../../../../../../hooks/utility/useModule";
-import Text from "../../../../../Text";
-import Input from "../../../../../Input";
-import { useOneUIConfig } from "../../../../../../context/OneUIProvider";
+import useModule from "../../../../../hooks/utility/useModule";
+import Text from "../../../../Text";
+import Input from "../../../../Input";
+import { useOneUIConfig } from "../../../../../context/OneUIProvider";
 
 /**
  * An extra form field that enables the user to input a phone number

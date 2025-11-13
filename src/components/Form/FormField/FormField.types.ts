@@ -1,7 +1,7 @@
 import { ReactElement, ReactNode } from "react";
-import { SelectItem } from "../../../Select/Select";
+import { SelectItem } from "../../Select/Select";
 import { UploadTask } from "firebase/storage";
-import { UnresolvableOr } from "../../../../type-utils";
+import { UnresolvableOr } from "../../../type-utils";
 
 export type GenericFormFieldProps<T extends FormField["type"]> = {
   value: AnswerByField<{ type: T }>;

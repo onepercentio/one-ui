@@ -1,66 +1,5 @@
 @import "../../assets/styles/index.scss";
 
-.title {
-  font-weight: 300;
-  font-size: 22px;
-  line-height: 33px;
-}
-.boldTitle {
-  font-family: $secondaryFontFamily;
-  font-size: 24px;
-  font-weight: bolder;
-  line-height: 26px;
-}
-.boldTitleBig {
-  font-family: $secondaryFontFamily;
-  font-size: 28px;
-  font-weight: bolder;
-  line-height: 33.8px;
-}
-.content {
-  font-size: 16px;
-  line-height: 24px;
-  font-family: $mainFontFamily;
-}
-.icon.description {
-  font-size: 14px;
-  line-height: 21px;
-  color: $darkestGray;
-}
-.text.error,
-.text.caption {
-  font-size: 12px;
-  line-height: 18px;
-}
-.text.error {
-  color: $warningRed;
-}
-.text {
-  margin: 0px;
-  font-family: $mainFontFamily;
-  white-space: pre-wrap;
-  color: $textDefaultColor;
-}
-.highlightTitle {
-  font-family: $secondaryFontFamily;
-  font-size: 24px;
-  font-weight: bolder;
-  line-height: 29px;
-  color: $sunsetPink;
-}
-.subtitle {
-  font-family: $secondaryFontFamily;
-  font-size: 20px;
-  font-weight: 800;
-  line-height: 22px;
-  color: var(--text-default-color, $gray);
-}
-.link {
-  font-family: $mainFontFamily;
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 18px;
-}
 .iteractible {
   cursor: pointer;
   &:hover {
@@ -68,14 +7,7 @@
   }
 }
 
-.highlight {
-  font-family: $secondaryFontFamily;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 20px;
-  color: $sunsetPink;
-}
-
-.text[color="primary"] {
-  color: var(--digital-blue);
+.text {
+  margin: 0px;
+  white-space: pre-wrap;
 }

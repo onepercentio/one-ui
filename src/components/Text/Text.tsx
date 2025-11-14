@@ -26,7 +26,7 @@ export function _Text(
   return (
     <TagType
       ref={_ref}
-      className={`${Styles.text} ${classNameType[type as keyof typeof classNameType] || Styles[type]
+      className={`${Styles.text} ${classNameType[type as keyof typeof classNameType]
         } ${className} ${otherProps.onClick ? Styles.iteractible : ""}`}
       {...otherProps}
     >

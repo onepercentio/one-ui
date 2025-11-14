@@ -1,7 +1,7 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import Table from ".";
-import OneUIProvider from "../../context/OneUIProvider";
+import OneUIProvider, { OneUIContextSpecs } from "../../context/OneUIProvider";
 
 it("Should display the footer only when really pageable", () => {
   const wrapper = render(
@@ -12,7 +12,7 @@ it("Should display the footer only when really pageable", () => {
             controls: {},
           },
         },
-      }}
+      } as OneUIContextSpecs}
     >
       <Table<{ id: string }>
         heading={{}}

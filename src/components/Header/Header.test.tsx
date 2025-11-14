@@ -7,7 +7,7 @@ jest.mock("../../context/OneUIProvider");
 const MockedHook = (Hook as unknown) as typeof import("../../context/__mocks__/OneUIProvider");
 MockedHook.setupMock({
   component: { header: { LogoImage: () => <div data-testid="logo-img" /> } },
-});
+} as Hook.ContextConfigSpecs);
 
 function renderScreen(props: React.ComponentProps<typeof Header>) {
   return render(<Header {...props} />);

@@ -1,8 +1,9 @@
 import React, { PropsWithChildren } from "react";
 import Styles from "./LinkToId.module.scss";
+import { FromOnePercentUtility } from "../../type-utils";
 
 export function scrollToId(
-  id: OnepercentUtility.PageSections,
+  id: FromOnePercentUtility<'PageSections'>,
   shouldScrollToCenter: boolean = false
 ) {
   const el = document.getElementById(id);
@@ -32,7 +33,7 @@ export default function LinkToId({
   link,
   scrollToCenter = false,
 }: PropsWithChildren<{
-  id?: OnepercentUtility.PageSections;
+  id?: FromOnePercentUtility<'PageSections'>;
   link?: string;
   scrollToCenter?: boolean;
 }>) {

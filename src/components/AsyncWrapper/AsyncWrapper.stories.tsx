@@ -1,5 +1,5 @@
 import React from "react";
-import OneUIProvider from "../../context/OneUIProvider";
+import OneUIProvider, { ContextConfigSpecs } from "../../context/OneUIProvider";
 import Loader from "../Loader";
 import AsyncWrapper from "./AsyncWrapper";
 
@@ -22,14 +22,14 @@ export const InitialImplementation = (args: any) => (
           },
         },
       },
-    }}
+    } as ContextConfigSpecs}
   >
     <AsyncWrapper {...args} />
   </OneUIProvider>
 );
 InitialImplementation.args = {
-    loading: true,
-    error: false
+  loading: true,
+  error: false
 } as Partial<
   React.ComponentProps<typeof AsyncWrapper>
 >;

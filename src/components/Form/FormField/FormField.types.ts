@@ -1,7 +1,7 @@
 import { ReactElement, ReactNode } from "react";
 import { SelectItem } from "../../Select/Select";
 import { UploadTask } from "firebase/storage";
-import { UnresolvableOr } from "../../../type-utils";
+import { FromOnePercentUtility, UnresolvableOr } from "../../../type-utils";
 
 export type GenericFormFieldProps<T extends FormField["type"]> = {
   value: AnswerByField<{ type: T }>;
@@ -105,13 +105,16 @@ export type FormField = {
         optional?: true;
       }[];
     }
-  | UnresolvableOr<OnepercentUtility.UIElements.FormExtension["fields"], BasicFormFields>
+  | UnresolvableOr<
+      FromOnePercentUtility<"UIElements.FormExtension">["fields"],
+      BasicFormFields
+    >
 >;
 
-export type FormFieldTypes = FormField['type'] | 'accept'
+export type FormFieldTypes = FormField["type"] | "accept";
 
 type ExternalQuestionFields = UnresolvableOr<
-  OnepercentUtility.UIElements.FormExtension["fieldAnswer"],
+  FromOnePercentUtility<"UIElements.FormExtension">["fieldAnswer"],
   {}
 >;
 
@@ -123,7 +126,7 @@ export type AnswerByField<F extends Pick<FormField, "type">> =
     : F["type"] extends "radio" | "text" | "select" | "number"
     ? string
     : F["type"] extends keyof ExternalQuestionFields
-    ? OnepercentUtility.UIElements.FormExtension["fieldAnswer"][F["type"]]
+    ? FromOnePercentUtility<"UIElements.FormExtension">["fieldAnswer"][F["type"]]
     : unknown;
 
 type O = FormField["type"];

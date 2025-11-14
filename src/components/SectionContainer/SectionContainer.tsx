@@ -7,6 +7,7 @@ import React, {
   RefObject,
 } from "react";
 import Styles from "./SectionContainer.module.scss";
+import { FromOnePercentUtility } from "../../type-utils";
 
 export function createId(...args: string[]): string {
   return args.join("-");
@@ -18,7 +19,7 @@ type Props<S extends string> = PropsWithChildren<{
   className?: string;
   onClick?: JSX.IntrinsicElements["div"]["onClick"];
 }>;
-function _SectionContainer<S extends string = OnepercentUtility.PageSections>(
+function _SectionContainer<S extends string = FromOnePercentUtility<'PageSections'>>(
   { children, section, className = "", decoration, onClick }: Props<S>,
   ref: ForwardedRef<HTMLDivElement>
 ) {

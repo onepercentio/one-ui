@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import Styles from "./Spacing.module.scss";
 import { useOneUIConfig } from "../../context/OneUIProvider";
+import { FromOnePercentUtility } from "../../type-utils";
 
 /**
  * A component to inject some spacing between component when required
@@ -8,7 +9,7 @@ import { useOneUIConfig } from "../../context/OneUIProvider";
 export default function Spacing({
   size,
 }: {
-  size: OnepercentUtility.UIElements.SpacingVariants | "stretch";
+  size: FromOnePercentUtility<'UIElements.SpacingVariants'> | "stretch";
 }) {
   const spacingClasses = useOneUIConfig("component.spacing.variants", {
     large: Styles.spacing_large,

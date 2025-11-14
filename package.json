@@ -8,14 +8,15 @@
   "types": "./dist/index.d.ts",
   "main": "./dist/index.js",
   "exports": {
-    "./*": "./dist-ts/*.js",
-    "./*.scss": "./dist-ts/*.scss",
     "./components/Form/v2/*": "./dist-ts/components/Form/v2/*.js",
     "./components/*": "./dist-ts/components/*/index.js",
     "./components/*.scss": "./dist-ts/components/*.scss",
     "./components/*.hook": "./dist-ts/components/*.hook.js",
+    "./WebpackConfigs/*": "./WebpackConfigs/*",
+    "./context/*": "./dist-ts/context/*.js",
     ".": "./dist-ts/index.js",
-    "./WebpackConfigs/*": "./WebpackConfigs/*"
+    "./*": "./dist-ts/*.js",
+    "./*.scss": "./dist-ts/*.scss"
   },
   "devDependencies": {
     "@babel/cli": "^7.22.9",

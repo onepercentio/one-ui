@@ -7,12 +7,13 @@ import {
   useRef,
 } from "react";
 import useEvents from "../hooks/utility/useEvents";
+import { FromOnePercentUtility } from "../type-utils";
 
 const AsyncProcessContext = createContext<{
   _subscriber: ReturnType<typeof useEvents>["subscriber"];
   _wrappedFunctions: {
-    [k in keyof OnepercentUtility.AsyncQueue.Processes]: (
-      ...args: OnepercentUtility.AsyncQueue.Processes[k]
+    [k in keyof FromOnePercentUtility<'AsyncQueue.Processes'>]: (
+      ...args: FromOnePercentUtility<'AsyncQueue.Processes'>[k]
     ) => Promise<void>;
   };
 }>(null as any);
@@ -26,15 +27,15 @@ export default function AsyncProcessProvider({
 }: PropsWithChildren<{
   /** Functions that will be provided to those that use the async process */
   triggers: {
-    [k in keyof OnepercentUtility.AsyncQueue.Processes]: (
-      ...args: OnepercentUtility.AsyncQueue.Processes[k]
+    [k in keyof FromOnePercentUtility<'AsyncQueue.Processes'>]: (
+      ...args: FromOnePercentUtility<'AsyncQueue.Processes'>[k]
     ) => Promise<void>;
   };
   /** This will persist the data required for restoring the async processes when required */
   persistence: {
-    write: <K extends keyof OnepercentUtility.AsyncQueue.Processes>(
+    write: <K extends keyof FromOnePercentUtility<'AsyncQueue.Processes'>>(
       k: K,
-      ...args: OnepercentUtility.AsyncQueue.Processes[K]
+      ...args: FromOnePercentUtility<'AsyncQueue.Processes'>[K]
     ) => PersistedIdentifier;
     remove: (id: PersistedIdentifier) => void;
     recover: () => [PersistedIdentifier, Promise<void>][];
@@ -47,7 +48,7 @@ export default function AsyncProcessProvider({
       (r, k) => ({
         ...r,
         [k]: (
-          ...args: OnepercentUtility.AsyncQueue.Processes[keyof OnepercentUtility.AsyncQueue.Processes]
+          ...args: FromOnePercentUtility<'AsyncQueue.Processes'>[keyof FromOnePercentUtility<'AsyncQueue.Processes'>]
         ) => {
           let persisted = persistence.write(k as any, ...args);
           return (triggers as any)[k as any](...args).finally(() => {
@@ -78,12 +79,12 @@ export default function AsyncProcessProvider({
 }
 
 export function useAsyncProcess(): {
-  [k in keyof OnepercentUtility.AsyncQueue.Processes]: (
-    ...args: OnepercentUtility.AsyncQueue.Processes[k]
+  [k in keyof FromOnePercentUtility<'AsyncQueue.Processes'>]: (
+    ...args: FromOnePercentUtility<'AsyncQueue.Processes'>[k]
   ) => Promise<void>;
 } & {
   on: (
-    k: keyof OnepercentUtility.AsyncQueue.Processes,
+    k: keyof FromOnePercentUtility<'AsyncQueue.Processes'>,
     whatToDo: () => void
   ) => void;
 } {

@@ -1,10 +1,11 @@
 import { IntlFormatters, IntlShape, useIntl } from "react-intl";
 import { BigNumber } from "bignumber.js";
 import { ReactElement, useEffect, useState } from "react";
+import { FromOnePercentUtility } from "../type-utils";
 
 export default function useShortIntl(): IntlShape & {
   txt: <R extends ReturnType<IntlFormatters["formatMessage"]> = string>(
-    id: OnepercentUtility.IntlIds,
+    id: FromOnePercentUtility<"IntlIds">,
     params?: Record<string, string | ReactElement>
   ) => R;
   formatToDoubleDecimal(
@@ -40,7 +41,7 @@ export default function useShortIntl(): IntlShape & {
   return {
     ...intl,
     txt: (id, params) => {
-      return devMode ? id : formatMessage({ id }, params) as any;
+      return devMode ? id : (formatMessage({ id }, params) as any);
     },
     formatToDoubleDecimal(val: number, options = {}) {
       return formatNumber(val, {

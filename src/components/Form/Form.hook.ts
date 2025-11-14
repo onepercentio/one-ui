@@ -1,8 +1,5 @@
 import { useLayoutEffect, useMemo, useState } from "react";
-import {
-  OneUIContextSpecs,
-  useOneUIConfig,
-} from "../../context/OneUIProvider";
+import { OneUIContextSpecs, useOneUIConfig } from "../../context/OneUIProvider";
 import {
   AnswerAction,
   AnswerByField,
@@ -13,6 +10,7 @@ import {
 } from "./FormField/FormField.types";
 import { AnswersMap } from "./Form.types";
 import { UploadTask, UploadTaskSnapshot } from "firebase/storage";
+import { FromOnePercentUtility } from "../../type-utils";
 
 export function useFormAnswers<A extends AnswersMap<any> = AnswersMap>(
   defaultAnswers: A,
@@ -203,7 +201,7 @@ export function useFieldErrors<
         default:
           const extendedSupport =
             extensions?.[
-              question.type as OnepercentUtility.UIElements.FormExtension["fields"]["type"]
+              question.type as FromOnePercentUtility<"UIElements.FormExtension">["fields"]["type"]
             ];
           if (extendedSupport) {
             const validationResultExtend = extendedSupport.validator(
@@ -283,7 +281,7 @@ export function areAllQuestionsAnswered(
           default:
             const extendedSupport =
               extensions?.[
-                question.type as OnepercentUtility.UIElements.FormExtension["fields"]["type"]
+                question.type as FromOnePercentUtility<"UIElements.FormExtension">["fields"]["type"]
               ];
             if (extendedSupport) {
               const validationResultExtend = extendedSupport.validator(
@@ -304,7 +302,7 @@ export function areAllQuestionsAnswered(
 }
 
 export const isValidated = (
-    _answer: AnswerByField<{ type: FormFieldTypes }>,
+  _answer: AnswerByField<{ type: FormFieldTypes }>,
   isOptional: boolean,
   validator: ((val: any) => string | boolean) | undefined,
   requiredFieldLabel: string

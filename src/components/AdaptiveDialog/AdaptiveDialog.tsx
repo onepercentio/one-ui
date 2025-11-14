@@ -4,6 +4,7 @@ import Styles from "./AdaptiveDialog.module.scss";
 import MutableHamburgerButton from "../MutableHamburgerButton";
 import ScrollAndFocusLock from "../utilitary/ScrollAndFocusLock";
 import { useOneUIConfig } from "../../context/OneUIProvider";
+import { FromOnePercentUtility } from "../../type-utils";
 
 /**
  * This component implements a generic drawer that displays it as a drawer on mobile and as a modal on desktop
@@ -18,7 +19,7 @@ export default function AdaptiveDialog({
   onClosed,
   inline = false,
 }: PropsWithChildren<{
-  variant?: OnepercentUtility.UIElements.AdaptiveDialogVariants;
+  variant?: FromOnePercentUtility<'UIElements.AdaptiveDialogVariants'>;
   className?: string;
   open: boolean;
   onClose?: () => void;
@@ -61,9 +62,8 @@ export default function AdaptiveDialog({
   const content = (
     <div
       ref={rootDivRef}
-      className={`${Styles.backdrop} ${open ? Styles.open : Styles.close} ${
-        expanded ? Styles.expanded : ""
-      } ${globalClassName.backdrop} ${variantClass}`}
+      className={`${Styles.backdrop} ${open ? Styles.open : Styles.close} ${expanded ? Styles.expanded : ""
+        } ${globalClassName.backdrop} ${variantClass}`}
       onClick={onClickOut}
       onAnimationEnd={({ target, currentTarget }) => {
         if (target === currentTarget)

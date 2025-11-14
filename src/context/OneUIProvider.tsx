@@ -7,7 +7,7 @@ import React, { ComponentProps, ReactElement, ReactNode, useMemo } from "react";
 import { createContext, PropsWithChildren, useContext } from "react";
 import { ImageScales } from "@muritavo/webpack-microfrontend-scripts/bin/types/ImageScales";
 import { UploadTask } from "firebase/storage";
-import { FieldPath } from "../type-utils";
+import { FieldPath, FromOnePercentUtility, NamespaceAccessors, Path, PathObject } from "../type-utils";
 import useAdaptiveImage from "../hooks/ui/useAdaptiveImage";
 import Button from "../components/Button";
 import CheckBox from "../components/CheckBox";
@@ -25,19 +25,21 @@ type DeepPartial<T> = {
   : DeepPartial<T[P]>;
 };
 
+type IfUtilityHas<N extends NamespaceAccessors, Declare> = FromOnePercentUtility<N> extends `To define this property you need to set OnepercentUtility.${string} globally` ? undefined : Declare;
+
 export type OneUIContextSpecs = {
   component: {
     spacing: {
       variants: {
-        [k in OnepercentUtility.UIElements.SpacingVariants]: string;
+        [k in FromOnePercentUtility<"UIElements.SpacingVariants">]: string;
       };
     };
     collapsable: {
       className: string;
     };
     form: {
-      titleVariant: OnepercentUtility.UIElements.TextVariants;
-      labelVariant: OnepercentUtility.UIElements.TextVariants;
+      titleVariant: FromOnePercentUtility<"UIElements.TextVariants">;
+      labelVariant: FromOnePercentUtility<"UIElements.TextVariants">;
       /** Label shown when a field is optional */
       optionalLabel: string;
 
@@ -46,13 +48,13 @@ export type OneUIContextSpecs = {
 
       onFileUpload(questionId: string, file: File): UploadTask;
 
-      extensions?: {
-        [K in OnepercentUtility.UIElements.FormExtension["fields"]["type"]]: {
+      extensions: IfUtilityHas<"UIElements.FormExtension", {
+        [K in FromOnePercentUtility<'UIElements.FormExtension'>["fields"]["type"]]: {
           Input: (props: GenericFormFieldProps<K>) => ReactElement;
           validator: (
             answer: AnswerByField<{ type: K }>,
             question: BaseQuestion &
-              (OnepercentUtility.UIElements.FormExtension["fields"] & {
+              (FromOnePercentUtility<"UIElements.FormExtension">["fields"] & {
                 type: K;
               })
           ) => {
@@ -60,20 +62,20 @@ export type OneUIContextSpecs = {
             error?: string;
           };
         };
-      };
+      }>;
     };
-    text?: {
-      className?: {
+    text: IfUtilityHas<"UIElements.TextVariants", {
+      className: {
         [k in React.ComponentProps<
           typeof import("../components/Text")["default"]
-        >["type"]]?: string;
+        >["type"]]: string;
       };
-      htmlTag?: {
+      htmlTag: {
         [k in React.ComponentProps<
           typeof import("../components/Text")["default"]
-        >["type"]]?: "p" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+        >["type"]]: "p" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
       };
-    };
+    }>;
     button?: {
       className?: {
         [k in NonNullable<
@@ -85,8 +87,12 @@ export type OneUIContextSpecs = {
       Component?: (props: ComponentProps<typeof Button>) => ReactElement;
     };
     input: {
-      className: string;
-      border: boolean;
+      className: {
+        /** The wrapper around input tag & caption element (used for error and caption) */
+        container: string,
+        /** The input html tag */
+        input: string
+      }
     };
     fileInput: {
       View: (props: FileInputViewProps) => ReactElement;
@@ -132,7 +138,7 @@ export type OneUIContextSpecs = {
       dialogClassName: string;
       backdropClassName: string;
       variant: {
-        [k in OnepercentUtility.UIElements.AdaptiveDialogVariants]: string;
+        [k in FromOnePercentUtility<"UIElements.AdaptiveDialogVariants">]: string;
       };
     };
     adaptiveSidebar: {
@@ -160,7 +166,7 @@ export type OneUIContextSpecs = {
   };
 };
 
-type ContextConfigSpecs = DeepPartial<OneUIContextSpecs>;
+export type ContextConfigSpecs = DeepPartial<OneUIContextSpecs> & PathObject<OneUIContextSpecs, "component.text">;
 
 const Context = createContext<ContextConfigSpecs>(null as any);
 
@@ -277,8 +283,15 @@ ${`<OneUIProvider config={${JSON.stringify(
 
 export function useOneUIConfig<
   P extends FieldPath<OneUIContextSpecs>,
+>(prop: P): Get<OneUIContextSpecs, P>
+export function useOneUIConfig<
+  P extends FieldPath<OneUIContextSpecs>,
+  T extends DeepPartial<Get<OneUIContextSpecs, P>>
+>(prop: P, defaultValue: T): NonNullable<Get<OneUIContextSpecs, P>>
+export function useOneUIConfig<
+  P extends FieldPath<OneUIContextSpecs>,
   T extends Get<OneUIContextSpecs, P>
->(prop: P, defaultValue?: T): NonNullable<Get<OneUIContextSpecs, P>> {
+>(prop: P, defaultValue?: T): Get<OneUIContextSpecs, P> | T {
   const context = useContext(Context);
   if (process.env.NODE_ENV === "development") {
     const val = useMemo(() => {

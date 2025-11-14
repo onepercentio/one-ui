@@ -3,28 +3,28 @@
  *
  * Redeclare this namespace with the usefull typings for your project and enjoy intelisense :)
  */
-namespace OnepercentUtility {
+type OnepercentUtility = {
   /** The ids used by the useShortIntl hooks */
-  type IntlIds = "generic.id";
+  IntlIds: "generic.id";
   /** A type hint to bind the LinkToId action and the SectionContainer identifier */
-  type PageSections = "example-section-1";
+  PageSections: "example-section-1";
   /** A type hint to autocomplete functions related to the AsyncProcess context */
-  namespace AsyncQueue {
+  AsyncQueue: {
     /** These are the recovery types available */
-    type RecoveryTypes = {
+    RecoveryTypes: {
       [R: string]: any[];
     };
 
     /** These are the available UI models */
-    type Processes = {
+    Processes: {
       [k in "waitForBuild"]: [thash: string];
     };
   }
   /** These are the extensible properties for the UI elements */
-  namespace UIElements {
-    type AdaptiveDialogVariants = "default";
-    type ButtonVariants = "transparent" | "filled" | "outline" | "link";
-    type TextVariants =
+  UIElements: {
+    AdaptiveDialogVariants: "default";
+    ButtonVariants: "transparent" | "filled" | "outline" | "link";
+    TextVariants:
       | "title"
       | "description"
       | "error"
@@ -36,9 +36,9 @@ namespace OnepercentUtility {
       | "link"
       | "boldTitleBig"
       | "content";
-    type SpacingVariants = "large" | "small";
-    type TextColors = "primary" | "error" | undefined;
-    type FormExtension = {
+    SpacingVariants: "large" | "small";
+    TextColors: "primary" | "error" | undefined;
+    FormExtension: {
       fields:
         | {
             type: "phone";

@@ -1,9 +1,10 @@
 import React, { ElementRef, ForwardedRef, forwardRef } from "react";
 import { useOneUIConfig } from "../../context/OneUIProvider";
+import { FromOnePercentUtility } from "../../type-utils";
 
 type ButtonProps = React.PropsWithChildren<
   React.ButtonHTMLAttributes<HTMLButtonElement> & {
-    variant?: OnepercentUtility.UIElements.ButtonVariants;
+    variant?: FromOnePercentUtility<'UIElements.ButtonVariants'>;
   }
 >;
 

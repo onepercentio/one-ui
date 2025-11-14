@@ -50,7 +50,7 @@ function _Input(
   }: InputProps,
   ref: ForwardedRef<any>
 ) {
-  const className = useOneUIConfig("component.input.className");
+  const className = useOneUIConfig("component.input.className", {});
   const [focused, setFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
   useImperativeHandle(ref, () => inputRef.current, []);
@@ -70,7 +70,7 @@ function _Input(
   return (
     <div
       className={`${Styles.inputContainer} ${false ? Styles.withIcon : ""
-        } ${className} ${localClassName}`}
+        } ${className.container} ${localClassName}`}
       {...containerProps}
       data-testid={otherProps['data-testid']}
     >
@@ -79,6 +79,7 @@ function _Input(
         ref={inputRef as any}
         placeholder={placeholder}
         rows={multiline}
+        className={className.input}
         {...otherProps}
         onFocus={(e) => {
           setFocused(true);

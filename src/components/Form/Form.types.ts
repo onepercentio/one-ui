@@ -76,6 +76,7 @@ export type ModeProps =
     };
 export type FormViewProps<Q extends BaseQuestion[]> = {
   questions: Q;
+  "data-testid"?: (id: Q[number]["id"]) => string;
 } & (
   | {
       mode?: FormMode.WRITE;
@@ -94,13 +95,11 @@ export type AnswersMap<
   Q extends Readonly<BaseQuestion[]> = [
     { type: BaseQuestion["type"]; id: string }
   ]
-> = Partial<
-  {
-    [questionId in Q[number]["id"]]: AnswerByField<
-      Q[number] & { id: questionId }
-    >;
-  }
->;
+> = Partial<{
+  [questionId in Q[number]["id"]]: AnswerByField<
+    Q[number] & { id: questionId }
+  >;
+}>;
 
 export enum INVESTOR_PROFILE {
   /**

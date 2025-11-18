@@ -22,6 +22,7 @@ export default function Radio({
   size?: number;
   groupId: string;
   value: string;
+  "data-testid"?: string;
 }> &
   React.DetailedHTMLProps<
     React.HTMLAttributes<HTMLSpanElement>,
@@ -46,7 +47,15 @@ export default function Radio({
           label ? Styles.wContent : ""
         }`}
       />
-      <input type="radio" name={groupId} id={value} checked={checked} readOnly/>
+      <input
+        type="radio"
+        name={groupId}
+        id={value}
+        value={value}
+        checked={checked}
+        readOnly
+        data-testid={props["data-testid"]}
+      />
       {label}
     </label>
   );

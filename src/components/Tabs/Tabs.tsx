@@ -1,5 +1,6 @@
 import React, { ReactElement, useEffect, useRef } from "react";
 import Styles from "./Tabs.module.scss";
+import { useOneUIConfig } from "../../context/OneUIProvider";
 
 export enum TabType {
   /** A div that encovers the tab */
@@ -43,6 +44,7 @@ export default function Tabs<O extends string | number>(
     className = "",
     type = TabType.UNDERLINE,
   } = props;
+  const classes = useOneUIConfig("component.tabs", {})
   const selectedRef = useRef<HTMLParagraphElement>(null);
   const guideRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -73,7 +75,7 @@ export default function Tabs<O extends string | number>(
   const tabNativeCls = TabType[type] in Styles ? Styles[TabType[type]] : "";
   return (
     <>
-      <div className={`${Styles.container} ${className} ${tabNativeCls}`}>
+      <div className={`${Styles.container} ${className} ${tabNativeCls} ${classes.container}`}>
         {options.map((o) => (
           <div
             ref={selected === o.id ? selectedRef : undefined}
@@ -84,7 +86,7 @@ export default function Tabs<O extends string | number>(
               props.type === TabType.CLASS && selected === o.id
                 ? props.selectedClass
                 : ""
-            }`}
+            } ${classes.item}`}
             key={o.id}
             data-testid="tab-option"
           >

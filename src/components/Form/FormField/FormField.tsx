@@ -29,15 +29,15 @@ export default function FormField<Q extends FormFieldView>({
 }: FormFieldProps<Q>) {
   const val = <T extends FormFieldView["type"]>() =>
     value as unknown as
-      | AnswerByField<{
-          type: T;
-        }>
-      | undefined;
+    | AnswerByField<{
+      type: T;
+    }>
+    | undefined;
   const ans = <T extends FormFieldView["type"]>(
     answer:
       | AnswerAction<{
-          type: T;
-        }>
+        type: T;
+      }>
       | undefined
   ) =>
     answer as unknown as AnswerAction<{
@@ -81,7 +81,7 @@ export default function FormField<Q extends FormFieldView>({
                 },
               }}
               footer={c.footer}
-              onFile={() => {}}
+              onFile={() => { }}
               file={file === true ? ({} as File) : undefined}
               progress={file === true ? 100 : undefined}
               disabled={true}
@@ -104,8 +104,7 @@ export default function FormField<Q extends FormFieldView>({
         return (
           <>
             <OneText type={titleVariant}>{c.title}</OneText>
-            <OneText type={labelVariant}>{answer || "-"}</OneText>
-            <Spacing size="small" />
+            <OneText type={labelVariant} data-testid={props["data-testid"]}>{answer || "-"}</OneText>
           </>
         );
     }
@@ -244,6 +243,7 @@ export default function FormField<Q extends FormFieldView>({
                   onToggle={() => onAnswer(type, c.id, el.value)}
                   groupId={c.id}
                   value={el.value}
+                  data-testid={props["data-testid"]}
                 />
               </OneText>
               <br />
@@ -354,6 +354,7 @@ export default function FormField<Q extends FormFieldView>({
             onChange={({ target: { value } }) => {
               onAnswer(type, c.id, filter(value));
             }}
+            data-testid={props["data-testid"]}
           />
         </>
       );
@@ -367,6 +368,7 @@ export default function FormField<Q extends FormFieldView>({
             question={c as any}
             value={value as any}
             error={error as any}
+            data-testid={props["data-testid"]}
           />
         );
       }

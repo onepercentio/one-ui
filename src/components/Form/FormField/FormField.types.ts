@@ -15,6 +15,7 @@ export type GenericFormFieldProps<T extends FormField["type"]> = {
 export type FormFieldProps<Q extends Pick<FormFieldView, "type">> = {
   config: Q;
   value: AnswerByField<Q>;
+  "data-testid"?: string
 } & (
   | {
       mode: FormMode.READ_ONLY;
@@ -70,6 +71,7 @@ type DistributeValidatorOverUnion<FormFieldTypes extends { type: any }> =
 export type FormField = {
   optional?: boolean;
   id: string;
+  readOnly?: boolean;
 } & DistributeValidatorOverUnion<
   | BasicFormFields
   | {

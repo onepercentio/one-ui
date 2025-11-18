@@ -1,13 +1,16 @@
 import React, {
   ForwardedRef,
   forwardRef,
+  PropsWithChildren,
   useEffect,
   useImperativeHandle,
+  useMemo,
 } from "react";
-import { BaseQuestion, FormMode, FormViewProps } from "./Form.types";
+import { FormMode, FormViewProps } from "./Form.types";
 import { useFieldErrors, useForm } from "./Form.hook";
 import FormField from "./FormField";
 import { AnswerByField, FormFieldView } from "./FormField/FormField.types";
+import { useOneUIConfig } from "../../context/OneUIProvider";
 
 export type FormRef<Q extends FormFieldView[]> = {
   setAnswer<I extends Q[number]["id"]>(
@@ -29,11 +32,12 @@ function Form<Q extends FormFieldView[]>(
   const errors = useFieldErrors(questions, answers, showAllErrors);
 
   useEffect(() => {
-    if (props.mode !== FormMode.READ_ONLY)
+    if (props.mode !== FormMode.READ_ONLY) {
       props.onFormUpdate(
         answers as any,
         isQuestionsAnswered && isFilesUploaded
       );
+    }
   }, [answers, isQuestionsAnswered, isFilesUploaded]);
 
   useImperativeHandle(
@@ -50,29 +54,61 @@ function Form<Q extends FormFieldView[]>(
     []
   );
 
+  const wrapperClasses = useOneUIConfig("component.form.fieldWrapper", {});
+
   return (
     <>
-      {questions.map((q) => (
-        <FormField
-          key={q.id}
-          config={q}
-          onAnswer={onAnswerAction}
-          value={answers[q.id] as any}
-          error={(errors as any)[q.id]}
-          mode={mode}
-        />
-      ))}
+      {questions.map((q) => {
+        const targetMode = q.readOnly ? FormMode.READ_ONLY : mode;
+        const classOrComponentWrapper =
+          wrapperClasses[
+            `${FormMode[targetMode] as keyof typeof FormMode}-${q.type}`
+          ];
+        const WrapperComp = useMemo(
+          () =>
+            typeof classOrComponentWrapper === "function"
+              ? classOrComponentWrapper
+              : ({ children }: PropsWithChildren) => {
+                  return (
+                    <div
+                      key={q.id}
+                      className={`${classOrComponentWrapper || ""}`}
+                    >
+                      {children}
+                    </div>
+                  );
+                },
+          [classOrComponentWrapper]
+        );
+        return (
+          <WrapperComp {...q} value={answers[q.id]}>
+            {targetMode === FormMode.WRITE ? (
+              <FormField
+                config={q}
+                onAnswer={onAnswerAction}
+                value={answers[q.id] as any}
+                error={(errors as any)[q.id]}
+                mode={targetMode}
+                data-testid={props["data-testid"]?.(q.id)}
+              />
+            ) : (
+              <FormField
+                config={q}
+                value={answers[q.id] as any}
+                mode={FormMode.READ_ONLY}
+                data-testid={props["data-testid"]?.(q.id)}
+              />
+            )}
+          </WrapperComp>
+        );
+      })}
     </>
   );
 }
 
 /**
- * Brainstorm:
- * The answers must be externalized in some way because those answers will be manipulated
- * There must be a way to disable non validation related errors
- */
-
-/**
  * A new and improved version of the one-ui design form
+ *
+ * Custom question types can be defined via @type {OnepercentUtility['UIElements']['FormExtension']['fields']}
  **/
 export default forwardRef(Form);

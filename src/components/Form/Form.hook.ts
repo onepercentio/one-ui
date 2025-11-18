@@ -67,10 +67,13 @@ export function useFormState(
         });
         break;
       default:
-        setAnswers((prev) => ({
-          ...prev,
-          [id]: answer as string,
-        }));
+        setAnswers((prev) => {
+          if (prev[id] === answer) return prev;
+          return {
+            ...prev,
+            [id]: answer as string,
+          };
+        });
     }
   };
 

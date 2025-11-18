@@ -11,6 +11,7 @@
     "./components/Form/v2/*": "./dist-ts/components/Form/v2/*.js",
     "./components/*": "./dist-ts/components/*/index.js",
     "./components/*.scss": "./dist-ts/components/*.scss",
+    "./components/*.types": "./dist-ts/components/*.types.js",
     "./components/*.hook": "./dist-ts/components/*.hook.js",
     "./WebpackConfigs/*": "./WebpackConfigs/*",
     "./context/*": "./dist-ts/context/*.js",
@@ -88,6 +89,7 @@
     "react-scripts": "^5.0.0",
     "sass": "^1.54.0",
     "sass-loader": "^10",
+    "sharp": "^0.30.3",
     "storybook": "^9.1.7",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
@@ -97,10 +99,10 @@
     "typescript": "^5",
     "url": "^0.11.0",
     "use-wallet": "0.13.5",
-    "sharp": "^0.30.3",
     "webpack": "^5"
   },
   "dependencies": {
+    "@mona-health/react-input-mask": "^3.0.3",
     "@types/lodash": "^4.14.177",
     "@types/react-router-dom": "^5.3.3",
     "bignumber.js": "^9.0.2",

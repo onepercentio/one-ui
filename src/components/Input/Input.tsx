@@ -72,7 +72,6 @@ function _Input(
       className={`${Styles.inputContainer} ${false ? Styles.withIcon : ""
         } ${className.container} ${localClassName}`}
       {...containerProps}
-      data-testid={otherProps['data-testid']}
     >
       {decoration}
       <Component

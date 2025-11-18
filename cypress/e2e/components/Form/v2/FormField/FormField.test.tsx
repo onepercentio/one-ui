@@ -1,11 +1,14 @@
-import FormField from "components/Form/v2/FormField";
+import FormField from "components/Form/FormField";
 import dateFieldFactory, {
   dateFieldValidatorFactory,
-} from "components/Form/v2/FormField/Extensions/DateField/DateField";
-import phoneFieldFactory, { phoneFieldValidator } from "components/Form/v2/FormField/Extensions/PhoneField/PhoneField";
-import { FormMode } from "components/Form/v2/FormField/FormField.types";
+} from "components/Form/FormField/Extensions/DateField/DateField";
+import phoneFieldFactory, {
+  phoneFieldValidator,
+} from "components/Form/FormField/Extensions/PhoneField/PhoneField";
+import { FormMode } from "components/Form/FormField/FormField.types";
 import OneUIProvider, { OneUIContextSpecs } from "context/OneUIProvider";
 import { useState } from "react";
+import { FromOnePercentUtility } from "type-utils";
 
 it("Should be able to render field", () => {
   cy.mount(
@@ -44,7 +47,7 @@ it.only("Should be able to extend", () => {
     (extension: OneUIContextSpecs["component"]["form"]["extensions"]) => {
       function Wrapper() {
         const [s, ss] = useState<
-          OnepercentUtility.UIElements.FormExtension["fieldAnswer"]["phone"]
+          FromOnePercentUtility<"UIElements.FormExtension.fieldAnswer">["phone"]
         >(["", false, undefined]);
         return (
           <FormField

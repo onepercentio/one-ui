@@ -280,7 +280,7 @@ export default function useHero(
           Math.trunc(origin.width) === Math.trunc(target.width) &&
           Math.trunc(origin.height) === Math.trunc(target.height)
         );
-        
+
         return willItMove;
       }
 
@@ -308,7 +308,10 @@ export default function useHero(
       const coordinates = otherElement.getBoundingClientRect();
       const currentCoordinates = heroRef.current!.getBoundingClientRect();
       const itWontMove = !willTheHeroMove(coordinates, currentCoordinates);
-      if (itWontMove) return;
+      if (itWontMove) {
+        events.onHeroEnd?.();
+        return;
+      }
 
       if (!oldClone) {
         /** Set the clone over the starting element */

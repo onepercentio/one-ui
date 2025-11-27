@@ -24,18 +24,20 @@ parseDir("./src");
 
 function parseDir(path: string) {
   let folders = readdirSync(path);
-  if (folders.includes("index.ts") || folders.includes("index.tsx")) {
-    folders = folders.filter((f) => {
-      const toCheck = join(path, f);
-      if (f.includes("index.ts")) {
-        preProcessIndex(toCheck);
-        return true;
-      } else {
-        return lstatSync(toCheck).isDirectory();
-      }
-    });
-  }
+  if (path !== "./src")
+    if (folders.includes("index.ts") || folders.includes("index.tsx")) {
+      folders = folders.filter((f) => {
+        const toCheck = join(path, f);
+        if (f.includes("index.ts")) {
+          preProcessIndex(toCheck);
+          return true;
+        } else {
+          return lstatSync(toCheck).isDirectory();
+        }
+      });
+    }
   for (let folder of folders) {
+    if (path === "./src") console.log(path, folder);
     const toCheck = join(path, folder);
     if (
       toCheck.endsWith(".d.ts") ||
@@ -45,6 +47,7 @@ function parseDir(path: string) {
       folder.includes("preprocess") ||
       toCheck === "src/index.ts" ||
       toCheck === "src/test.ts" ||
+      toCheck === "src/types.ts" ||
       folder.endsWith(".scss") ||
       folder.endsWith(".svg") ||
       folder.endsWith(".md") ||

@@ -80,13 +80,13 @@ export type FormViewProps<Q extends BaseQuestion[]> = {
 } & (
   | {
       mode?: FormMode.WRITE;
-      initialAnswers?: AnswersMap;
-      onFormUpdate: (...args: FormState<Q>) => void;
+      initialAnswers?: AnswersMap<Q>;
+      onFormUpdate: (answers: any, isValid: boolean) => void;
       /** When provided (true) show all current errors that are blocking the completion of the form */
       showAllErrors?: boolean;
     }
   | {
-      initialAnswers: AnswersMap;
+      initialAnswers: AnswersMap<Q>;
       mode: FormMode.READ_ONLY;
     }
 );

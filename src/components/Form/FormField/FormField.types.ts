@@ -4,7 +4,7 @@ import { UploadTask } from "firebase/storage";
 import { FromOnePercentUtility, UnresolvableOr } from "../../../type-utils";
 
 export type GenericFormFieldProps<T extends FormField["type"]> = {
-  value: AnswerByField<{ type: T }>;
+  value: AnswerByField<{ type: T }> | undefined;
   onAnswer: (FormFieldProps<{ type: T }> & {
     mode: FormMode.WRITE;
   })["onAnswer"];
@@ -15,7 +15,7 @@ export type GenericFormFieldProps<T extends FormField["type"]> = {
 export type FormFieldProps<Q extends Pick<FormFieldView, "type">> = {
   config: Q;
   value: AnswerByField<Q>;
-  "data-testid"?: string
+  "data-testid"?: string;
 } & (
   | {
       mode: FormMode.READ_ONLY;

@@ -53,7 +53,7 @@ export type OneUIContextSpecs = {
       fieldWrapper: {
         [k in `${keyof typeof FormMode}-${FormField["type"]}`]:
           | string
-          | ((p: PropsWithChildren<FormField & {value: any}>) => ReactNode);
+          | ((p: PropsWithChildren<FormField & { value: any }>) => ReactNode);
       };
       titleVariant: FromOnePercentUtility<"UIElements.TextVariants">;
       labelVariant: FromOnePercentUtility<"UIElements.TextVariants">;
@@ -71,7 +71,7 @@ export type OneUIContextSpecs = {
           [K in FromOnePercentUtility<"UIElements.FormExtension">["fields"]["type"]]: {
             Input: (props: GenericFormFieldProps<K>) => ReactElement;
             validator: (
-              answer: AnswerByField<{ type: K }>,
+              answer: AnswerByField<{ type: K }> | undefined,
               question: BaseQuestion &
                 (FromOnePercentUtility<"UIElements.FormExtension">["fields"] & {
                   type: K;

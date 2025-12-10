@@ -28,9 +28,9 @@ export function useFormAnswers<A extends AnswersMap<any> = AnswersMap>(
     setAnswers,
   };
 }
-export function useFormState(
-  currentQuestions: FormFieldView[],
-  { answers, setAnswers }: ReturnType<typeof useFormAnswers>
+export function useFormState<Q extends FormFieldView[]>(
+  currentQuestions: Q,
+  { answers, setAnswers }: ReturnType<typeof useFormAnswers<AnswersMap<Q>>>
 ) {
   const formConfig = useOneUIConfig("component.form");
 
@@ -88,8 +88,8 @@ export function useFormState(
   };
 }
 
-export function useForm(
-  currentQuestions: FormFieldView[],
+export function useForm<Q extends FormFieldView[]>(
+  currentQuestions: Q,
   defaultAnswers: AnswersMap,
   mode: FormMode
 ) {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { IntlProvider } from "react-intl";
 import {
   extractAllPossibilitiesFromEnumProp,
@@ -21,6 +21,21 @@ export const InitialImplementation = (
 );
 InitialImplementation.args = {
   timeRemaining: 1000 * 60 * 60 * 12, // 12 hours
+} as Partial<React.ComponentProps<typeof Countdown>>;
+
+export const FinishCallback = (
+  args: React.ComponentProps<typeof Countdown>
+) => {
+  const [finished, setFinished] = useState(false);
+  return (
+    <IntlProvider locale="pt-br">
+      <h1>Finished {String(finished)}</h1>
+      <Countdown {...args} onFinish={() => setFinished(true)} />
+    </IntlProvider>
+  );
+};
+FinishCallback.args = {
+  timeRemaining: 1000 * 9.5,
 } as Partial<React.ComponentProps<typeof Countdown>>;
 
 export const SynergyTextAndCountdown = (args: any) => {

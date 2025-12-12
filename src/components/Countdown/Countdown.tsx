@@ -13,7 +13,8 @@ export type TimeObject = {
 };
 
 export function calculateTimeFromTimespan(timespan: number): TimeObject {
-  const seconds = Math.floor(timespan / 1000);
+  const secondsFraction = timespan / 1000
+  const seconds = Math.round(secondsFraction);
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
   return {
@@ -70,7 +71,7 @@ export default function Countdown({
 
     const tick = () => {
       const timeLeft = targetDate - Date.now();
-      if (timeLeft <= 0) {
+      if (timeLeft <= 800) {
         setT(calculateTimeFromTimespan(0));
         if (onFinishRef.current) onFinishRef.current();
         clearInterval(cl);

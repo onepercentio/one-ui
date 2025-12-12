@@ -13,7 +13,8 @@ export type TimeObject = {
 };
 
 export function calculateTimeFromTimespan(timespan: number): TimeObject {
-  const seconds = Math.floor(timespan / 1000);
+  const secondsFraction = timespan / 1000
+  const seconds = Math.round(secondsFraction);
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
   return {
@@ -55,37 +56,31 @@ export default function Countdown({
     calculateTimeFromTimespan(timeRemaining)
   );
 
+  const onFinishRef = React.useRef(onFinish);
+
+  useEffect(() => {
+    onFinishRef.current = onFinish;
+  }, [onFinish]);
+
   useLayoutEffect(() => {
     setT(calculateTimeFromTimespan(timeRemaining));
   }, [timeRemaining]);
 
   useEffect(() => {
-    const cl = setInterval(() => {
-      setT((prev) => {
-        let nextSecond = prev!.seconds - 1;
-        let nextMinute = prev!.minutes;
-        let nextHour = prev!.hours;
-        if (nextSecond < 0) {
-          nextSecond = 59;
-          nextMinute -= 1;
-          if (nextMinute < 0) {
-            nextMinute = 59;
-            nextHour -= 1;
-          }
-        }
+    const targetDate = Date.now() + timeRemaining;
 
-        if (nextHour === 0 && nextMinute === 0 && nextSecond === 0) {
-          if (onFinish) onFinish();
-          clearInterval(cl);
-        }
+    const tick = () => {
+      const timeLeft = targetDate - Date.now();
+      if (timeLeft <= 800) {
+        setT(calculateTimeFromTimespan(0));
+        if (onFinishRef.current) onFinishRef.current();
+        clearInterval(cl);
+      } else {
+        setT(calculateTimeFromTimespan(timeLeft));
+      }
+    };
 
-        return {
-          seconds: nextSecond,
-          minutes: nextMinute,
-          hours: nextHour,
-        };
-      });
-    }, 1000);
+    const cl = setInterval(tick, 1000);
 
     return () => {
       clearInterval(cl);

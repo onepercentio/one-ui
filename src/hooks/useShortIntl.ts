@@ -41,7 +41,7 @@ export default function useShortIntl(): IntlShape & {
   return {
     ...intl,
     txt: (id, params) => {
-      return devMode ? id : (formatMessage({ id }, params) as any);
+      return devMode ? id : (formatMessage({ id }, params as any) as any);
     },
     formatToDoubleDecimal(val: number, options = {}) {
       return formatNumber(val, {
@@ -69,9 +69,8 @@ export default function useShortIntl(): IntlShape & {
         )
         .toString()
         .replace("0.", "");
-      return `${integer}${
-        decimals !== "0" ? `${decimalSeparator}${decimals}` : ""
-      }`;
+      return `${integer}${decimals !== "0" ? `${decimalSeparator}${decimals}` : ""
+        }`;
     },
   };
 }

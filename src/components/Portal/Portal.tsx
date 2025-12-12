@@ -32,7 +32,7 @@ export default function Portal({
     els.forEach((el: any) => {
       latestEl =
         Number(el.getAttribute("data-timestamp")) >
-        Number(latestEl?.timestamp || 0)
+          Number(latestEl?.timestamp || 0)
           ? el
           : latestEl;
     });
@@ -40,7 +40,7 @@ export default function Portal({
   }, []);
 
   return target === undefined ? null : (
-    <>{target === null ? children : ReactDOM.createPortal(children, target)}</>
+    <>{target === null ? children : ReactDOM.createPortal(children as any, target)}</>
   );
 }
 

@@ -68,7 +68,7 @@ export function useFormState<Q extends FormFieldView[]>(
         break;
       default:
         setAnswers((prev) => {
-          if (prev[id] === answer) return prev;
+          if (prev[id as keyof typeof prev] === answer) return prev;
           return {
             ...prev,
             [id]: answer as string,
@@ -94,7 +94,7 @@ export function useForm<Q extends FormFieldView[]>(
   mode: FormMode
 ) {
   const answers = useFormAnswers(defaultAnswers, mode);
-  return useFormState(currentQuestions, answers);
+  return useFormState(currentQuestions, answers as any);
 }
 
 function useFileUploads(questions: FormField[], answers: AnswersMap) {

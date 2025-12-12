@@ -81,12 +81,12 @@ function Form<Q extends FormFieldView[]>(
           [classOrComponentWrapper]
         );
         return (
-          <WrapperComp {...q} value={answers[q.id]}>
+          <WrapperComp {...q} value={answers[q.id as keyof typeof answers]}>
             {targetMode === FormMode.WRITE ? (
               <FormField
                 config={q}
                 onAnswer={onAnswerAction}
-                value={answers[q.id] as any}
+                value={answers[q.id as keyof typeof answers]}
                 error={(errors as any)[q.id]}
                 mode={targetMode}
                 data-testid={props["data-testid"]?.(q.id)}
@@ -94,7 +94,7 @@ function Form<Q extends FormFieldView[]>(
             ) : (
               <FormField
                 config={q}
-                value={answers[q.id] as any}
+                value={answers[q.id as keyof typeof answers]}
                 mode={FormMode.READ_ONLY}
                 data-testid={props["data-testid"]?.(q.id)}
               />

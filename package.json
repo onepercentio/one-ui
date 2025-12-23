@@ -1,6 +1,6 @@
 {
   "name": "@onepercentio/one-ui",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A set of reusable components created through the development of Onepercent projects",
   "repository": "git@github.com:onepercentio/one-ui.git",
   "author": "Murilo Oliveira de Araujo <murilo.araujo@onepercent.io>",
@@ -141,7 +141,7 @@
     "deploy:storybook": "yarn build-storybook && firebase deploy --only hosting",
     "test:e2e:watch": "cypress open --component --port 6005 --browser chrome",
     "test:e2e": "cypress run --component --port 6015 --browser chrome",
-    "prepack": "yarn build; yarn build:ts; yarn build:ts:scss;"
+    "prepack": "bun src/index.preprocess.ts; yarn build; yarn build:ts; yarn build:ts:scss;"
   },
   "browserslist": {
     "production": [

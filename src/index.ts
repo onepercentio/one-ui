@@ -73,6 +73,8 @@ export * from "./components/StaticScroller/index";
 export {default as StaticScroller} from "./components/StaticScroller/index"
 export * from "./components/CheckBox/index";
 export {default as CheckBox} from "./components/CheckBox/index"
+export * from "./components/Slider/index";
+export {default as Slider} from "./components/Slider/index"
 export * from "./components/InfinityScroll/index";
 export {default as InfinityScroll} from "./components/InfinityScroll/index"
 export * from "./components/ProgressBar/index";

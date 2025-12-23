@@ -320,7 +320,7 @@ export function useOneUIConfig<
   P extends FieldPath<OneUIContextSpecs>,
   T extends Get<OneUIContextSpecs, P>
 >(prop: P, defaultValue?: T): Get<OneUIContextSpecs, P> | T {
-  const context = useContext(Context);
+  const context = useContext(Context);  
   if (process.env.NODE_ENV === "development") {
     const val = useMemo(() => {
       return get(context, prop);

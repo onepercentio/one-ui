@@ -2,19 +2,19 @@ import React, { ElementRef, ForwardedRef, forwardRef } from "react";
 import { useOneUIConfig } from "../../context/OneUIProvider";
 import { FromOnePercentUtility } from "../../type-utils";
 
-type ButtonProps = React.PropsWithChildren<
-  React.ButtonHTMLAttributes<HTMLButtonElement> & {
-    variant?: FromOnePercentUtility<'UIElements.ButtonVariants'>;
-  }
->;
+type Props = {
+  variant?: FromOnePercentUtility<"UIElements.ButtonVariants">;
+};
 
-export function _Button(
+function Button(
   {
     children,
     variant = "transparent",
     className = "",
     ...otherProps
-  }: ButtonProps,
+  }: React.PropsWithChildren<
+    Props & React.ButtonHTMLAttributes<HTMLButtonElement>
+  >,
   ref: ForwardedRef<HTMLButtonElement>
 ) {
   const classNameType = useOneUIConfig("component.button.className", {});
@@ -22,6 +22,7 @@ export function _Button(
     "component.button.Component",
     "button" as any
   );
+  
   return (
     <Component
       ref={ref}
@@ -37,5 +38,4 @@ export function _Button(
 /**
  * A simple button that can be customized via the provider
  **/
-const Button = forwardRef<HTMLButtonElement, ButtonProps>(_Button);
-export default Button;
+export default forwardRef(Button);

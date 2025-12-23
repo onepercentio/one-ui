@@ -32,6 +32,7 @@ it("Should display the footer only when really pageable", () => {
           currentPage: 1,
           togglePage: jest.fn(),
           totalItems: 3,
+          pageSize: 5
         }}
       />
     </OneUIProvider>

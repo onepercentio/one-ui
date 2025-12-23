@@ -5,10 +5,10 @@ import { RefObject, useLayoutEffect, useRef } from "react";
  */
 export default function useMergeRefs<T extends ReturnType<typeof useRef>>(
   mainRef: T,
-  ...otherRefs: T[]
+  ...otherRefs: (T | undefined)[]
 ) {
   useLayoutEffect(() => {
-    for (let ref of otherRefs) ref.current = mainRef.current;
+    for (let ref of otherRefs.filter(Boolean)) ref!.current = mainRef.current;
   }, []);
   return mainRef;
 }

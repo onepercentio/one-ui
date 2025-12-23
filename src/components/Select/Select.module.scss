@@ -20,7 +20,9 @@
   opacity: 0.3;
 }
 .input {
-  cursor: pointer;
+  &:not(.disabled) {
+    cursor: pointer;
+  }
   input {
     transition: opacity $fast;
     padding-right: 30px;

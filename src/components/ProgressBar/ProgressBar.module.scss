@@ -15,7 +15,7 @@
   background-color: red;
   position: relative;
   border-radius: math.div(0.25em, 2);
-  background: var(--progress-bar-bg, #0000);
+  background: var(--progress-bar-bg, #ababab);
   > :first-child {
     position: absolute;
     top: 0;
@@ -24,7 +24,7 @@
     height: inherit;
     border-top-left-radius: math.div(0.25em, 2);
     border-bottom-left-radius: math.div(0.25em, 2);
-    background: var(--progress-bar-bar, var(--digital-blue));
+    background: var(--progress-bar-bar, #dedede);
     transition: width var(--animation-speed-transition, $fast) ease-out;
   }
   &.completed > :first-child {
@@ -39,6 +39,6 @@
     width: 1em;
     border-radius: 0.5em;
     transition: left var(--animation-speed-transition, $fast) ease-out;
-    background: var(--progress-bar-guide, var(--digital-blue));
+    background: var(--progress-bar-guide, #dedede);
   }
 }

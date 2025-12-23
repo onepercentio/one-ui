@@ -1,0 +1,7 @@
+@import "../../assets/styles/variables.scss";
+@import "../../assets/styles/mixins.scss";
+
+.indicator {
+  @include iteractibleElement();
+  transition: left var(--animation-speed-transition, $fast) ease-out, transform  var(--animation-speed-transition, $fast) ease-out !important;
+}

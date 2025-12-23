@@ -1,19 +1,26 @@
 import React, {
   ComponentProps,
+  ForwardedRef,
+  RefObject,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
 import Styles from "./ProgressBar.module.scss";
+import useMergeRefs from "../../hooks/useMergeRefs";
 
 /**
  * Shows a progress bar
  **/
 export default function ProgressBar({
   progress,
+  indicatorRef,
+  bodyRef,
   ...props
 }: {
+  indicatorRef?: ForwardedRef<HTMLSpanElement>;
+  bodyRef?: RefObject<HTMLDivElement>;
   /**
    * Given in percent
    */
@@ -93,9 +100,12 @@ export default function ProgressBar({
         progress === 100 ? Styles.completed : ""
       }`}
       style={{ fontSize: size }}
+      ref={bodyRef}
     >
       <span style={{ width: `${progress}%` }} />
-      {mode === "guide" && <span style={{ left: `${progress}%` }} />}
+      {mode === "guide" && (
+        <span ref={indicatorRef} style={{ left: `${progress}%` }} />
+      )}
     </div>
   );
 }
@@ -120,5 +130,5 @@ export function BalancedProgressBar({
     return currProgress;
   }, [min, max, current]);
 
-  return <ProgressBar size={size} progress={progress} {...props as any} />;
+  return <ProgressBar size={size} progress={progress} {...(props as any)} />;
 }

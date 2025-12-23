@@ -41,28 +41,9 @@ export type SelectItem = (
     "ref" | "color"
   >;
 
-/**
- * A dropdown select
- **/
-function Select<I extends SelectItem>({
-  items,
-  selected,
-  label,
-  onClick,
-  loading,
-  rootClassName = "",
-  dropdownClassName: _drop = "",
-  alignTo = AnchoredTooltipAlignment.CENTER,
-  filter,
-  ...otherProps
-}: {
-  loading?: boolean;
-  items: Readonly<I[]>;
+type SingleMode<I extends SelectItem> = {
+  mode?: "single";
   onClick: (i: I) => void;
-  rootClassName?: string;
-  dropdownClassName?: string;
-  alignTo?: AnchoredTooltipAlignment;
-  filter?: (item: I, term: string) => boolean;
 } & (
   | {
       selected?: I["value"];
@@ -72,14 +53,44 @@ function Select<I extends SelectItem>({
       selected: I["value"];
       label?: string;
     }
-) &
+);
+
+type MultiMode<I extends SelectItem> = {
+  mode: "multi";
+  onClick: (i: I[]) => void;
+  selected?: I["value"][];
+};
+
+/**
+ * A dropdown select
+ **/
+function Select<I extends SelectItem>({
+  items,
+  label,
+  loading,
+  rootClassName = "",
+  dropdownClassName: _drop = "",
+  alignTo = AnchoredTooltipAlignment.CENTER,
+  filter,
+  ...otherProps
+}: {
+  loading?: boolean;
+  items: Readonly<I[]>;
+  rootClassName?: string;
+  dropdownClassName?: string;
+  alignTo?: AnchoredTooltipAlignment;
+  filter?: (item: I, term: string) => boolean;
+} & (SingleMode<I> | MultiMode<I>) &
   Omit<ComponentProps<typeof Input>, "selected" | "onClick">) {
+  const { selected: _, onClick: __, ...propsToSpread } = otherProps;
   const { StateIndicator } = useOneUIContext().component.select;
   const collapsableRef = useRef<ElementRef<typeof Collapsable>>(null);
 
   const _selected = useMemo(() => {
-    return items.find((a) => a.value === selected);
-  }, [selected, items]);
+    if (otherProps.mode === "multi")
+      return items.filter((a) => otherProps.selected?.includes(a.value));
+    return items.find((a) => a.value === otherProps.selected);
+  }, [otherProps.selected, items]);
 
   const [open, setOpen] = useState(false);
   const [filterTerm, setFilterTerm] = useState("");
@@ -118,12 +129,20 @@ function Select<I extends SelectItem>({
     <Collapsable
       title={
         <Input
-          {...otherProps}
+          {...propsToSpread}
           className={`${Styles.input} ${selectClasses.input} ${
             !items.length ? Styles.empty : ""
-          }`}
+          } ${otherProps.disabled ? Styles.disabled : ""}`}
           value={
-            _selected
+            Array.isArray(_selected)
+              ? _selected.length
+                ? `(${_selected.length}) ${
+                    "labelStr" in _selected[0]
+                      ? _selected[0].labelStr
+                      : _selected[0].label
+                  }`
+                : label || ""
+              : _selected
               ? "labelStr" in _selected
                 ? _selected.labelStr
                 : _selected.label
@@ -141,7 +160,7 @@ function Select<I extends SelectItem>({
       mode="float"
       open={open}
       onToggleOpen={(open) => {
-        if (items.length) setOpen(open);
+        if (items.length && !otherProps.disabled) setOpen(open);
       }}
       className={`${otherProps.disabled ? "disabled" : ""} ${rootClassName}`}
       contentClassName={`${Styles.optionsContainer} ${selectClasses.dropdown}`}
@@ -177,7 +196,15 @@ function Select<I extends SelectItem>({
                 ? `${Styles.selected} ${selectClasses.selectedItem}`
                 : ""
             } ${selectClasses.item || ""}`}
-            onClick={() => onClick(i)}
+            onClick={() => {
+              if (otherProps.mode === "multi") {
+                const curr = otherProps.selected || [];
+                otherProps.onClick([
+                  ...curr.map((iId) => items.find((i) => i.value === iId)!),
+                  i,
+                ]);
+              } else otherProps.onClick(i);
+            }}
             {...i}
           >
             {i.label}

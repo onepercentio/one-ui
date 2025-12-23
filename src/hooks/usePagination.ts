@@ -43,8 +43,9 @@ export default function usePagination<I extends any>(
     Array.isArray(paginationId) ? paginationId : [paginationId]
   );
 
-  const [items, setItems] =
-    useState<[paginationId: string, items: I[]] | undefined>();
+  const [items, setItems] = useState<
+    [paginationId: string, items: I[]] | undefined
+  >();
 
   const [id, setId] = useState(() => paginationIdFactory());
 

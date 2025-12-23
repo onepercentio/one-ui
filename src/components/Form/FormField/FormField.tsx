@@ -336,6 +336,7 @@ export default function FormField<Q extends FormFieldView>({
             }}
             filter={c.filter}
             error={error as string}
+            disabled={props.disabled}
           />
         </>
       );
@@ -357,6 +358,7 @@ export default function FormField<Q extends FormFieldView>({
               onAnswer(type, c.id, filter(value));
             }}
             data-testid={props["data-testid"]}
+            disabled={props.disabled}
           />
         </>
       );

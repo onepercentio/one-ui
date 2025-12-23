@@ -1,12 +1,14 @@
 @mixin iteractibleElement() {
-  & {
-    cursor: pointer;
-    transition: transform $fast;
-  }
-  &:hover {
-    transform: scale(1.2);
-  }
-  &:active {
-    transform: scale(1.1);
+  &:not(:disabled) {
+    & {
+      cursor: pointer;
+      transition: transform $fast;
+    }
+    &:hover {
+      transform: scale(1.2);
+    }
+    &:active {
+      transform: scale(1.1);
+    }
   }
 }

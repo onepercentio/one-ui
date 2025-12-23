@@ -4,24 +4,26 @@ import React, {
   useContext,
   useMemo,
   useRef,
+  useState,
 } from "react";
-import { useOneUIContext } from "../../context/OneUIProvider";
-import Button from "../Button";
+import { useOneUIConfig } from "../../context/OneUIProvider";
 import Spacing from "../Spacing";
 import UncontrolledTransition from "../UncontrolledTransition";
 import Styles from "./Table.module.scss";
 
 export type TableProps<I extends any> = {
+  /** The list of items to render on the table */
+  items: (I & { className?: string })[] | undefined;
   className?: string;
+  /** A map of header ID */
   heading: {
     [K in keyof I]?: string;
   };
   order: (keyof I)[];
-  items: (I & { className?: string })[];
   paginable?: {
-    currentPage: number;
     totalItems: number;
     togglePage: (page: number) => void;
+    pageSize: number;
   };
 };
 
@@ -35,39 +37,36 @@ export default function Table<I extends any>({
   items,
   className = "",
 }: TableProps<I>) {
-  const transitionRef =
-    useRef<ElementRef<typeof UncontrolledTransition> | HTMLDivElement>(null);
-  const {
-    controls: {
-      NextPage = ({ disabled }) => (
-        <Button disabled={disabled} variant="filled">
-          {">"}
-        </Button>
-      ),
-      PrevPage = ({ disabled }) => (
-        <Button disabled={disabled} variant="filled">
-          {"<"}
-        </Button>
-      ),
-    },
-  } = useOneUIContext().component.table;
+  const transitionRef = useRef<
+    ElementRef<typeof UncontrolledTransition> | HTMLDivElement
+  >(null);
 
-  const { items: itemsToShow, pages } = useMemo(() => {
+  const [currPage, setCurrPage] = useState(0);
+
+  const { NextPage, PrevPage } = useOneUIConfig("component.table.controls");
+  const itemsToShow = useMemo(() => {
     if (paginable) {
-      const numPages = Math.ceil(paginable.totalItems / 5);
+      const from = currPage * paginable.pageSize;
+      return items?.slice(from, from + paginable.pageSize) || [];
+    } else {
+      return items;
+    }
+  }, [items, currPage]);
+  console.log("Showing", itemsToShow);
+  
+
+  const { pages } = useMemo(() => {
+    if (paginable) {
+      const numPages = Math.ceil(paginable.totalItems / paginable.pageSize);
 
       return {
-        items: items.slice(
-          (paginable.currentPage - 1) * 5,
-          (paginable.currentPage - 1) * 5 + 5
-        ),
         pages: numPages,
       };
     }
     return {
       items: items,
     };
-  }, [items, paginable?.currentPage, paginable?.totalItems]);
+  }, [items, currPage, paginable?.totalItems]);
 
   const Wrapper = paginable ? UncontrolledTransition : "div";
 
@@ -84,10 +83,10 @@ export default function Table<I extends any>({
           className={Styles.transitionContainer}
           ref={transitionRef as any}
         >
-          <TableComp key={paginable?.currentPage} className={className} />
+          <TableComp key={currPage} className={className} />
         </Wrapper>
       </TableContext.Provider>
-      {paginable && paginable.totalItems > 5 ? (
+      {paginable && paginable.totalItems > paginable.pageSize ? (
         <>
           <Spacing size="small" />
           <div className={Styles.footer} data-testid="controls">
@@ -96,23 +95,23 @@ export default function Table<I extends any>({
               onClick={() => {
                 if (!(transitionRef.current instanceof HTMLDivElement))
                   transitionRef.current!.setOrientation("backward");
-                paginable.togglePage(paginable.currentPage - 1);
+                paginable.togglePage(currPage - 1);
+                setCurrPage(currPage - 1);
               }}
             >
-              <PrevPage disabled={paginable.currentPage === 1} />
+              <PrevPage disabled={currPage === 0} />
             </span>
-            <span
-              className={Styles.paging}
-            >{`${paginable.currentPage}/${pages}`}</span>
+            <span className={Styles.paging}>{`${currPage + 1}/${pages}`}</span>
             <span
               className={Styles.iterable}
               onClick={() => {
                 if (!(transitionRef.current instanceof HTMLDivElement))
                   transitionRef.current!.setOrientation("forward");
-                paginable.togglePage(paginable.currentPage + 1);
+                paginable.togglePage(currPage + 1);
+                setCurrPage(currPage + 1);
               }}
             >
-              <NextPage disabled={paginable.currentPage === pages} />
+              <NextPage disabled={currPage === pages! - 1} />
             </span>
           </div>
         </>

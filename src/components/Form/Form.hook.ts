@@ -207,10 +207,9 @@ export function useFieldErrors<
               question.type as FromOnePercentUtility<"UIElements.FormExtension">["fields"]["type"]
             ];
           if (extendedSupport) {
-            const validationResultExtend = extendedSupport.validator(
-              ans(question) as any,
-              question as any
-            );
+            const validationResultExtend = extendedSupport.validator
+              ? extendedSupport.validator(ans(question) as any, question as any)
+              : _isValidated();
             if (validationResultExtend.error)
               errorsMap[question.id] = validationResultExtend.error;
           } else {
@@ -287,10 +286,17 @@ export function areAllQuestionsAnswered(
                 question.type as FromOnePercentUtility<"UIElements.FormExtension">["fields"]["type"]
               ];
             if (extendedSupport) {
-              const validationResultExtend = extendedSupport.validator(
-                ans(question) as any,
-                question as any
-              );
+              const validationResultExtend = extendedSupport.validator
+                ? extendedSupport.validator(
+                    ans(question) as any,
+                    question as any
+                  )
+                : isValidated(
+                    ans(question),
+                    !!question.optional,
+                    question.validator,
+                    requiredLabel
+                  );
               return validationResultExtend.isValid;
             } else
               return question.validator

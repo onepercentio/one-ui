@@ -27,8 +27,14 @@ function Form<Q extends FormFieldView[]>(
   const { showAllErrors = false } = props as FormViewProps<Q> & {
     mode: FormMode.WRITE;
   };
+  const filterOutInitialAnswers = useMemo(() => {
+    const questionIds = questions.map((a) => a.id);
+    return Object.fromEntries(
+      Object.entries(initialAnswers).filter(([id]) => questionIds.includes(id))
+    );
+  }, [initialAnswers]);
   const { answers, onAnswerAction, isQuestionsAnswered, isFilesUploaded } =
-    useForm(questions, initialAnswers, mode);
+    useForm(questions, filterOutInitialAnswers, mode);
   const errors = useFieldErrors(questions, answers, showAllErrors);
 
   useEffect(() => {

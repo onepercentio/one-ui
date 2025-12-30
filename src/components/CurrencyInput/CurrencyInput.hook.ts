@@ -2,7 +2,7 @@ import { useLayoutEffect, useMemo, useRef } from "react";
 import { currencyFormatterFactory } from "../../utils/formatters";
 
 export function useCurrencyInput(
-  amount: string | undefined,
+  amount: number | string | undefined,
   locale: string,
   currency: string,
   onChange?: (formattedCurrency: string) => void
@@ -12,7 +12,10 @@ export function useCurrencyInput(
     []
   );
   const number = useMemo(
-    () => Number(amount?.replace(/[^0-9]/g, "") || 0) / 100,
+    () =>
+      typeof amount === "number"
+        ? amount
+        : Number(amount?.replace(/[^0-9]/g, "") || 0) / 100,
     [amount]
   );
   const moneyFormat = useMemo(() => {

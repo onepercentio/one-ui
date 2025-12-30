@@ -121,7 +121,7 @@ export default function Table<I extends any>({
 }
 
 const TableContext = createContext<{
-  itemsToShow: any[];
+  itemsToShow: any[] | undefined;
   keys: any[];
   heading: { [k: string]: string | undefined };
 }>(null as any);
@@ -138,7 +138,7 @@ function TableComp({ className }: { className: string }) {
         </tr>
       </thead>
       <tbody>
-        {itemsToShow.map((i, index) => (
+        {itemsToShow?.map((i, index) => (
           <tr key={String(index)} className={i.className}>
             {keys.map((key) => (
               <td key={String(key)}>{i[key]}</td>

@@ -1,26 +1,24 @@
-import React, { ComponentProps } from "react";
+import { ComponentProps } from "react";
 import Input from "../Input";
-import { useCurrencyInput } from "./CurrencyInput.hook";
-import { currencyFormatterFactory } from "../../utils/formatters";
+import { useCurrencyInput } from "../CurrencyInput/CurrencyInput.hook";
+import { decimalFormatterFactory } from "../../utils/formatters";
 
 export default function CurrencyInput({
   locale,
   value: amount,
-  currency,
   onChange,
   placeholder,
   error,
   ...props
 }: Omit<ComponentProps<typeof Input>, "onChange"> & {
-  currency: string;
   onChange?: (formatted: string) => void;
   locale: string;
 }) {
   const { inputRef, moneyFormat, lastPosition } = useCurrencyInput(
     amount,
     locale,
-    currency,
-    currencyFormatterFactory,
+    "",
+    decimalFormatterFactory,
     onChange
   );
   return (

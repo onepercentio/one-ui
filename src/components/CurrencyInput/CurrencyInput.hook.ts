@@ -1,16 +1,19 @@
 import { useLayoutEffect, useMemo, useRef } from "react";
-import { currencyFormatterFactory } from "../../utils/formatters";
+import {
+  currencyFormatterFactory,
+  decimalFormatterFactory,
+} from "../../utils/formatters";
 
 export function useCurrencyInput(
   amount: number | string | undefined,
   locale: string,
   currency: string,
+  formatterFactory:
+    | typeof currencyFormatterFactory
+    | typeof decimalFormatterFactory,
   onChange?: (formattedCurrency: string) => void
 ) {
-  const formatter = useMemo(
-    () => currencyFormatterFactory(locale, currency),
-    []
-  );
+  const formatter = useMemo(() => formatterFactory(locale, currency), []);
   const number = useMemo(
     () =>
       typeof amount === "number"

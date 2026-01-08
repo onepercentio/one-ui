@@ -34,3 +34,21 @@ export const currencyFormatterFactory = (
     };
   }
 };
+
+export const decimalFormatterFactory = (langCode: string) => {
+  try {
+    return new Intl.NumberFormat(langCode, {
+      style: "decimal",
+    });
+  } catch (e) {
+    const f = new Intl.NumberFormat(langCode, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+    return {
+      format: (num: number) => `${currencyNumberFormatter(num)}`,
+      formatToParts: (num: number) => [...f.formatToParts(num)],
+    };
+  }
+};

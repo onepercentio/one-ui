@@ -69,6 +69,9 @@ export type OneUIContextSpecs = {
         "UIElements.FormExtension",
         {
           [K in FromOnePercentUtility<"UIElements.FormExtension">["fields"]["type"]]: {
+            ReadOnly?: (
+              props: Omit<GenericFormFieldProps<K>, "onAnswer" | "error">
+            ) => ReactElement;
             Input: (props: GenericFormFieldProps<K>) => ReactElement;
             validator: (
               answer: AnswerByField<{ type: K }> | undefined,
@@ -320,7 +323,7 @@ export function useOneUIConfig<
   P extends FieldPath<OneUIContextSpecs>,
   T extends Get<OneUIContextSpecs, P>
 >(prop: P, defaultValue?: T): Get<OneUIContextSpecs, P> | T {
-  const context = useContext(Context);  
+  const context = useContext(Context);
   if (process.env.NODE_ENV === "development") {
     const val = useMemo(() => {
       return get(context, prop);

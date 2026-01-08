@@ -6,8 +6,13 @@ import React, {
   useImperativeHandle,
   useMemo,
 } from "react";
-import { FormMode, FormViewProps } from "./Form.types";
-import { useFieldErrors, useForm } from "./Form.hook";
+import { AnswersMap, FormMode, FormViewProps } from "./Form.types";
+import {
+  useFieldErrors,
+  useForm,
+  useFormAnswers,
+  useFormState,
+} from "./Form.hook";
 import FormField from "./FormField";
 import { AnswerByField, FormFieldView } from "./FormField/FormField.types";
 import { useOneUIConfig } from "../../context/OneUIProvider";
@@ -23,19 +28,60 @@ function Form<Q extends FormFieldView[]>(
   { questions, initialAnswers = {}, ...props }: FormViewProps<Q>,
   ref: ForwardedRef<FormRef<Q>>
 ) {
-  const { mode = FormMode.WRITE } = props;
-  const { showAllErrors = false } = props as FormViewProps<Q> & {
-    mode: FormMode.WRITE;
-  };
   const filterOutInitialAnswers = useMemo(() => {
     const questionIds = questions.map((a) => a.id);
     return Object.fromEntries(
       Object.entries(initialAnswers).filter(([id]) => questionIds.includes(id))
     );
   }, [initialAnswers]);
+  const answers = useFormAnswers(filterOutInitialAnswers, props.mode!);
+
+  return (
+    <ControlledForm
+      ref={ref}
+      questions={questions}
+      initialAnswers={initialAnswers}
+      answers={answers}
+      {...props}
+    />
+  );
+}
+
+/**
+ * A new and improved version of the one-ui design form
+ *
+ * Custom question types can be defined via @type {OnepercentUtility['UIElements']['FormExtension']['fields']}
+ **/
+export default forwardRef(Form);
+
+function ControlledFormComp<Q extends FormFieldView[]>(
+  {
+    questions,
+    initialAnswers = {},
+    answers: answersControl,
+    ...props
+  }: FormViewProps<Q> & {
+    answers: ReturnType<typeof useFormAnswers<AnswersMap<Q>>>;
+  },
+  ref: ForwardedRef<FormRef<Q>>
+) {
+  const { mode = FormMode.WRITE } = props;
+  const { showAllErrors = false } = props as unknown as FormViewProps<Q> & {
+    mode: FormMode.WRITE;
+  };
   const { answers, onAnswerAction, isQuestionsAnswered, isFilesUploaded } =
-    useForm(questions, filterOutInitialAnswers, mode);
-  const errors = useFieldErrors(questions, answers, showAllErrors);
+    useFormState(questions, answersControl as any);
+  const errors = useFieldErrors(
+    questions,
+    answersControl.answers,
+    showAllErrors
+  );
+
+  const answersArray = useMemo(() => {
+    return questions.map(
+      (q) => answersControl.answers[q.id as keyof typeof answersControl.answers]
+    );
+  }, [questions.map((a) => a.id), answersControl.answers]);
 
   useEffect(() => {
     if (props.mode !== FormMode.READ_ONLY) {
@@ -44,7 +90,7 @@ function Form<Q extends FormFieldView[]>(
         isQuestionsAnswered && isFilesUploaded
       );
     }
-  }, [answers, isQuestionsAnswered, isFilesUploaded]);
+  }, [...answersArray, isQuestionsAnswered, isFilesUploaded]);
 
   useImperativeHandle(
     ref,
@@ -87,12 +133,23 @@ function Form<Q extends FormFieldView[]>(
           [classOrComponentWrapper]
         );
         return (
-          <WrapperComp {...q} value={answers[q.id as keyof typeof answers]}>
+          <WrapperComp
+            {...q}
+            value={
+              answersControl.answers[
+                q.id as keyof typeof answersControl.answers
+              ]
+            }
+          >
             {targetMode === FormMode.WRITE ? (
               <FormField
                 config={q}
                 onAnswer={onAnswerAction}
-                value={answers[q.id as keyof typeof answers]}
+                value={
+                  answersControl.answers[
+                    q.id as keyof typeof answersControl.answers
+                  ]
+                }
                 error={(errors as any)[q.id]}
                 mode={targetMode}
                 data-testid={props["data-testid"]?.(q.id)}
@@ -100,7 +157,11 @@ function Form<Q extends FormFieldView[]>(
             ) : (
               <FormField
                 config={q}
-                value={answers[q.id as keyof typeof answers]}
+                value={
+                  answersControl.answers[
+                    q.id as keyof typeof answersControl.answers
+                  ]
+                }
                 mode={FormMode.READ_ONLY}
                 data-testid={props["data-testid"]?.(q.id)}
               />
@@ -112,9 +173,4 @@ function Form<Q extends FormFieldView[]>(
   );
 }
 
-/**
- * A new and improved version of the one-ui design form
- *
- * Custom question types can be defined via @type {OnepercentUtility['UIElements']['FormExtension']['fields']}
- **/
-export default forwardRef(Form);
+export const ControlledForm = forwardRef(ControlledFormComp);

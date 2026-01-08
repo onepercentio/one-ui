@@ -100,12 +100,22 @@ export default function FormField<Q extends FormFieldView>({
           </>
         );
       default:
-        const answer = val<typeof type>() as ReactNode;
+        const CustomReadOnly = extensions?.[type as keyof typeof extensions]
+          ?.ReadOnly as any;
+        const answer = val<typeof type>();
         return (
           <>
             <OneText type={titleVariant}>{c.title}</OneText>
             <OneText type={labelVariant} data-testid={props["data-testid"]}>
-              {answer || "-"}
+              {CustomReadOnly ? (
+                <CustomReadOnly
+                  question={c as any}
+                  value={value as any}
+                  data-testid={props["data-testid"]}
+                />
+              ) : (
+                ((answer || "-") as ReactNode)
+              )}
             </OneText>
           </>
         );

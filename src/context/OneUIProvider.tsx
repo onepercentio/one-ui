@@ -119,6 +119,10 @@ export type OneUIContextSpecs = {
         /** The input html tag */
         input: string;
       };
+      labelVariants: {
+        error?: FromOnePercentUtility<"UIElements.TextVariants">;
+        disclaimer?: FromOnePercentUtility<"UIElements.TextVariants">;
+      };
     };
     fileInput: {
       View: (props: FileInputViewProps) => ReactElement;

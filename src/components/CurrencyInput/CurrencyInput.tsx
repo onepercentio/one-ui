@@ -36,6 +36,7 @@ export default function CurrencyInput({
           lastPosition.current = diffFromEndToStart;
           onChange?.(value);
         }}
+        disclaimer={props.disclaimer}
       />
     </>
   );

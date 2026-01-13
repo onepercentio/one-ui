@@ -28,10 +28,10 @@ export type InputProps = {
   onChange?: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
   containerProps?: Omit<React.HTMLProps<HTMLDivElement>, "ref">;
   value?: string;
-  'data-testid'?: string;
+  "data-testid"?: string;
 } & Omit<
   React.HTMLProps<HTMLInputElement | HTMLTextAreaElement>,
-  "ref" | "onChange" | 'value'
+  "ref" | "onChange" | "value"
 >;
 function _Input(
   {
@@ -51,6 +51,7 @@ function _Input(
   ref: ForwardedRef<any>
 ) {
   const className = useOneUIConfig("component.input.className", {});
+  const variants = useOneUIConfig("component.input.labelVariants", {});
   const [focused, setFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
   useImperativeHandle(ref, () => inputRef.current, []);
@@ -69,8 +70,9 @@ function _Input(
   const Component = multiline ? "textarea" : "input";
   return (
     <div
-      className={`${Styles.inputContainer} ${false ? Styles.withIcon : ""
-        } ${className.container} ${localClassName}`}
+      className={`${Styles.inputContainer} ${false ? Styles.withIcon : ""} ${
+        className.container
+      } ${localClassName}`}
       {...containerProps}
     >
       {decoration}
@@ -93,14 +95,14 @@ function _Input(
         <Text
           title={typeof error === "string" ? error : ""}
           className={Styles.caption}
-          type="error"
+          type={variants.error ?? "error"}
         >
           {error}
         </Text>
       ) : disclaimer ? (
         <Text
           title={typeof disclaimer === "string" ? disclaimer : ""}
-          type="caption"
+          type={variants.disclaimer ?? "caption"}
           className={Styles.caption}
         >
           {disclaimer}

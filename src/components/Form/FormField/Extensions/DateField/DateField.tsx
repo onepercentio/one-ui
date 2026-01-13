@@ -16,7 +16,8 @@ export default function dateFieldFactory(dateFormat: string) {
     value,
     error,
     ...input
-  }: GenericFormFieldProps<"date"> & Pick<ComponentProps<typeof Input>, "data-testid">) {
+  }: GenericFormFieldProps<"date"> &
+    Pick<ComponentProps<typeof Input>, "data-testid" | "placeholder">) {
     const { titleVariant } = useOneUIConfig("component.form");
     return (
       <>
@@ -29,7 +30,7 @@ export default function dateFieldFactory(dateFormat: string) {
           }}
         >
           <Input
-            placeholder={question.title}
+            placeholder={input.placeholder ?? question.title}
             error={error}
             data-testid={input["data-testid"]}
           />
@@ -39,31 +40,35 @@ export default function dateFieldFactory(dateFormat: string) {
   };
 }
 
-const parseDate = (formattedDate: string) => {
+const parseDate = (formattedDate: string, format: string) => {
+  const howManyParts = format.split("/");
   const providedDate = formattedDate;
-  const dateParts = providedDate.split("/").map(Number);
-  if (dateParts.length < 2) return false;
-  const [day, month, year] = dateParts;
+  const dateParts = providedDate.split("/").map(Number).reverse();
+  if (dateParts.length < howManyParts.length) return false;
+  const [year, month, day = 1] = dateParts;
+  if (month > 12) return false;
+  if (day > 31) return false;
   const parsedDate = new Date(year, month - 1, day);
 
   return parsedDate;
 };
 
 export const dateFieldValidatorFactory =
-  (invalidDateLabel: string, requiredFieldLabel: string) =>
-    (answer: AnswerByField<{ type: "date" }>) => {
-      const providedDate = answer || "";
-      const parsedDate = parseDate(providedDate);
-      if (!parsedDate)
-        return {
-          isValid: false,
-          error: invalidDateLabel,
-        };
-      const dateValidation = isValidated(
-        providedDate,
-        false,
-        undefined,
-        requiredFieldLabel
-      );
-      return dateValidation;
-    };
+  (invalidDateLabel: string, requiredFieldLabel: string, format: string) =>
+  (answer: AnswerByField<{ type: "date" }>) => {
+    const providedDate = answer || "";
+    const parsedDate = parseDate(providedDate, format);
+
+    if (!parsedDate)
+      return {
+        isValid: false,
+        error: invalidDateLabel,
+      };
+    const dateValidation = isValidated(
+      providedDate,
+      false,
+      undefined,
+      requiredFieldLabel
+    );
+    return dateValidation;
+  };

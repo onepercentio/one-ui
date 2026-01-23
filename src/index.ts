@@ -122,6 +122,8 @@ export * from "./components/AnimatedEntrance/index";
 export {default as AnimatedEntrance} from "./components/AnimatedEntrance/index"
 export * from "./components/LoaderDotsIndicator/index";
 export {default as LoaderDotsIndicator} from "./components/LoaderDotsIndicator/index"
+export * from "./components/NumberInput/index";
+export {default as NumberInput} from "./components/NumberInput/index"
 export * from "./components/Text/index";
 export {default as Text} from "./components/Text/index"
 export * from "./components/Select/index";

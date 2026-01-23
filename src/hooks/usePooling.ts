@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 type PoolingAction = () => Promise<boolean>;
 
 export default function usePooling(intervalMs = 1000, maxPoolingTime: number | null = 60000) {
-  const [intervalId, setIntervalId] = useState<NodeJS.Timer>();
+  const [intervalId, setIntervalId] = useState<NodeJS.Timeout>();
   const [failed, setFailed] = useState<boolean>(false);
 
   const cancelPooling = () => {

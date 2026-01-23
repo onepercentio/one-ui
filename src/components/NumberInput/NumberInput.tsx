@@ -1,40 +1,61 @@
-import { ComponentProps } from "react";
+import { ComponentProps, useEffect, useMemo, useState } from "react";
 import Input from "../Input";
-import { useCurrencyInput } from "../CurrencyInput/CurrencyInput.hook";
-import { decimalFormatterFactory } from "../../utils/formatters";
+import CurrencyInput from "../CurrencyInput";
+import bn from "bignumber.js"
 
-export default function CurrencyInput({
-  locale,
-  value: amount,
-  onChange,
-  placeholder,
-  error,
-  ...props
-}: Omit<ComponentProps<typeof Input>, "onChange"> & {
-  onChange?: (formatted: string) => void;
-  locale: string;
-}) {
-  const { inputRef, moneyFormat, lastPosition } = useCurrencyInput(
-    amount,
-    locale,
-    "",
-    decimalFormatterFactory,
-    onChange
-  );
-  return (
-    <>
-      <Input
-        ref={inputRef}
-        placeholder={placeholder}
-        value={moneyFormat}
-        error={error as string}
-        data-testid={props["data-testid"]}
-        onChange={({ target: { value, selectionStart = value.length } }) => {
-          const diffFromEndToStart = value.length - selectionStart!;
-          lastPosition.current = diffFromEndToStart;
-          onChange?.(value);
-        }}
-      />
-    </>
-  );
+const withoutFormat = (strValue: string) =>
+    strValue
+        .replace(/[^0-9,.]/g, '')
+        .replaceAll('.', '')
+        .replaceAll(',', '.')
+
+export default function NumberInput(
+    props: Omit<
+        ComponentProps<typeof CurrencyInput>,
+        'onChange' | 'value' | 'locale' | 'currency'
+    > & {
+        onChange: (n?: number) => void
+        value?: number
+        hint?: string
+    }
+) {
+    const [strValue, setStrValue] = useState(() => {
+        return withoutFormat(props.value?.toFixed() ?? '')
+    })
+    const nextValue = useMemo(() => {
+        const valueToConvert = withoutFormat(strValue)
+        const newValue = Number(valueToConvert)
+        return !Number.isNaN(newValue) ? bn(newValue).toNumber() : undefined
+    }, [strValue])
+
+    useEffect(() => {
+        const t = setTimeout(() => {
+            if (nextValue !== props.value)
+                setStrValue(withoutFormat(props.value?.toFixed() ?? ''))
+        }, 500)
+        return () => clearTimeout(t)
+    }, [props.value])
+
+    useEffect(() => {
+        if (nextValue !== undefined) {
+            props.onChange(nextValue)
+        } else {
+            props.onChange(undefined)
+        }
+    }, [nextValue])
+    return (
+        <Input
+            {...props}
+            value={strValue}
+            onChange={(e) => {
+                setStrValue(
+                    withoutFormat(e.target.value.replace('.', ',')).replace(
+                        '.',
+                        ','
+                    )
+                )
+            }}
+            disclaimer={props.hint}
+        />
+    )
 }

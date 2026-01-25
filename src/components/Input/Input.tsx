@@ -71,11 +71,9 @@ function _Input(
   }, [autoFocus]);
   const Component = multiline ? "textarea" : "input";
   return (
-    <div>
+    <div className={`${className.container} ${localClassName}`}>
       <div
-        className={`${Styles.inputContainer} ${false ? Styles.withIcon : ""} ${
-          className.container
-        } ${localClassName}`}
+        className={`${Styles.inputContainer} ${false ? Styles.withIcon : ""}`}
         {...containerProps}
       >
         {decoration}
@@ -102,7 +100,6 @@ function _Input(
           <Text
             key={"error"}
             title={typeof error === "string" ? error : ""}
-            className={Styles.caption}
             type={variants.error ?? "error"}
           >
             {error}
@@ -112,7 +109,6 @@ function _Input(
             key={"t"}
             title={typeof disclaimer === "string" ? disclaimer : ""}
             type={variants.disclaimer ?? "caption"}
-            className={Styles.caption}
           >
             {disclaimer}
           </Text>

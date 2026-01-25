@@ -3,6 +3,7 @@ import React, {
   DetailedHTMLProps,
   ForwardedRef,
   forwardRef,
+  Fragment,
   ReactElement,
   useEffect,
   useImperativeHandle,
@@ -13,6 +14,7 @@ import React, {
 import { useOneUIConfig } from "../../context/OneUIProvider";
 import Text from "../Text";
 import Styles from "./Input.module.scss";
+import AdaptiveContainer from "../AdaptiveContainer";
 
 export type InputProps = {
   decoration?: React.ReactElement | null;
@@ -48,7 +50,7 @@ function _Input(
     className: localClassName,
     ...otherProps
   }: InputProps,
-  ref: ForwardedRef<any>
+  ref: ForwardedRef<any>,
 ) {
   const className = useOneUIConfig("component.input.className", {});
   const variants = useOneUIConfig("component.input.labelVariants", {});
@@ -69,47 +71,55 @@ function _Input(
   }, [autoFocus]);
   const Component = multiline ? "textarea" : "input";
   return (
-    <div
-      className={`${Styles.inputContainer} ${false ? Styles.withIcon : ""} ${
-        className.container
-      } ${localClassName}`}
-      {...containerProps}
-    >
-      {decoration}
-      <Component
-        ref={inputRef as any}
-        placeholder={placeholder}
-        rows={multiline}
-        className={className.input}
-        {...otherProps}
-        onFocus={(e) => {
-          setFocused(true);
-          if (otherProps.onFocus) otherProps.onFocus(e);
-        }}
-        onBlur={(e) => {
-          setFocused(false);
-          if (otherProps.onBlur) otherProps.onBlur(e);
-        }}
-      />
-      {error && shouldShowError ? (
-        <Text
-          title={typeof error === "string" ? error : ""}
-          className={Styles.caption}
-          type={variants.error ?? "error"}
-        >
-          {error}
-        </Text>
-      ) : disclaimer ? (
-        <Text
-          title={typeof disclaimer === "string" ? disclaimer : ""}
-          type={variants.disclaimer ?? "caption"}
-          className={Styles.caption}
-        >
-          {disclaimer}
-        </Text>
-      ) : null}
-      {Icon && <div className={Styles.icon}>{Icon}</div>}
-      {icon && <img className={Styles.icon} {...icon} />}
+    <div>
+      <div
+        className={`${Styles.inputContainer} ${false ? Styles.withIcon : ""} ${
+          className.container
+        } ${localClassName}`}
+        {...containerProps}
+      >
+        {decoration}
+        <Component
+          ref={inputRef as any}
+          placeholder={placeholder}
+          rows={multiline}
+          className={className.input}
+          {...otherProps}
+          onFocus={(e) => {
+            setFocused(true);
+            if (otherProps.onFocus) otherProps.onFocus(e);
+          }}
+          onBlur={(e) => {
+            setFocused(false);
+            if (otherProps.onBlur) otherProps.onBlur(e);
+          }}
+        />
+        {Icon && <div className={Styles.icon}>{Icon}</div>}
+        {icon && <img className={Styles.icon} {...icon} />}
+      </div>
+      <AdaptiveContainer direction="v">
+        {error && shouldShowError ? (
+          <Text
+            key={"error"}
+            title={typeof error === "string" ? error : ""}
+            className={Styles.caption}
+            type={variants.error ?? "error"}
+          >
+            {error}
+          </Text>
+        ) : disclaimer ? (
+          <Text
+            key={"t"}
+            title={typeof disclaimer === "string" ? disclaimer : ""}
+            type={variants.disclaimer ?? "caption"}
+            className={Styles.caption}
+          >
+            {disclaimer}
+          </Text>
+        ) : (
+          <Fragment key={"e"} />
+        )}
+      </AdaptiveContainer>
     </div>
   );
 }

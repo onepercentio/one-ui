@@ -7,6 +7,9 @@ export default {
 };
 
 export const Primary = (args: InputProps) => <C {...args} />;
+export const WithDecoration = (args: InputProps) => (
+  <C {...args} decoration={<span>DECOR</span>} />
+);
 
 Primary.args = {
   disclaimer: "Some disclaimer info",
@@ -14,3 +17,4 @@ Primary.args = {
   autoFocus: true,
   hideError: "onfocus",
 } as InputProps;
+WithDecoration.args = Primary.args

@@ -2584,10 +2584,10 @@
   resolved "https://registry.yarnpkg.com/@cypress/react/-/react-6.2.0.tgz#5816ecd26b1595483e0ae6e4eb0dca0725d07197"
   integrity sha512-arBO5/ed5MM56ypgmMugCOZoAIHH9e+7NH98oF2LCEffr8qkAV4WG5o4S+fqDjFPFP5WNZoKtPC7DEkxOm6kFA==
 
-"@cypress/request@^3.0.9":
-  version "3.0.9"
-  resolved "https://registry.yarnpkg.com/@cypress/request/-/request-3.0.9.tgz#8ed6e08fea0c62998b5552301023af7268f11625"
-  integrity sha512-I3l7FdGRXluAS44/0NguwWlO83J18p0vlr2FYHrJkWdNYhgVoiYo61IXPqaOsL+vNxU1ZqMACzItGK3/KKDsdw==
+"@cypress/request@^3.0.10":
+  version "3.0.10"
+  resolved "https://registry.yarnpkg.com/@cypress/request/-/request-3.0.10.tgz#e09c695e8460a82acafe6cfaf089cf2ca06dc054"
+  integrity sha512-hauBrOdvu08vOsagkZ/Aju5XuiZx6ldsLfByg1htFeldhex+PeMrYauANzFsMJeAA0+dyPLbDoX2OYuvVoLDkQ==
   dependencies:
     aws-sign2 "~0.7.0"
     aws4 "^1.8.0"
@@ -2602,7 +2602,7 @@
     json-stringify-safe "~5.0.1"
     mime-types "~2.1.19"
     performance-now "^2.1.0"
-    qs "6.14.0"
+    qs "~6.14.1"
     safe-buffer "^5.1.2"
     tough-cookie "^5.0.0"
     tunnel-agent "^0.6.0"
@@ -10715,12 +10715,12 @@ cypress-wait-until@^1.7.2:
   resolved "https://registry.yarnpkg.com/cypress-wait-until/-/cypress-wait-until-1.7.2.tgz#7f534dd5a11c89b65359e7a0210f20d3dfc22107"
   integrity sha512-uZ+M8/MqRcpf+FII/UZrU7g1qYZ4aVlHcgyVopnladyoBrpoaMJ4PKZDrdOJ05H5RHbr7s9Tid635X3E+ZLU/Q==
 
-cypress@^15.8.1:
-  version "15.8.1"
-  resolved "https://registry.yarnpkg.com/cypress/-/cypress-15.8.1.tgz#48fcb0859b8b656534c9bb3f3abbf37554a2bb2d"
-  integrity sha512-ogc62stTQGh1395ipKxfCE5hQuSApTzeH5e0d9U6m7wYO9HQeCpgnkYtBtd0MbkN2Fnch5Od2mX9u4hoTlrH4Q==
+cypress@15.9.0:
+  version "15.9.0"
+  resolved "https://registry.yarnpkg.com/cypress/-/cypress-15.9.0.tgz#9bcbbfbf3923d8aca7d06990cb174d5ba67e4084"
+  integrity sha512-Ks6Bdilz3TtkLZtTQyqYaqtL/WT3X3APKaSLhTV96TmTyudzSjc6EJsJCHmBb7DxO+3R12q3Jkbjgm/iPgmwfg==
   dependencies:
-    "@cypress/request" "^3.0.9"
+    "@cypress/request" "^3.0.10"
     "@cypress/xvfb" "^1.2.4"
     "@types/sinonjs__fake-timers" "8.1.1"
     "@types/sizzle" "^2.3.2"
@@ -20254,19 +20254,26 @@ qs@6.10.3:
   dependencies:
     side-channel "^1.0.4"
 
-qs@6.14.0, qs@~6.14.0:
-  version "6.14.0"
-  resolved "https://registry.yarnpkg.com/qs/-/qs-6.14.0.tgz#c63fa40680d2c5c941412a0e899c89af60c0a930"
-  integrity sha512-YWWTjgABSKcvs/nWBi9PycY/JiPJqOD4JA6o9Sej2AtvSGarXxKC3OQSk4pAarbdQlKAh5D4FCQkJNkW+GAn3w==
-  dependencies:
-    side-channel "^1.1.0"
-
 qs@^6.10.0:
   version "6.11.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.11.0.tgz#fd0d963446f7a65e1367e01abd85429453f0c37a"
   integrity sha512-MvjoMCJwEarSbUYk5O+nmoSzSutSsTwF85zcHPQ9OrlFoZOYIjaqBAJIqIXjptyD5vThxGq52Xu/MaJzRkIk4Q==
   dependencies:
     side-channel "^1.0.4"
+
+qs@~6.14.0:
+  version "6.14.0"
+  resolved "https://registry.yarnpkg.com/qs/-/qs-6.14.0.tgz#c63fa40680d2c5c941412a0e899c89af60c0a930"
+  integrity sha512-YWWTjgABSKcvs/nWBi9PycY/JiPJqOD4JA6o9Sej2AtvSGarXxKC3OQSk4pAarbdQlKAh5D4FCQkJNkW+GAn3w==
+  dependencies:
+    side-channel "^1.1.0"
+
+qs@~6.14.1:
+  version "6.14.2"
+  resolved "https://registry.yarnpkg.com/qs/-/qs-6.14.2.tgz#b5634cf9d9ad9898e31fba3504e866e8efb6798c"
+  integrity sha512-V/yCWTTF7VJ9hIh18Ugr2zhJMP01MY7c5kh4J870L7imm6/DIzBsNLTXzMwUA3yZ5b/KBqLx8Kp3uRvd7xSe3Q==
+  dependencies:
+    side-channel "^1.1.0"
 
 qs@~6.5.2:
   version "6.5.3"

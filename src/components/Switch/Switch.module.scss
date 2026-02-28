@@ -1,4 +1,4 @@
-@use 'sass:math';
+@use "sass:math";
 @import "../../assets/styles/variables.scss";
 
 .root {
@@ -12,6 +12,9 @@
   background-color: white;
   transition: background-color $fast linear;
   cursor: pointer;
+  & * {
+    pointer-events: none !important;
+  }
 
   input {
     max-width: 0px;

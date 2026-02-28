@@ -52,8 +52,6 @@ export default function Table<I extends any>({
       return items;
     }
   }, [items, currPage]);
-  console.log("Showing", itemsToShow);
-  
 
   const { pages } = useMemo(() => {
     if (paginable) {

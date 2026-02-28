@@ -38,7 +38,7 @@ export default function FormField<Q extends FormFieldView>({
       | AnswerAction<{
           type: T;
         }>
-      | undefined
+      | undefined,
   ) =>
     answer as unknown as AnswerAction<{
       type: T;
@@ -57,7 +57,7 @@ export default function FormField<Q extends FormFieldView>({
               checks.map((checked, i) =>
                 checked ? (
                   <OneText type={labelVariant}>{c.options[i].value}</OneText>
-                ) : null
+                ) : null,
               )
             ) : (
               <OneText type={labelVariant}>-</OneText>
@@ -103,6 +103,10 @@ export default function FormField<Q extends FormFieldView>({
         const CustomReadOnly = extensions?.[type as keyof typeof extensions]
           ?.ReadOnly as any;
         const answer = val<typeof type>();
+        if (!CustomReadOnly && typeof answer === "object")
+          throw new Error(
+            `There is no custom read only component for the form field type "${type}". Please review and set it at OneUIProvider.`,
+          );
         return (
           <>
             <OneText type={titleVariant}>{c.title}</OneText>
@@ -387,7 +391,7 @@ export default function FormField<Q extends FormFieldView>({
         );
       }
       throw new Error(
-        `The form field "${type}" is not implemented yet. Please provide it using OneUIProvider config options for form extensions`
+        `The form field "${type}" is not implemented yet. Please provide it using OneUIProvider config options for form extensions`,
       );
   }
 }

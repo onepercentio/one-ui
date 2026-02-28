@@ -30,7 +30,10 @@ export default function Switch({
         className={`${Styles.root} ${enabled ? Styles.on : ""} ${
           disabled ? Styles.disabled : ""
         }`}
-        onClick={() => onToggle(!enabled)}
+        onClick={({ target, currentTarget }) => {
+          if (target !== currentTarget) return;
+          onToggle(!enabled);
+        }}
         {...props}
       >
         <div className={Styles.toggler} />

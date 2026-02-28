@@ -37,6 +37,7 @@ export default function CurrencyInput({
           onChange?.(value);
         }}
         disclaimer={props.disclaimer}
+        disabled={props.disabled}
       />
     </>
   );

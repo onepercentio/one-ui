@@ -1,5 +1,6 @@
 import React, {
   ChangeEventHandler,
+  ComponentRef,
   DetailedHTMLProps,
   ForwardedRef,
   forwardRef,
@@ -70,10 +71,16 @@ function _Input(
     }
   }, [autoFocus]);
   const Component = multiline ? "textarea" : "input";
+  const containerRef = useRef<ComponentRef<"div">>(null);
+  const maxWidth = useMemo(
+    () => containerRef.current?.getBoundingClientRect().width,
+    [error, disclaimer],
+  );
   return (
     <div className={`${className.container} ${localClassName}`}>
       <div
         className={`${Styles.inputContainer} ${false ? Styles.withIcon : ""}`}
+        ref={containerRef}
         {...containerProps}
       >
         {decoration}
@@ -95,7 +102,7 @@ function _Input(
         {Icon && <div className={Styles.icon}>{Icon}</div>}
         {icon && <img className={Styles.icon} {...icon} />}
       </div>
-      <AdaptiveContainer direction="v">
+      <AdaptiveContainer direction="v" style={{ maxWidth: maxWidth }}>
         {error && shouldShowError ? (
           <Text
             key={"error"}

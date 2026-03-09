@@ -76,7 +76,7 @@ export type OneUIContextSpecs = {
             Input: (props: GenericFormFieldProps<K>) => ReactElement;
             validator: (
               answer: AnswerByField<{ type: K }> | undefined,
-              question: BaseQuestion &
+              question: FormField &
                 (FromOnePercentUtility<"UIElements.FormExtension">["fields"] & {
                   type: K;
                 }),

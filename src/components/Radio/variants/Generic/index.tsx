@@ -1,2 +1,2 @@
-export { Generic as default } from "./Generic";
+export { default } from "./Generic";
 export * from "./Generic";

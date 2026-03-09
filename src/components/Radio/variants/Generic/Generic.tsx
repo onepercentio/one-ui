@@ -7,7 +7,11 @@ export type GenericProps = {
   className?: string;
 };
 
-export function Generic({ checked, hasContent = false, className = "" }: GenericProps) {
+export default function Generic({
+  checked,
+  hasContent = false,
+  className = "",
+}: GenericProps) {
   return (
     <span
       className={`${Styles.generic} ${checked ? Styles.checked : ""} ${
@@ -18,3 +22,5 @@ export function Generic({ checked, hasContent = false, className = "" }: Generic
     </span>
   );
 }
+
+export { Generic };

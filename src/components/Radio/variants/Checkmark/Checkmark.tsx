@@ -7,7 +7,11 @@ export type CheckmarkProps = {
   className?: string;
 };
 
-export function Checkmark({ checked, hasContent = false, className = "" }: CheckmarkProps) {
+export default function Checkmark({
+  checked,
+  hasContent = false,
+  className = "",
+}: CheckmarkProps) {
   return (
     <span
       className={`${Styles.checkmark} ${checked ? Styles.checked : ""} ${
@@ -16,3 +20,5 @@ export function Checkmark({ checked, hasContent = false, className = "" }: Check
     />
   );
 }
+
+export { Checkmark };

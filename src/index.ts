@@ -43,6 +43,10 @@ export * from "./components/Freeze/index";
 export {default as Freeze} from "./components/Freeze/index"
 export * from "./components/Radio/index";
 export {default as Radio} from "./components/Radio/index"
+export * from "./components/Radio/variants/Checkmark/index";
+export {default as Checkmark} from "./components/Radio/variants/Checkmark/index"
+export * from "./components/Radio/variants/Generic/index";
+export {default as Generic} from "./components/Radio/variants/Generic/index"
 export * from "./components/Card/index";
 export {default as Card} from "./components/Card/index"
 export * from "./components/OrderableList/index";

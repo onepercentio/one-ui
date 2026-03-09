@@ -36,11 +36,6 @@ export default function useElementFit(
     const width = ref.current?.clientWidth || window.visualViewport!.width;
     const maxItemsHorizontally = Math.floor(width / baseWidth) || 1;
 
-    if (process.env.NODE_ENV === "development")
-      require("../models/DebugLogger").default(
-        `${useElementFit.name}:clientWidth`,
-        ref.current?.clientWidth
-      );
     return {
       howManyItemsWillBeVisible:
         maxItemsHorizontally * howManyItemsStackVertically(),

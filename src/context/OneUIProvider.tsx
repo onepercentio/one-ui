@@ -32,15 +32,16 @@ type DeepPartial<T> = {
     : DeepPartial<T[P]>;
 };
 
-type IfUtilityHas<
-  N extends NamespaceAccessors,
-  Declare
-> = FromOnePercentUtility<N> extends `To define this property you need to set OnepercentUtility.${string} globally`
-  ? undefined
-  : Declare;
+type IfUtilityHas<N extends NamespaceAccessors, Declare> =
+  FromOnePercentUtility<N> extends `To define this property you need to set OnepercentUtility.${string} globally`
+    ? undefined
+    : Declare;
 
 export type OneUIContextSpecs = {
   component: {
+    asyncTriggerContainer: {
+      LoadingComponent: () => ReactElement;
+    };
     spacing: {
       variants: {
         [k in FromOnePercentUtility<"UIElements.SpacingVariants">]: string;
@@ -70,7 +71,7 @@ export type OneUIContextSpecs = {
         {
           [K in FromOnePercentUtility<"UIElements.FormExtension">["fields"]["type"]]: {
             ReadOnly?: (
-              props: Omit<GenericFormFieldProps<K>, "onAnswer" | "error">
+              props: Omit<GenericFormFieldProps<K>, "onAnswer" | "error">,
             ) => ReactElement;
             Input: (props: GenericFormFieldProps<K>) => ReactElement;
             validator: (
@@ -78,7 +79,7 @@ export type OneUIContextSpecs = {
               question: BaseQuestion &
                 (FromOnePercentUtility<"UIElements.FormExtension">["fields"] & {
                   type: K;
-                })
+                }),
             ) => {
               isValid: boolean;
               error?: string;
@@ -92,12 +93,12 @@ export type OneUIContextSpecs = {
       {
         className: {
           [k in React.ComponentProps<
-            typeof import("../components/Text")["default"]
+            (typeof import("../components/Text"))["default"]
           >["type"]]: string;
         };
         htmlTag: {
           [k in React.ComponentProps<
-            typeof import("../components/Text")["default"]
+            (typeof import("../components/Text"))["default"]
           >["type"]]: "p" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
         };
       }
@@ -106,7 +107,7 @@ export type OneUIContextSpecs = {
       className?: {
         [k in NonNullable<
           React.ComponentProps<
-            typeof import("../components/Button")["default"]
+            (typeof import("../components/Button"))["default"]
           >["variant"]
         >]?: string;
       };
@@ -227,7 +228,7 @@ export default OneUIProvider;
 function pathToJson(
   path: string,
   key?: string | Symbol,
-  exampleConfig = "THE_MISSING_CONFIG"
+  exampleConfig = "THE_MISSING_CONFIG",
 ) {
   if (!key) {
     key = path.split(".").slice(-1)[0];
@@ -246,13 +247,13 @@ function pathToJson(
 
 function ErrorWrapper(
   originalObject: any,
-  path: string = "config"
+  path: string = "config",
 ): typeof Proxy {
   return new Proxy(
     typeof originalObject !== "object" ? {} : originalObject || {},
     {
       get(_target, key) {
-        if (key === Symbol.toPrimitive) {
+        if (key === Symbol.toPrimitive || key === "$$typeof") {
           return () => _target[key];
         }
         try {
@@ -272,11 +273,11 @@ import OneUIProvider from "@onepercent/one-ui/dist/context/OneUIProvider";
   ...
 ${`<OneUIProvider config={${JSON.stringify(pathJson, null, 4)}}>
 ...
-</OneUIProvider>`.replace(/[ ]/g, "-")}`
+</OneUIProvider>`.replace(/[ ]/g, "-")}`,
           );
         }
       },
-    }
+    },
   );
 }
 
@@ -291,7 +292,7 @@ export function useOneUIContext() {
 
 export function useOneUIView<P extends FieldPath<OneUIContextSpecs>>(
   oneuiConfigPath: P,
-  componentName: string
+  componentName: string,
 ) {
   const providedValue = useOneUIConfig(oneuiConfigPath);
   if (!providedValue) {
@@ -307,7 +308,7 @@ import OneUIProvider from "@onepercentio/one-ui/dist/context/OneUIProvider";
 ${`<OneUIProvider config={${JSON.stringify(
   pathToJson(oneuiConfigPath, undefined, "SomeView"),
   null,
-  4
+  4,
 )}}>
 ...
 </OneUIProvider>`.replace(/[ ]/g, "-")}`);
@@ -317,15 +318,15 @@ ${`<OneUIProvider config={${JSON.stringify(
 }
 
 export function useOneUIConfig<P extends FieldPath<OneUIContextSpecs>>(
-  prop: P
+  prop: P,
 ): Get<OneUIContextSpecs, P>;
 export function useOneUIConfig<
   P extends FieldPath<OneUIContextSpecs>,
-  T extends DeepPartial<Get<OneUIContextSpecs, P>>
+  T extends DeepPartial<Get<OneUIContextSpecs, P>>,
 >(prop: P, defaultValue: T): NonNullable<Get<OneUIContextSpecs, P>>;
 export function useOneUIConfig<
   P extends FieldPath<OneUIContextSpecs>,
-  T extends Get<OneUIContextSpecs, P>
+  T extends Get<OneUIContextSpecs, P>,
 >(prop: P, defaultValue?: T): Get<OneUIContextSpecs, P> | T {
   const context = useContext(Context);
   if (process.env.NODE_ENV === "development") {

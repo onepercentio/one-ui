@@ -1,0 +1,38 @@
+@import "../../../../assets/styles/index.scss";
+
+.generic {
+  visibility: visible;
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 0.8em;
+  position: relative;
+  background-color: transparent;
+  border: 1px solid rgb(40, 43, 53);
+  flex-shrink: 0;
+
+  &.wContent {
+    margin-right: 0.8em;
+  }
+
+  > .inner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 90%;
+    height: 90%;
+    margin-top: -45%;
+    margin-left: -45%;
+    border-radius: 0.8em;
+    background-color: $digitalBlue;
+    opacity: 0;
+    transform: scale(0.1);
+    transition: background-color 250ms, border 250ms, box-shadow 250ms, opacity 150ms ease-in-out, transform 150ms ease-in-out;
+  }
+
+  &.checked {
+    .inner {
+      opacity: 1;
+      transform: scale(0.7);
+    }
+  }
+}

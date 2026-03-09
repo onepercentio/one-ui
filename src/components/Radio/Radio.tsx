@@ -1,10 +1,8 @@
 import React, { PropsWithChildren } from "react";
 import { useOneUIConfig } from "../../context/OneUIProvider";
 import Styles from "./Radio.module.scss";
+import { Checkmark } from "./variants/Checkmark/Checkmark";
 
-/**
- * A simple radio with nice guidelines
- **/
 export default function Radio({
   checked,
   onToggle,
@@ -30,8 +28,9 @@ export default function Radio({
   >) {
   const Checkbox = useOneUIConfig(
     "component.radio.Component",
-    "span" as any
+    Checkmark as any
   ) as any;
+
   return (
     <label
       className={`${Styles.container} ${className}`}
@@ -41,12 +40,7 @@ export default function Radio({
         e.preventDefault();
       }}
     >
-      <Checkbox
-        {...props}
-        className={`${checked ? Styles.checked : ""} ${
-          label ? Styles.wContent : ""
-        }`}
-      />
+      <Checkbox checked={checked} hasContent={!!label} {...props} />
       <input
         type="radio"
         name={groupId}

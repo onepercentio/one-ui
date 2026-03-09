@@ -18,3 +18,4 @@ templates/
 *storybook.log
 dist-ts/
 test.tsx
+.ai

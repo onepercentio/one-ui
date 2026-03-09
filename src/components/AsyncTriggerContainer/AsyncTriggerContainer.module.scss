@@ -1,0 +1,22 @@
+.container {
+    align-items: stretch;
+    display: flex;
+    margin-bottom: 0px;
+    > * {
+        align-items: stretch;
+        flex: 1;
+    }
+}
+.loader {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    opacity: 0.72;
+    pointer-events: none;
+
+    .loaderContainer {
+        align-items: flex-end;
+        justify-content: flex-end;
+        padding: 24px;
+    }
+}

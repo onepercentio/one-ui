@@ -14,7 +14,7 @@ function preProcessIndex(indexPath: string) {
   writeFileSync(
     indexPath,
     `export { default } from "./${componentName}";
-export * from "./${componentName}";`
+export * from "./${componentName}";`,
   );
 }
 
@@ -57,7 +57,11 @@ function parseDir(path: string) {
       folder.includes("GenericContract") ||
       folder.includes(".test.") ||
       folder.includes("ObjectWatchShim") ||
-      folder.includes("MasksFactory")
+      folder.includes("MasksFactory") ||
+      folder.includes("CustomBrowserRouter") ||
+      folder.includes("useCustomHistory") ||
+      folder.includes("useDependencyChangeDetection") ||
+      folder.includes("DebugLogger")
     )
       continue;
     if (lstatSync(toCheck).isDirectory()) {
@@ -77,8 +81,8 @@ function parseDir(path: string) {
               toCheck.split("/").at(-1)!.split(".")[0]
             }} from "${importPath}";\n`
           : componentName
-          ? `export {default as ${componentName}} from "${importPath}"\n`
-          : "";
+            ? `export {default as ${componentName}} from "${importPath}"\n`
+            : "";
       finalIndexTs += `export * from "${importPath}";
 ${extraExport}`;
     }

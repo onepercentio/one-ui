@@ -6,7 +6,8 @@ export function extractAllPossibilitiesFromEnumProp<
   C extends (...args: any[]) => any,
   K extends keyof P,
   P extends ComponentProps<C> = ComponentProps<C>
->(component: C, propName: K): P[K][] {
+>(component: C, propName: K, cypressExample: P[K][]): P[K][] {
+  if (window.Cypress) return cypressExample
   if (component === _Text)
     (_Text as any).__docgenInfo.props[propName] = {
       type: {

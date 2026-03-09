@@ -31,7 +31,7 @@ export default function Switch({
           disabled ? Styles.disabled : ""
         }`}
         onClick={({ target, currentTarget }) => {
-          if (target !== currentTarget) return;
+          if (target !== currentTarget || disabled) return;
           onToggle(!enabled);
         }}
         {...props}

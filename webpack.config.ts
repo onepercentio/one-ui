@@ -10,7 +10,7 @@ const configFactory =
   require("@muritavo/webpack-microfrontend-scripts/bin/react/scripts/_webpackConfiguration").createBaseConfiguration;
 const baseConfig: Configuration = configFactory(
   __dirname,
-  process.env.NODE_ENV
+  process.env.NODE_ENV,
 );
 
 baseConfig.output!.libraryTarget = "umd";
@@ -20,7 +20,7 @@ baseConfig.plugins = baseConfig.plugins!.filter(
       "ReactRefreshPlugin",
       "ModuleFederationPlugin",
       "SourceMapDevToolPlugin",
-    ].includes(a.constructor.name)
+    ].includes(a.constructor.name),
 );
 const plugins = (baseConfig as any).module.rules[0].use.options
   .plugins as string[];
@@ -67,9 +67,7 @@ baseConfig.module!.rules!.push(
           sourceType: "unambiguous",
         },
       },
-      require.resolve(
-        "@muritavo/webpack-microfrontend-scripts/bin/shared/loaders/ImageResolutionOptimizer/namedSVG"
-      ),
+      require.resolve("@muritavo/webpack-microfrontend-scripts/bin/shared/loaders/ImageResolutionOptimizer/namedSVG"),
       {
         loader: require.resolve("@svgr/webpack"),
         options: {
@@ -77,24 +75,11 @@ baseConfig.module!.rules!.push(
           babel: false,
         },
       },
-      require.resolve(
-        "@muritavo/webpack-microfrontend-scripts/bin/shared/loaders/ImageResolutionOptimizer/extractImages"
-      ),
+      require.resolve("@muritavo/webpack-microfrontend-scripts/bin/shared/loaders/ImageResolutionOptimizer/extractImages"),
     ],
     issuer: {
       and: [/\.(scss)$/],
     },
-  }
+  },
 );
-// baseConfig.plugins.push(
-//   new ReactDocgenTypescriptPlugin({
-//     shouldExtractLiteralValuesFromEnum: true,
-//     shouldRemoveUndefinedFromOptional: true,
-//     propFilter: function (prop) {
-//       return prop.parent ? !/node_modules/.test(prop.parent.fileName) : true;
-//     },
-//     // NOTE: this default cannot be changed
-//     savePropValueAsString: true,
-//   })
-// );
 export default baseConfig;

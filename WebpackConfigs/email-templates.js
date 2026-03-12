@@ -5,7 +5,18 @@ process.env.NODE_ENV =
     : "production");
 const { resolveFromMainContext } = require("./workarounds");
 require("./monkeypatch");
+const chalk = require("chalk");
 const { join, relative, resolve } = require("path");
+try {
+  require(resolveFromMainContext("html-webpack-plugin"));
+} catch (error) {
+  throw new Error(
+    chalk.white(
+      `There was a problem loading the module ${chalk.red(chalk.bold("html-webpack-plugin"))} (Check the error above). 
+Make sure it's installed as it is important for generating the final HTML files.`,
+    ),
+  );
+}
 const HTMLPlugin = require(resolveFromMainContext("html-webpack-plugin"));
 const {
   writeFileSync,
@@ -17,7 +28,6 @@ const {
 } = require("fs");
 const lodash = require("lodash");
 const { findPathDeep } = require("deepdash")(lodash);
-const chalk = require("chalk");
 
 function findAllStaticGeneration() {
   const glob = require("glob");
@@ -49,11 +59,12 @@ async function loadGenerator() {
     })();
     return await (configGenerator.default || configGenerator)(
       resolve("."),
-      process.env.NODE_ENV
+      process.env.NODE_ENV,
     );
   } catch (e) {
     switch (e.code) {
       case "MODULE_NOT_FOUND":
+      case "ERR_MODULE_NOT_FOUND":
         if (e.message.split("\n")[0].includes("config-factory")) {
           const ans = await require("inquirer").prompt([
             {
@@ -74,14 +85,14 @@ async function loadGenerator() {
     config,
     mainHtml
   }
-}`
+}`,
             );
             console.log(require("chalk").green("File created"));
           } else {
             console.log(
               require("chalk").yellow(
-                "This command will only work when there is a valid configuration"
-              )
+                "This command will only work when there is a valid configuration",
+              ),
             );
           }
           process.exit(0);
@@ -104,11 +115,11 @@ function findFirstBabelLoaderConfigPath(config) {
 function prerenderRequire() {
   try {
     return resolveFromMainContext(
-      "@nettoolkit/prerender-loader" // This supports webpack 5
+      "@nettoolkit/prerender-loader", // This supports webpack 5
     );
   } catch (e) {
     return resolveFromMainContext(
-      "prerender-loader" // This doesn't
+      "prerender-loader", // This doesn't
     );
   }
 }
@@ -126,11 +137,11 @@ async function createConfig(
   /** @type {number} */
   maxParallelTasks,
   /** @type {() => Promise<string[]>} */
-  filterResults = async (results) => results
+  filterResults = async (results) => results,
 ) {
   if (!process.env.EMAIL_TEMPLATES_BASE_DOMAIN)
     throw new Error(
-      `The env variable "EMAIL_TEMPLATES_BASE_DOMAIN" is not set (ex: https://localhost:3000). It's required for pointing to the image resources correctly`
+      `The env variable "EMAIL_TEMPLATES_BASE_DOMAIN" is not set (ex: https://localhost:3000). It's required for pointing to the image resources correctly`,
     );
   if (!existsSync(outputDir)) mkdirSync(outputDir, { recursive: true });
 
@@ -140,7 +151,7 @@ async function createConfig(
     const onlyHTMLs = !outputFolderFiles.some(
       (file) =>
         lstatSync(join(outputDir, file)).isDirectory() ||
-        !file.endsWith(".html")
+        !file.endsWith(".html"),
     );
     if (onlyHTMLs) {
       rmSync(outputDir, {
@@ -158,8 +169,8 @@ async function createConfig(
   baseConfig.plugins = baseConfig.plugins.filter(
     (a) =>
       !["ManifestPlugin", "MiniCss"].find((pattern) =>
-        a.constructor.name.includes(pattern)
-      )
+        a.constructor.name.includes(pattern),
+      ),
   );
   /** @type {import("webpack").WebpackPluginInstance} */
   const LogPlugin = {
@@ -168,7 +179,7 @@ async function createConfig(
       compiler.hooks.afterEmit.tap("Logger", (compilation) => {
         console.log(chalk.green("Output successfull"));
         const htmls = Object.keys(compilation.assets).filter((a) =>
-          a.endsWith(".html")
+          a.endsWith(".html"),
         );
         const lazyFindPort = process.argv.find((a) => a === "--port");
         const port = process.argv[process.argv.indexOf(lazyFindPort) + 1];
@@ -190,7 +201,7 @@ async function createConfig(
       ? baseConfig.module.rules
       : lodash.get(
           baseConfig.module.rules,
-          babelLoaderPath.slice(0, indexOfOneOf + 5)
+          babelLoaderPath.slice(0, indexOfOneOf + 5),
         );
 
   whereToPlaceTheNewLoaderPath.splice(1, 0, {
@@ -315,7 +326,7 @@ async function createConfig(
 
   if (!baseConfig.resolve.alias) baseConfig.resolve.alias = {};
   baseConfig.resolve.alias.CSSInliner = require.resolve(
-    join(__dirname, "scripts", "css-inliner.ts")
+    join(__dirname, "scripts", "css-inliner.ts"),
   );
 
   baseConfig.output.filename = `[name].js`;
@@ -326,12 +337,12 @@ async function createConfig(
   baseConfig.plugins = baseConfig.plugins.filter(
     (a) =>
       !["ModuleFederationPlugin", "SourceMapDevToolPlugin"].includes(
-        a.constructor.name
-      )
+        a.constructor.name,
+      ),
   );
 
   const providePlugin = baseConfig.plugins.find(
-    (a) => a.constructor.name === "ProvidePlugin"
+    (a) => a.constructor.name === "ProvidePlugin",
   );
 
   if (providePlugin) delete providePlugin.definitions.process;
@@ -344,9 +355,9 @@ function checkTemplatesCount(webpackEntry) {
     console.log(
       chalk.green(
         `No templates were found. If you want to create a static template, please create a file with name ${chalk.white(
-          "{htmlName}.static.tsx"
-        )} (ex: some-template.static.tsx)`
-      )
+          "{htmlName}.static.tsx",
+        )} (ex: some-template.static.tsx)`,
+      ),
     );
     process.exit(0);
   }
@@ -370,7 +381,7 @@ module.exports = async function initEmailWebpack() {
     outputDir,
     resourcesOnly,
     maxParallelTasks,
-    templatesFilter
+    templatesFilter,
   );
   checkTemplatesCount(config.entry);
   return config;

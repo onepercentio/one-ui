@@ -21,9 +21,10 @@ return new Promise((r) => {
     } else {
       render(<${functionName}/>, document.body);  
     }
-    
-    ${inlineCSS ? `InlineCSS();` : ""}
-    r();
+    setTimeout(() => {
+      ${inlineCSS ? `InlineCSS();` : ""}
+      r();
+    }, 750)
 })
 }
 

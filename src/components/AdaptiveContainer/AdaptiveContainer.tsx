@@ -2,8 +2,6 @@ import React, {
   ComponentProps,
   ElementRef,
   FunctionComponent,
-  HTMLAttributes,
-  HTMLProps,
   JSX,
   ReactElement,
   useEffect,
@@ -15,10 +13,10 @@ import UncontrolledTransition from "../UncontrolledTransition";
 import Styles from "./AdaptiveContainer.module.scss";
 
 /**
- * A container that animates width changes across content updates
+ * A container that animates width/height changes across UI updates
  **/
 export default function AdaptiveContainer<
-  E extends keyof JSX.IntrinsicElements | FunctionComponent
+  E extends keyof JSX.IntrinsicElements | FunctionComponent,
 >({
   children,
   className = "",
@@ -46,13 +44,13 @@ export default function AdaptiveContainer<
   const animatedProperty = useMemo(() => {
     if (!strict && direction !== "v")
       throw new Error(
-        `Strict false only works with direction "v" at the moment`
+        `Strict false only works with direction "v" at the moment`,
       );
     switch (direction) {
       case "both":
-        return ["width", "height"] as const
+        return ["width", "height"] as const;
       case "h":
-        return ("width" as const);
+        return "width" as const;
       case "v":
         return strict ? ("height" as const) : ("minHeight" as const);
     }
@@ -71,9 +69,8 @@ export default function AdaptiveContainer<
         transitionContainer.style.width = `${transitionContainer.clientWidth}px`;
         transitionContainer.style[animatedProperty as "width"] = ``;
       } else {
-        transitionContainer.style[
-          animatedProperty as "height"
-        ] = `${transitionContainer.clientHeight}px`;
+        transitionContainer.style[animatedProperty as "height"] =
+          `${transitionContainer.clientHeight}px`;
         transitionContainer.style.width = ``;
       }
     const t = setTimeout(() => {
@@ -86,9 +83,11 @@ export default function AdaptiveContainer<
           if (screenThatWillEnter) {
             function resetFactory(
               param: "minHeight" | "height" | "width",
-              target: number
+              target: number,
             ) {
-              const resetPropertyInstance = (e: Pick<TransitionEvent, "propertyName">) => {
+              const resetPropertyInstance = (
+                e: Pick<TransitionEvent, "propertyName">,
+              ) => {
                 if (e.propertyName !== param) return;
                 setTimeout(() => {
                   if (transitionContainer?.style[param] === `${target}px`) {
@@ -99,7 +98,7 @@ export default function AdaptiveContainer<
                 if (transitionContainer)
                   transitionContainer.removeEventListener(
                     "transitionend",
-                    resetPropertyInstance
+                    resetPropertyInstance,
                   );
               };
               return resetPropertyInstance;
@@ -107,34 +106,31 @@ export default function AdaptiveContainer<
             if (direction === "both") {
               const contentSize = {
                 width: screenThatWillEnter.clientWidth,
-                height: screenThatWillEnter.scrollHeight
+                height: screenThatWillEnter.scrollHeight,
               };
 
               const targetSize = {
                 width: `${contentSize.width}px`,
-                height: `${contentSize.height}px`
+                height: `${contentSize.height}px`,
               };
 
               const prevSize = {
                 width: transitionContainer.style.width,
-                height: transitionContainer.style.height
+                height: transitionContainer.style.height,
               };
 
               transitionContainer.style.width = targetSize.width;
               transitionContainer.style.height = targetSize.height;
 
               if (Array.isArray(animatedProperty))
-                for (let prop of animatedProperty as ('width' | 'height')[]) {
-                  const resetProperty = resetFactory(
-                    prop,
-                    contentSize[prop]
-                  );
+                for (let prop of animatedProperty as ("width" | "height")[]) {
+                  const resetProperty = resetFactory(prop, contentSize[prop]);
                   if (targetSize[prop] === prevSize[prop])
                     resetProperty({ propertyName: prop });
                   else
                     transitionContainer.addEventListener(
                       "transitionend",
-                      resetProperty
+                      resetProperty,
                     );
                 }
             } else if (direction === "h") {
@@ -146,21 +142,21 @@ export default function AdaptiveContainer<
               if (targetWidth === prevWidth) func({ propertyName: "width" });
               else transitionContainer.addEventListener("transitionend", func);
             } else {
-              const _animatedProperty = animatedProperty as "width"
+              const _animatedProperty = animatedProperty as "width";
               const contentHeight = screenThatWillEnter.scrollHeight;
               const targetHeight = `${contentHeight}px`;
               const prevHeight = transitionContainer.style[_animatedProperty];
               transitionContainer.style[_animatedProperty] = targetHeight;
               const resetProperty = resetFactory(
                 _animatedProperty,
-                contentHeight
+                contentHeight,
               );
               if (targetHeight === prevHeight)
                 resetProperty({ propertyName: _animatedProperty });
               else
                 transitionContainer.addEventListener(
                   "transitionend",
-                  resetProperty
+                  resetProperty,
                 );
             }
           }

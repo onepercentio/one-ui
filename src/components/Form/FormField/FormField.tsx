@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from "react";
+import { Fragment, ReactNode, useEffect, useState } from "react";
 import debounce from "lodash/debounce";
 import {
   AnswerAction,
@@ -17,6 +17,8 @@ import FileInput from "../../FileInput/FileInput";
 import CheckBox from "../../CheckBox/CheckBox";
 import Spacing from "../../Spacing";
 import { useOneUIConfig } from "../../../context/OneUIProvider";
+import AdaptiveContainer from "../../AdaptiveContainer";
+import Text from "../../Text";
 // import InputMask from "react-input-mask";
 
 /**
@@ -27,6 +29,7 @@ export default function FormField<Q extends FormFieldView>({
   value,
   ...props
 }: FormFieldProps<Q>) {
+  const variants = useOneUIConfig("component.input.labelVariants", {});
   const val = <T extends FormFieldView["type"]>() =>
     value as unknown as
       | AnswerByField<{
@@ -282,12 +285,7 @@ export default function FormField<Q extends FormFieldView>({
                   checked={checkmarks[i]}
                   label={
                     <>
-                      {el.label}
-                      {checkError?.[i] ? (
-                        <OneText type="caption" color="error">
-                          {checkError[i]}
-                        </OneText>
-                      ) : null}
+                      <div>{el.label}</div>
                     </>
                   }
                   onToggle={(checked) => {
@@ -302,6 +300,31 @@ export default function FormField<Q extends FormFieldView>({
               <br />
             </>
           ))}
+          <AdaptiveContainer direction="v">
+            {Array.isArray(checkError) ? (
+              checkError.some((a) => !!a) ? (
+                <Text
+                  key={"error"}
+                  title={typeof error === "string" ? error : ""}
+                  type={variants.error ?? "error"}
+                >
+                  {error}
+                </Text>
+              ) : (
+                <Fragment key={"e"} />
+              )
+            ) : !!checkError ? (
+              <Text
+                key={"error-single"}
+                title={typeof error === "string" ? error : ""}
+                type={variants.error ?? "error"}
+              >
+                {error}
+              </Text>
+            ) : (
+              <Fragment key={"e"} />
+            )}
+          </AdaptiveContainer>
         </>
       );
     case "rawcheck":

@@ -15,14 +15,13 @@ type PossibleT = (
 )[];
 
 type T<IDS extends PossibleT> = {
-  [I in IDS[number] extends string
-    ? IDS[number]
-    : IDS[number][0]]: I extends IDS[number] ? string : (id: any) => string;
+  [k in Extract<IDS[number], string>]: k;
+} & {
+  [k in Exclude<IDS[number], Extract<IDS[number], string>>[0]]: Exclude<
+    IDS[number],
+    Extract<IDS[number], string>
+  >[1];
 };
-
-export function combineTestIds(...t: ReturnType<typeof testIDFactory>[]) {
-  return t.reduce((acc, i) => ({ ...acc, i }), {});
-}
 
 /**
  * Creates an data-testid map generator instance based on the module name or arbitrary id

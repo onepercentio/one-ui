@@ -45,6 +45,11 @@ function _SectionContainer<S extends string = FromOnePercentUtility<'PageSection
 /**
  * This component wraps a section and limits the width of it's content as well as requiring an id to reference to this section
  **/
+/**
+ * A reusable container component that wraps content with consistent styling
+ * and optional decorative elements. It helps organize page sections with
+ * controlled width and visual enhancements.
+ */
 const SectionContainer =
   forwardRef<HTMLDivElement, Props<string>>(_SectionContainer);
 export default SectionContainer;

@@ -11,8 +11,9 @@ import Styles from "./ProgressBar.module.scss";
 import useMergeRefs from "../../hooks/useMergeRefs";
 
 /**
- * Shows a progress bar
- **/
+ * A visual indicator that shows how much of a task is complete.
+ * It displays a bar that fills up from 0 to 100 percent.
+ */
 export default function ProgressBar({
   progress,
   indicatorRef,

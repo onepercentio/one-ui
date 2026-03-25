@@ -1,3 +1,7 @@
+/**
+ * A custom radio button component that allows users to select one option from a group.
+ * It displays a label and can be customized with different sizes and styling.
+ */
 import React, { PropsWithChildren } from "react";
 import { useOneUIConfig } from "../../context/OneUIProvider";
 import Styles from "./Radio.module.scss";

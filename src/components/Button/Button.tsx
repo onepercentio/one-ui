@@ -38,4 +38,8 @@ function Button(
 /**
  * A simple button that can be customized via the provider
  **/
+/**
+ * A clickable button component that users can interact with.
+ * It supports different styles and can be customized through configuration.
+ **/
 export default forwardRef(Button);

@@ -6,6 +6,10 @@ interface Object {
   unwatch(): void;
 }
 
+/**
+ * A React hook that watches for changes to specific properties of an object.
+ * When the watched properties change, it triggers a re-render.
+ */
 export default function useObserve<T extends any>(
   toObserve: T | T[],
   keysToObserve: (keyof T)[]

@@ -4,7 +4,8 @@ import Button from "../Button";
 import Styles from "./AdaptiveButton.module.scss";
 
 /**
- * A button that adapts it's width according to the content size
+ * A button that automatically adjusts its width to fit the content inside it.
+ * This makes the button look natural and not stretched wider than needed.
  **/
 export default function AdaptiveButton({
   children,

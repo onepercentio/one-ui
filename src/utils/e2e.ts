@@ -27,6 +27,9 @@ type T<IDS extends PossibleT> = {
  * Creates an data-testid map generator instance based on the module name or arbitrary id
  * @returns A function to set the IDs that this created instance will provide
  */
+/**
+ * Creates a data-testid map generator for use in end-to-end tests.
+ */
 export function testIDFactory(moduleOrId: Pick<Module, "id"> | string) {
   const moduleId = typeof moduleOrId === "string" ? moduleOrId : moduleOrId.id;
   return <const IDS extends PossibleT>(idsArr: IDS) =>

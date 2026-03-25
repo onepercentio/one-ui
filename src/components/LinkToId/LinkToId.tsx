@@ -25,7 +25,7 @@ export function scrollToId(
 }
 
 /**
- * This component creates an iteractive element and on click, routes to the specified id
+ * This component creates an interactive element that, when clicked, either scrolls to a section on the page or opens a link in a new tab.
  **/
 export default function LinkToId({
   children,

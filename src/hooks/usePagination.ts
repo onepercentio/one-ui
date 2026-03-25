@@ -15,6 +15,11 @@ type UpdateEvent<I extends any> = {
   totalItems: number;
 };
 
+/**
+ * This hook helps manage loading and showing items in pages.
+ * It handles fetching new items when the user scrolls or clicks next page,
+ * and keeps track of whether all items have been loaded.
+ */
 export default function usePagination<I extends any>(
   request: (
     page: number,

@@ -6,6 +6,11 @@ import { FromOnePercentUtility } from "../../type-utils";
 /**
  * A component to inject some spacing between component when required
  **/
+
+/**
+ * A simple spacer that adds breathing room between UI elements.
+ * It creates an empty space that can be sized large, small, or stretched to fill available space.
+ */
 export default function Spacing({
   size,
 }: {

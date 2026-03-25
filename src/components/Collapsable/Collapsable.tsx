@@ -250,4 +250,9 @@ export function CollapsableInterface(id: string) {
  * Allows collapsing and expanding the wrapped content
  **/
 const Collapsable = forwardRef(_Collapsable);
+/**
+ * A component that lets users hide or show content by clicking a header.
+ * It creates a toggleable section where content can be expanded to show more
+ * information or collapsed to save space.
+ **/
 export default Collapsable;

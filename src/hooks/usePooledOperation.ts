@@ -5,6 +5,11 @@ import usePooling from "./usePooling";
 /**
  * A toolkit hook to trigger an request to start a process and execute a pooling operation to validate when the operation is finished
  */
+
+/**
+ * This hook helps run a task and then check repeatedly if it's done.
+ * It combines starting a process with waiting for it to finish.
+ */
 export default function usePooledOperation() {
   const requestOperation = useRef<() => Promise<void>>(undefined);
   const poolingOperation = useRef<() => Promise<boolean>>(undefined);

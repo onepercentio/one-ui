@@ -71,7 +71,8 @@ function _FadeIn(
 }
 
 /**
- * Receives a children and displays it with a fade in animation, also when it's removed, it hides with a fadeout
+ * This component wraps content to make it fade in when it appears and fade out when it disappears.
+ * It helps animations feel smoother and more natural.
  **/
 const FadeIn = forwardRef<HTMLDivElement, FadeInProps>(_FadeIn);
 export default FadeIn;

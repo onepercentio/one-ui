@@ -72,4 +72,7 @@ function FileInput({ onFile, ...props }: FileInputProps) {
   );
 }
 
+/**
+ * A simple file uploader that lets users select and upload files from their device.
+ */
 export default FileInput;

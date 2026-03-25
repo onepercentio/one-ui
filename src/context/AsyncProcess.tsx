@@ -20,6 +20,7 @@ const AsyncProcessContext = createContext<{
 
 type PersistedIdentifier = string;
 
+/** Provides the async process functionality to the application */
 export default function AsyncProcessProvider({
   children,
   triggers,
@@ -78,6 +79,7 @@ export default function AsyncProcessProvider({
   );
 }
 
+/** Allows components to use the async process functionality */
 export function useAsyncProcess(): {
   [k in keyof FromOnePercentUtility<'AsyncQueue.Processes'>]: (
     ...args: FromOnePercentUtility<'AsyncQueue.Processes'>[k]

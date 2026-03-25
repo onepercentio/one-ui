@@ -4,6 +4,7 @@ import Styles from "./Notification.module.scss";
 
 /**
  * A layout for the notification card
+ * Displays messages to the user in a styled card format
  **/
 export default function Notification({
   type,

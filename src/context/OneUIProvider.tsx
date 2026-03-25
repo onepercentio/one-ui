@@ -37,6 +37,9 @@ type IfUtilityHas<N extends NamespaceAccessors, Declare> =
     ? undefined
     : Declare;
 
+/**
+ * Defines the available UI features and their settings.
+ */
 export type OneUIContextSpecs = {
   component: {
     asyncTriggerContainer: {
@@ -201,6 +204,9 @@ export type OneUIContextSpecs = {
   };
 };
 
+/**
+ * The configuration object used to set up the UI provider.
+ */
 export type ContextConfigSpecs = DeepPartial<OneUIContextSpecs> &
   PathObject<OneUIContextSpecs, "component.text">;
 
@@ -223,6 +229,9 @@ function OneUIProvider({
   return <Context.Provider value={mergedConfig}>{children}</Context.Provider>;
 }
 
+/**
+ * The main provider component that wraps your app to enable UI features.
+ */
 export default OneUIProvider;
 
 function pathToJson(
@@ -281,6 +290,9 @@ ${`<OneUIProvider config={${JSON.stringify(pathJson, null, 4)}}>
   );
 }
 
+/**
+ * A hook to access the current UI configuration.
+ */
 export function useOneUIContext() {
   const context = useContext(Context);
 
@@ -290,6 +302,9 @@ export function useOneUIContext() {
   return context as OneUIContextSpecs;
 }
 
+/**
+ * A hook to get a specific UI view component.
+ */
 export function useOneUIView<P extends FieldPath<OneUIContextSpecs>>(
   oneuiConfigPath: P,
   componentName: string,
@@ -300,7 +315,7 @@ export function useOneUIView<P extends FieldPath<OneUIContextSpecs>>(
 
 Views ready for use with this component shall be available at:
 import SomeView from "@onepercentio/one-ui/dist/components/${componentName}/View/SomeView";
-    
+
 Please define it using:
 import OneUIProvider from "@onepercentio/one-ui/dist/context/OneUIProvider";
 
@@ -317,6 +332,9 @@ ${`<OneUIProvider config={${JSON.stringify(
   return providedValue;
 }
 
+/**
+ * A hook to retrieve a specific value from the UI configuration.
+ */
 export function useOneUIConfig<P extends FieldPath<OneUIContextSpecs>>(
   prop: P,
 ): Get<OneUIContextSpecs, P>;
@@ -350,6 +368,9 @@ export function useOneUIConfig<
   return value || defaultValue;
 }
 
+/**
+ * A hook to get the current image scale setting.
+ */
 export function useCurrentImageScale() {
   const context = useContext(Context);
 

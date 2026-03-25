@@ -215,4 +215,8 @@ function Select<I extends SelectItem>({
   );
 }
 
+/**
+ * A dropdown select component that lets users choose one or more options from a list.
+ * It can show a loading state and supports filtering through search.
+ */
 export default Select;

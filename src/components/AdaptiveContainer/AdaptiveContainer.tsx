@@ -13,7 +13,11 @@ import UncontrolledTransition from "../UncontrolledTransition";
 import Styles from "./AdaptiveContainer.module.scss";
 
 /**
- * A container that animates width/height changes across UI updates
+ * A container that smoothly animates size changes when content updates.
+ * 
+ * This component wraps your content and makes transitions between different
+ * content sizes look polished by animating the width, height, or both dimensions.
+ * It's like giving your UI a gentle, professional feel when content changes.
  **/
 export default function AdaptiveContainer<
   E extends keyof JSX.IntrinsicElements | FunctionComponent,

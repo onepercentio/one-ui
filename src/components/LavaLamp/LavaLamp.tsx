@@ -10,8 +10,8 @@ type LavaLampProps = {
 };
 
 /**
- * A peaceful component simulating an interactive lavalamp
- **/
+ * This component creates a calming visual effect that looks like a lava lamp, with floating bubbles that move around smoothly.
+ */
 export default function LavaLamp({
   className,
   children,

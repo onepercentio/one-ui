@@ -174,7 +174,8 @@ function _InfinityScroll(
 }
 
 /**
- * Manages a set of divs that allows the effect of inifinite scrolling between elements
+ * A component that creates an infinite scrolling effect by showing different pages
+ * of content as the user scrolls horizontally.
  **/
 const InfinityScroll = forwardRef(_InfinityScroll);
 export default InfinityScroll;

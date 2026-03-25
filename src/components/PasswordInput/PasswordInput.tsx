@@ -148,7 +148,8 @@ function _PasswordInput(
 }
 
 /**
- * A Input based wrapper to handle inputing of password
- **/
+ * A password input component that shows and hides the password text
+ * and provides validation for password strength or matching.
+ */
 const PasswordInput = forwardRef(_PasswordInput);
 export default PasswordInput;

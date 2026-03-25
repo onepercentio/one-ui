@@ -151,7 +151,8 @@ export function AnimatedEntranceItem({
 }
 
 /**
- * Animates the entrance and exit of a component
+ * Wraps child components to add smooth entry and exit animations.
+ * It handles animations automatically when items are added or removed.
  **/
 export default function AnimatedEntrance({
   children,

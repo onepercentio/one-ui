@@ -7,10 +7,16 @@ import React, {
   useRef,
 } from "react";
 
+/**
+ * Defines the data that can be passed along with navigation.
+ */
 export type CustomState = {
   internalNavigation?: boolean;
 };
 
+/**
+ * A router component that manages navigation and route changes.
+ */
 export default function CustomBrowserRouter({
   children,
   beforeRouteChange = (s) => s,

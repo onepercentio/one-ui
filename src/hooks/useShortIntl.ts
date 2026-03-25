@@ -3,6 +3,10 @@ import { BigNumber } from "bignumber.js";
 import { ReactElement, useEffect, useState } from "react";
 import { FromOnePercentUtility } from "../type-utils";
 
+/**
+ * A custom hook that provides internationalization utilities.
+ * It formats messages and numbers, and includes special features for development mode.
+ */
 export default function useShortIntl(): IntlShape & {
   txt: <R extends ReturnType<IntlFormatters["formatMessage"]> = string>(
     id: FromOnePercentUtility<"IntlIds">,

@@ -33,12 +33,21 @@ class Subscriber {
   }
 }
 
-export type ContextAsyncControlContextShape = {
+/**
+ * Defines the structure for context control sharing.
+ */
+export type ContextAsyncControlContextShape = { {
   [controlId: string]: Subscriber;
 };
+/**
+ * The context used to share state across components.
+ */
 export const ContextAsyncControlContext =
   createContext<ContextAsyncControlContextShape>(null as any);
 
+/**
+ * Provider component to wrap the application context.
+ */
 export default function ContextAsyncControlProvider({
   children,
 }: PropsWithChildren<{}>) {
@@ -49,6 +58,9 @@ export default function ContextAsyncControlProvider({
   );
 }
 
+/**
+ * Hook to share state between components.
+ */
 export function useShareState<E>(controlId: string, stateId: string) {
   const ctx = useContext(ContextAsyncControlContext);
   const [state, setLocalState] = useState<E>(() => {
@@ -71,6 +83,9 @@ export function useShareState<E>(controlId: string, stateId: string) {
   return [state, wrappedSetState] as const;
 }
 
+/**
+ * Hook to control context with error and loading states.
+ */
 export function useContextControl<E, F extends FunctionMap>(
   controlId: string,
   functionsToWrap: F

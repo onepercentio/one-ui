@@ -41,8 +41,10 @@ function cleanKeys(keys: string[]) {
 }
 
 /**
- * This component receives a list of keyed elements and orders it based of the order provided via the prop "keyOrder"
- **/
+ * This component displays a list of items that can be reordered by dragging them with your mouse or touch.
+ * It supports simple vertical dragging and more advanced 2D reordering, with smooth animations
+ * when items move around.
+ */
 export default function OrderableList({
   children,
   className = "",

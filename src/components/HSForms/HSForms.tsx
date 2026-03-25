@@ -1,5 +1,9 @@
 import React, { useEffect, useRef } from "react";
 
+/**
+ * This component loads and displays a HubSpot form. It handles the form's
+ * initialization and provides callbacks when the form is ready or submitted.
+ */
 export default function HSForms({
   region,
   partialId,

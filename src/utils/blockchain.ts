@@ -1,5 +1,6 @@
 import { PromiEvent } from 'web3-core'
 
+/** Check if a transaction has been completed */
 export async function isTransactionMined(transactionHash: string, provider: any) {
     const transaction = await provider.eth.getTransactionReceipt(transactionHash)
 
@@ -12,6 +13,7 @@ export async function isTransactionMined(transactionHash: string, provider: any)
     else return !!transaction.status === true
 }
 
+/** Wait for a transaction to be confirmed */
 export async function waitForConfirmation(tHash: string, provider: any) {
     return new Promise<void>(async (r, rej) => {
         while (true) {
@@ -27,6 +29,7 @@ export async function waitForConfirmation(tHash: string, provider: any) {
     })
 }
 
+/** Get the transaction ID when a function is executed */
 export function dispatchAndWait(func: any) {
     const _func = func as PromiEvent<any>
     return new Promise<string>((r, rej) => {
@@ -37,6 +40,7 @@ export function dispatchAndWait(func: any) {
     })
 }
 
+/** Send a transaction and wait for it to be confirmed */
 export async function sendAndWaitForConfirmation(func: Promise<void>, provider: any) {
     const tHash = await dispatchAndWait(func)
     await waitForConfirmation(tHash, provider)

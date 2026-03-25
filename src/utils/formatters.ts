@@ -1,6 +1,7 @@
 /**
  * A formatter to format to double decimal
  */
+// Formats numbers as currency
 export const currencyNumberFormatter = new Intl.NumberFormat("pt-BR", {
   minimumFractionDigits: 2,
   maximumFractionDigits: 2,
@@ -9,6 +10,7 @@ export const currencyNumberFormatter = new Intl.NumberFormat("pt-BR", {
 /**
  * Instanciate a currency formatter
  */
+// Creates a currency formatter for a specific language
 export const currencyFormatterFactory = (
   langCode: string,
   currency?: string
@@ -35,6 +37,7 @@ export const currencyFormatterFactory = (
   }
 };
 
+// Creates a decimal formatter for a specific language
 export const decimalFormatterFactory = (langCode: string) => {
   try {
     return new Intl.NumberFormat(langCode, {

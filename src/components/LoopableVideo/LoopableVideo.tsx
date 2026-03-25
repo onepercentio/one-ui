@@ -7,7 +7,10 @@ import React, {
 
 /**
  * Plays a video and loops between the end and the timestamp you set
- **/
+ */
+/**
+ * This component displays a video that automatically restarts from a specific point when it reaches the end, creating a seamless loop effect.
+ */
 export default function LoopableVideo({
   videoSrc,
   percentToBackTo,

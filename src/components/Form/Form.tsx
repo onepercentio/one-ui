@@ -51,6 +51,10 @@ function Form<Q extends FormFieldView[]>(
  * A new and improved version of the one-ui design form
  *
  * Custom question types can be defined via @type {OnepercentUtility['UIElements']['FormExtension']['fields']}
+ *
+ * This component displays a form with multiple questions and allows users
+ * to enter answers to those questions. It handles validation, different
+ * display modes, and manages the form's state.
  **/
 export default forwardRef(Form);
 

@@ -47,5 +47,8 @@ function _EmailInput(
 /**
  * A Input based wrapper to handle inputs of email
  **/
+/**
+ * An email input field that validates the email format and shows error messages when the email is invalid.
+ **/
 const EmailInput = forwardRef(_EmailInput);
 export default EmailInput;

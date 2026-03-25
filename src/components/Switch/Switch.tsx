@@ -6,8 +6,10 @@ import React, {
 import Styles from "./Switch.module.scss";
 
 /**
- * Switchs between states
- **/
+ * A toggle switch component that lets users turn something on or off.
+ * It displays a clickable switch that changes state when clicked,
+ * and can be enabled or disabled based on user interaction.
+ */
 export default function Switch({
   enabled,
   onToggle,

@@ -14,6 +14,10 @@ const RIGHT_TEXT_MULTIPLIER = 5;
 /**
  * A component that keeps an overflow piece of text visible by continously scrolling it back and forward
  **/
+/**
+ * A component that displays text that scrolls back and forth when it's too long to fit.
+ * The scrolling stops when you hover your mouse over the text.
+ */
 export default function PingPongText({
   ...props
 }: ComponentProps<typeof Text>) {

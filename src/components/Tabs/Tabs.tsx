@@ -12,8 +12,9 @@ export enum TabType {
 }
 
 /**
- * Show tabs for toggling between options
- **/
+ * A component that displays a set of tabs for switching between different options or views.
+ * Users can click on a tab to select it, and the component highlights the active choice.
+ */
 export default function Tabs<O extends string | number>(
   props: {
     options: Readonly<

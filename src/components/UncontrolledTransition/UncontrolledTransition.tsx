@@ -137,7 +137,7 @@ function _UncontrolledTransition(
 }
 
 /**
- * This component receives child with key and applies a transition when the key changes, allowing to swap elements with a fine transition.
- **/
+ * A component that handles transitions when child elements change, making the swap appear smooth.
+ */
 export const UncontrolledTransition = forwardRef(_UncontrolledTransition);
 export default UncontrolledTransition;

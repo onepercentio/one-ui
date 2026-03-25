@@ -2,7 +2,8 @@ import React from "react";
 import Styles from "./HeaderCloseBtn.module.scss";
 
 /**
- * A simple close button implemented with pure HTML and CSS
+ * A simple close button that can be used for back or close actions.
+ * This component handles the visual styling and click behavior for navigation controls.
  **/
 export default function HeaderButton({
   mode,

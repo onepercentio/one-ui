@@ -19,6 +19,10 @@ type Step = {
 /**
  * Displays new texts as they are pushed into the steps property allowing for a nice progress follow experience
  **/
+/**
+ * This component shows a sequence of steps with titles, descriptions, and optional buttons.
+ * It highlights the current step and fades out previous ones, helping users follow along as they progress through a process.
+ **/
 export default function ProgressTexts({
   steps,
   currentStep,

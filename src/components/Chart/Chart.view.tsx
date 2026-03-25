@@ -99,8 +99,8 @@ function FloatingTooltip({
 }
 
 /**
- * Draws a simple line chart with some animation
- **/
+ * Displays a line chart that visualizes data over time with animated points and labels.
+ */
 export default function ChartView({
   bounds: [[startX, endX, stepsX], [startY, endY, stepsY]],
   data = [],

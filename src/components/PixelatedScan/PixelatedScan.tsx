@@ -17,6 +17,12 @@ const AnimDuration = Number(Styles.animationDuration);
 /**
  * This effect scans up and down on the div with a following pixelated trail
  **/
+
+/**
+ * A visual animation component that creates a pixelated scanning effect.
+ * It generates a grid of colored squares that animate in waves to create
+ * a dynamic, pixel-art style visual pattern.
+ */
 export default function PixelatedScan({
   squaresByLine,
   color,

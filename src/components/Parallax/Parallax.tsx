@@ -221,5 +221,9 @@ function _Parallax(
 /**
  * It holds a children and animates a tilt effect relative to mouse position
  **/
+/**
+ * A component that creates a 3D tilt effect on its content based on where you move your mouse or touch the screen.
+ * When active, the element tilts and responds to your cursor position, creating an interactive depth effect.
+ **/
 const Parallax = forwardRef(_Parallax);
 export default Parallax;

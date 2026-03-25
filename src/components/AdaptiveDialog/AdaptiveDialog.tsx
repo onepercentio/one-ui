@@ -7,7 +7,10 @@ import { useOneUIConfig } from "../../context/OneUIProvider";
 import { FromOnePercentUtility } from "../../type-utils";
 
 /**
- * This component implements a generic drawer that displays it as a drawer on mobile and as a modal on desktop
+ * This is a dialog component that shows content in an overlay. 
+ * On mobile devices, it slides in from the side like a drawer menu,
+ * while on desktop computers, it appears as a centered popup window.
+ * It handles closing animations and can render in different locations on the page.
  **/
 export default function AdaptiveDialog({
   variant = "default",

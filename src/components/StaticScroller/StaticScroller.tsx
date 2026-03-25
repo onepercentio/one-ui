@@ -77,7 +77,8 @@ function _StaticScroller(
 }
 
 /**
- * Mantains a static content at the start of the container and when scrolled animates it's concealment
- **/
+ * A scrollable container that keeps content visible at the start.
+ * As you scroll, the content smoothly fades out when it moves away.
+ */
 const StaticScroller = forwardRef(_StaticScroller);
 export default StaticScroller;

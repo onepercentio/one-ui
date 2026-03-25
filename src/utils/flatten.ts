@@ -1,5 +1,6 @@
 import { FieldPath } from "../types";
 
+/** Turns a nested object into a flat list of key-value pairs */
 export function flatten<T extends object>(obj: T): { [k in FieldPath<T>]: string } {
     return Object.assign(
         {},

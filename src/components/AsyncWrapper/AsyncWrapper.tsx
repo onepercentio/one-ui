@@ -7,6 +7,10 @@ import Text from "../Text";
 
 /**
  * This is a generic implementation of the loading, and error handling
+ * 
+ * This component wraps your content and shows a loading spinner while data is being fetched.
+ * If an error occurs, it displays an error message with a retry button.
+ * It handles both the loading state and error state in one place.
  **/
 export default function AsyncWrapper({
   loading,

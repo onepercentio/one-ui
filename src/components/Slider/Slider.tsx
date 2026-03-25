@@ -4,6 +4,10 @@ import { SLIDER_TEST_IDS } from "./Slider.e2e";
 import throttle from "lodash/throttle";
 import St from "./Slider.module.scss"
 
+/**
+ * A slider component that lets users select a value by dragging a handle.
+ * It converts the mouse position into a value between the specified minimum and maximum.
+ */
 export default function Slider(
   p: Pick<
     ComponentProps<typeof BalancedProgressBar>,

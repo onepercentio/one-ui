@@ -1,5 +1,9 @@
 import { useMemo, useRef } from "react";
 
+/**
+ * A hook that helps you watch when HTML or SVG elements appear on the screen.
+ * It lets you run code automatically when an element becomes visible to the user.
+ */
 export default function useIntersection() {
   const { current: targetMap } = useRef<[HTMLOrSVGElement, () => void][]>([]);
   const { current: observer } = useRef(

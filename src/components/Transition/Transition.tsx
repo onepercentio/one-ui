@@ -489,7 +489,16 @@ export enum TransitionAnimationTypes {
 }
 
 /**
- * Handles the transition between multiple children and recycling of elements
- **/
+ * A component that manages smooth transitions between different views or screens.
+ * It handles animations and switching between multiple children elements.
+ *
+ * Simple explanation: This component controls how content changes from one screen to another,
+ * making the transition look smooth and professional with various animation styles.
+ */
 const Transition = forwardRef(_Transition);
+
+/**
+ * A component that manages smooth transitions between different views or screens.
+ * It handles animations and switching between multiple children elements.
+ */
 export default Transition;

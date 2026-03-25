@@ -361,5 +361,10 @@ function _PaginationIndicator(
 /**
  * A cool component to indicate how many pages are
  **/
+/**
+ * A pagination indicator component that displays the current page
+ * and total number of pages using animated circular indicators.
+ * It updates visually when scrolling through pages.
+ */
 const PaginationIndicator = forwardRef(_PaginationIndicator);
 export default PaginationIndicator;

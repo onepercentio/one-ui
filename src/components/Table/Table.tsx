@@ -28,8 +28,10 @@ export type TableProps<I extends any> = {
 };
 
 /**
- * A simple table layout
- **/
+ * A component that displays data in a table format with optional pagination.
+ * It shows rows of information with customizable column headers and can handle
+ * large datasets by splitting them across multiple pages.
+ */
 export default function Table<I extends any>({
   paginable,
   heading,

@@ -23,6 +23,11 @@ import { useOneUIConfig } from "../../context/OneUIProvider";
  *  <>This is only shown when the action finished successfully</>
  * </AsyncTriggerContainer>
  */
+/**
+ * A component that manages the lifecycle of an asynchronous operation.
+ * It displays a loading state while the operation runs, shows the child content
+ * when the operation succeeds, and provides a retry option if the operation fails.
+ */
 export default function AsyncTriggerContainer({
   action,
   children,
@@ -122,3 +127,4 @@ export function AsyncTriggerContainerView({
     </AdaptiveContainer>
   );
 }
+

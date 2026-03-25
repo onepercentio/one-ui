@@ -9,6 +9,10 @@ const withoutFormat = (strValue: string) =>
         .replaceAll('.', '')
         .replaceAll(',', '.')
 
+/**
+ * A number input component that handles user input and converts it to a numeric value.
+ * It provides a user-friendly way to enter numbers while handling formatting automatically.
+ */
 export default function NumberInput(
     props: Omit<
         ComponentProps<typeof CurrencyInput>,

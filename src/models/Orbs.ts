@@ -1,3 +1,6 @@
+/**
+ * Handles drawing a circle on the screen.
+ */
 export interface OrbDrawer {
   drawOrb(x: number, y: number, radius: number): void;
 }
@@ -9,6 +12,9 @@ class BaseOrb {
   }
 }
 
+/**
+ * A moving circle that bounces inside a container.
+ */
 export class Orb extends BaseOrb {
   x: number;
   y: number;
@@ -51,6 +57,9 @@ export class Orb extends BaseOrb {
   }
 }
 
+/**
+ * A circle that follows and guides the main orb.
+ */
 export class GuideOrb extends BaseOrb {
   lastRadius!: number;
   lastX!: number;

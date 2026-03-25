@@ -117,7 +117,8 @@ function _AdaptiveSidebar(
 }
 
 /**
- * A component that you can put anywhere but hides when small enough and shows the control via a fixed floating button
+ * A component that displays a sidebar panel. On mobile devices, it shows a floating button to open and close the panel.
+ * On desktop, the panel displays directly in the page.
  **/
 const AdaptiveSidebar = forwardRef(_AdaptiveSidebar);
 export default AdaptiveSidebar;

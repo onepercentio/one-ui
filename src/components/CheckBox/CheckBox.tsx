@@ -4,6 +4,9 @@ import Styles from "./CheckBox.module.scss";
 
 /**
  * A simple checkbox with nissan guidelines
+ * 
+ * This component displays a checkbox that users can click to toggle between checked and unchecked states.
+ * It shows a label next to the checkbox and supports custom sizing and grouping.
  **/
 export default function CheckBox({
   checked,

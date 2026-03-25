@@ -3,6 +3,10 @@ import React, { useEffect, useState } from "react";
 /**
  * . .. ... . .. ...
  **/
+/**
+ * A simple loading indicator that shows animated dots.
+ * It displays a rotating sequence of dots to indicate that something is loading.
+ */
 export default function LoaderDotsIndicator({
   dotsCount = 3,
   lockSize = false,

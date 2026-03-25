@@ -3,6 +3,10 @@ import Input from "../Input";
 import { useCurrencyInput } from "./CurrencyInput.hook";
 import { currencyFormatterFactory } from "../../utils/formatters";
 
+/**
+ * A currency input field that handles formatting and user input for monetary values.
+ * It displays the value in a specified currency and locale, and provides formatted output to the parent.
+ */
 export default function CurrencyInput({
   locale,
   value: amount,

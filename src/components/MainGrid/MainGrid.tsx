@@ -64,5 +64,9 @@ function _MainGrid(
 /**
  * This layout divides the screen in 3 fragments and provides a responsive adaptation when on mobile
  **/
+/**
+ * A layout component that arranges content in three sections (left, center, right)
+ * and automatically adjusts for mobile devices
+ */
 const MainGrid = forwardRef(_MainGrid);
 export default MainGrid;

@@ -38,6 +38,10 @@ export enum CountdownTextModel {
 /**
  * You five it some time, and a countdown is shown
  **/
+/**
+ * A countdown timer that shows how much time is left until a specific moment.
+ * It can display time in two formats: as a clock (00:00:00) or in a short format (00h 00m 00s).
+ */
 export default function Countdown({
   timeRemaining,
   onFinish,

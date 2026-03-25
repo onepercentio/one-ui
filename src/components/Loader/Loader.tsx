@@ -2,7 +2,8 @@ import React from "react";
 import Styles from "./Loader.module.scss";
 
 /**
- * A simple loader
+ * A simple loader component that displays a loading indicator.
+ * Used to show users that content is being loaded.
  **/
 export default function Loader({
   className = "",

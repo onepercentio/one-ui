@@ -39,4 +39,9 @@ export function _Text(
  * A component to hold all text variantions
  **/
 const Text = forwardRef(_Text);
+
+/**
+ * A reusable component that displays styled text with different sizes and colors.
+ * It automatically applies the correct HTML tag and styling based on the text type.
+ */
 export default Text;

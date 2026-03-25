@@ -7,6 +7,9 @@ import {
 } from "web3-eth-contract";
 import { AbiItem } from "web3-utils";
 
+/**
+ * A collection of all contract interface definitions.
+ */
 export type AllABIs = readonly any[];
 
 type ExtractMethods<A extends AllABIs[number]> = A extends {
@@ -23,6 +26,9 @@ type ExtractEvents<A extends AllABIs[number]> = A extends {
 
 type TypeOrInternalType<T> = T['internalType'] extends unknown ? T['type'] : T['internalType']
 
+/**
+ * Converts a type to a JavaScript representation.
+ */
 export type MapTypeToJS<L, C> =
   L extends "tuple[]" ? TuplifyUnion<C[number], C[number]['name']>[] :
   L extends "address" | "uint256" | "uint128" | "uint8" | "string" | "bytes32" | "uint64"
@@ -46,6 +52,9 @@ type ExtractFromObj<R extends (AllABIs[number] & { type: "function" })> = {
   >;
 }
 
+/**
+ * Defines the structure of a contract method.
+ */
 export type ExtractMethodDefinition<
   A extends AllABIs,
   N extends (AllABIs[number] & { type: "function" })["name"],
@@ -94,6 +103,9 @@ type LastOf<T> = UnionToIntersection<
 type Push<T extends any[], V> = [...T, V];
 
 // TS4.1+
+/**
+ * Creates a tuple from a union of types.
+ */
 export type TuplifyUnion<
   FUNCS,
   T,
@@ -109,6 +121,9 @@ export type TuplifyUnion<
     >
   >;
 
+/**
+ * A specialized contract class with enhanced event handling.
+ */
 export class GenericContract<
   A extends AllABIs = AllABIs,
   E extends string = ExtractEvents<A[number]> | "allEvents"
@@ -143,8 +158,14 @@ export class GenericContract<
   }
 }
 
+/**
+ * The main contract class for interacting with blockchain contracts.
+ */
 export default GenericContract;
 
+/**
+ * Represents the data returned from a contract event.
+ */
 export type GenericEventData<E extends AllABIs> = EventData & GenericEvent<E>;
 
 type ABIEvent = AllABIs[number] & { type: "event" };

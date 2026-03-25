@@ -8,6 +8,10 @@ export type FlowControlState = "disabled" | "enabled" | "hidden";
 /**
  * Container for a flow, managing the go back and close controller
  **/
+/**
+ * A container that manages navigation controls for a multi-step flow.
+ * It handles showing back buttons, close buttons, and manages the transition between steps.
+ */
 export default function FlowController<
   E extends Pick<JSX.IntrinsicElements, "div" | "form">,
   W extends keyof E

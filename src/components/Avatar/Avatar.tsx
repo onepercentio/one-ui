@@ -2,7 +2,9 @@ import React, { useMemo } from "react";
 import Styles from "./Avatar.module.scss";
 
 /**
- * A simple avatar that shows the image of the user or it's initials as fallback
+ * A simple avatar that shows the user's image or their initials as a fallback
+ * This component displays a person's profile picture or generates their initials
+ * if no picture is available
  **/
 export default function Avatar({
   name,

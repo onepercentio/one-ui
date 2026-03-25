@@ -245,6 +245,9 @@ function _AnchoredTooltip(
 
 /**
  * This tooltip anchors itself to an element and handles positioning relative to the anchored element
- **/
+ * 
+ * A simple popup that appears near another element, automatically positioning itself to stay visible
+ * on the screen and adjusting its location if the page is scrolled or resized.
+ */
 const AnchoredTooltip = forwardRef(_AnchoredTooltip);
 export default AnchoredTooltip;

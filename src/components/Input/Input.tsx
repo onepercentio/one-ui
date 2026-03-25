@@ -130,5 +130,11 @@ function _Input(
 /**
  * A transparent input with some prebuilt states common to the application
  **/
+/**
+ * A simple text input component that users can type into.
+ * It supports both single-line and multi-line text entry,
+ * displays error messages when needed, and can show icons or
+ * custom decorations next to the input field.
+ */
 const Input = forwardRef(_Input);
 export default Input;

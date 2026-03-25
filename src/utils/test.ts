@@ -1,6 +1,7 @@
 type Func = (...args: any[]) => string
 
 /** @deprecated Preffer ./e2e.ts's test ids generator  */
+// Creates a helper to generate test IDs with a custom prefix
 export const preffixTestIds =
   (preffix: string) =>
   <

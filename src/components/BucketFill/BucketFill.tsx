@@ -6,6 +6,11 @@ import Styles from "./BucketFill.module.scss";
  *
  * IT IS NOT READY (AND PROBABLY NEVER WILL) FOR FRAGMENT NODES
  **/
+
+/**
+ * A visual component that changes the background color of child elements as the user progresses through steps.
+ * It fills up the background from bottom to top based on a "fillTo" value, creating a progress effect.
+ */
 export default function BucketFill({
   children,
   background,

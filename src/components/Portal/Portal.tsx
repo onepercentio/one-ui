@@ -14,11 +14,15 @@ import Styles from "./Portal.module.scss";
 
 /**
  * A react portal implementation with current page fallback
- * 
+ *
  * Usage
  * <PortalReceiver name="receive"/>
- * 
+ *
  * <Portal to="receive">CHILD</Portal>
+ *
+ * This component renders its children inside a different part of the DOM tree
+ * than where it was originally placed, allowing content to appear outside its
+ * parent containers (useful for modals, tooltips, and dropdowns).
  **/
 export default function Portal({
   to,

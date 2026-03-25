@@ -2,12 +2,6 @@ import React, { PropsWithChildren, ReactNode, useEffect, useRef } from "react";
 import Styles from "./BucketFill.module.scss";
 
 /**
- * A weird name for a component, but it's objective is to change element colors as the user progresses through a series of steps
- *
- * IT IS NOT READY (AND PROBABLY NEVER WILL) FOR FRAGMENT NODES
- **/
-
-/**
  * A visual component that changes the background color of child elements as the user progresses through steps.
  * It fills up the background from bottom to top based on a "fillTo" value, creating a progress effect.
  */

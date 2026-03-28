@@ -1,4 +1,5 @@
 import React, {
+  ComponentProps,
   ForwardedRef,
   forwardRef,
   PropsWithChildren,
@@ -6,7 +7,12 @@ import React, {
   useImperativeHandle,
   useMemo,
 } from "react";
-import { AnswersMap, FormMode, FormViewProps } from "./Form.types";
+import {
+  AnswersMap,
+  BaseQuestion,
+  FormMode,
+  FormViewProps,
+} from "./Form.types";
 import {
   useFieldErrors,
   useForm,
@@ -20,18 +26,18 @@ import { useOneUIConfig } from "../../context/OneUIProvider";
 export type FormRef<Q extends FormFieldView[]> = {
   setAnswer<I extends Q[number]["id"]>(
     questionId: I,
-    ans: AnswerByField<Q[number] & { id: I }>
+    ans: AnswerByField<Q[number] & { id: I }>,
   ): void;
 };
 
 function Form<Q extends FormFieldView[]>(
   { questions, initialAnswers = {}, ...props }: FormViewProps<Q>,
-  ref: ForwardedRef<FormRef<Q>>
+  ref: ForwardedRef<FormRef<Q>>,
 ) {
   const filterOutInitialAnswers = useMemo(() => {
     const questionIds = questions.map((a) => a.id);
     return Object.fromEntries(
-      Object.entries(initialAnswers).filter(([id]) => questionIds.includes(id))
+      Object.entries(initialAnswers).filter(([id]) => questionIds.includes(id)),
     );
   }, [initialAnswers]);
   const answers = useFormAnswers(filterOutInitialAnswers, props.mode!);
@@ -47,6 +53,8 @@ function Form<Q extends FormFieldView[]>(
   );
 }
 
+const forwardedRef = forwardRef(Form);
+
 /**
  * A new and improved version of the one-ui design form
  *
@@ -56,7 +64,9 @@ function Form<Q extends FormFieldView[]>(
  * to enter answers to those questions. It handles validation, different
  * display modes, and manages the form's state.
  **/
-export default forwardRef(Form);
+export default forwardedRef as unknown as <Q extends BaseQuestion[]>(
+  p: FormViewProps<Q> & Pick<ComponentProps<typeof forwardedRef>, "ref">,
+) => React.ReactElement;
 
 function ControlledFormComp<Q extends FormFieldView[]>(
   {
@@ -67,7 +77,7 @@ function ControlledFormComp<Q extends FormFieldView[]>(
   }: FormViewProps<Q> & {
     answers: ReturnType<typeof useFormAnswers<AnswersMap<Q>>>;
   },
-  ref: ForwardedRef<FormRef<Q>>
+  ref: ForwardedRef<FormRef<Q>>,
 ) {
   const { mode = FormMode.WRITE } = props;
   const { showAllErrors = false } = props as unknown as FormViewProps<Q> & {
@@ -78,12 +88,13 @@ function ControlledFormComp<Q extends FormFieldView[]>(
   const errors = useFieldErrors(
     questions,
     answersControl.answers,
-    showAllErrors
+    showAllErrors,
   );
 
   const answersArray = useMemo(() => {
     return questions.map(
-      (q) => answersControl.answers[q.id as keyof typeof answersControl.answers]
+      (q) =>
+        answersControl.answers[q.id as keyof typeof answersControl.answers],
     );
   }, [questions.map((a) => a.id), answersControl.answers]);
 
@@ -91,7 +102,7 @@ function ControlledFormComp<Q extends FormFieldView[]>(
     if (props.mode !== FormMode.READ_ONLY) {
       props.onFormUpdate(
         answers as any,
-        isQuestionsAnswered && isFilesUploaded
+        isQuestionsAnswered && isFilesUploaded,
       );
     }
   }, [...answersArray, isQuestionsAnswered, isFilesUploaded]);
@@ -103,11 +114,11 @@ function ControlledFormComp<Q extends FormFieldView[]>(
         onAnswerAction(
           questions.find((q) => q.id === id)!.type,
           id,
-          val as any
+          val as any,
         );
       },
     }),
-    []
+    [],
   );
 
   const wrapperClasses = useOneUIConfig("component.form.fieldWrapper", {});
@@ -134,7 +145,7 @@ function ControlledFormComp<Q extends FormFieldView[]>(
                     </div>
                   );
                 },
-          [classOrComponentWrapper]
+          [classOrComponentWrapper],
         );
         return (
           <WrapperComp

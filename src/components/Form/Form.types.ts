@@ -11,7 +11,7 @@ import {
 export type BaseQuestion = { id: string; type: FormField["type"] };
 export type FormState<Q extends BaseQuestion[] = []> = [
   answers: AnswersMap<Q>,
-  isValid: boolean
+  isValid: boolean,
 ];
 
 export enum DataStatus {
@@ -81,7 +81,7 @@ export type FormViewProps<Q extends BaseQuestion[]> = {
   | {
       mode?: FormMode.WRITE;
       initialAnswers?: AnswersMap<Q>;
-      onFormUpdate: (answers: any, isValid: boolean) => void;
+      onFormUpdate: (answers: AnswersMap<Q>, isValid: boolean) => void;
       /** When provided (true) show all current errors that are blocking the completion of the form */
       showAllErrors?: boolean;
     }
@@ -93,8 +93,8 @@ export type FormViewProps<Q extends BaseQuestion[]> = {
 
 export type AnswersMap<
   Q extends Readonly<BaseQuestion[]> = [
-    { type: BaseQuestion["type"]; id: string }
-  ]
+    { type: BaseQuestion["type"]; id: string },
+  ],
 > = Partial<{
   [questionId in Q[number]["id"]]: AnswerByField<
     Q[number] & { id: questionId }

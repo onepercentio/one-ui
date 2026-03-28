@@ -36,7 +36,7 @@ class Subscriber {
 /**
  * Defines the structure for context control sharing.
  */
-export type ContextAsyncControlContextShape = { {
+export type ContextAsyncControlContextShape = {
   [controlId: string]: Subscriber;
 };
 /**

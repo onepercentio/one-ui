@@ -40,15 +40,18 @@ function Form<Q extends FormFieldView[]>(
       Object.entries(initialAnswers).filter(([id]) => questionIds.includes(id)),
     );
   }, [initialAnswers]);
-  const answers = useFormAnswers(filterOutInitialAnswers, props.mode!);
+  const answers = useFormAnswers(
+    filterOutInitialAnswers as typeof initialAnswers,
+    props.mode!,
+  );
 
   return (
     <ControlledForm
       ref={ref}
       questions={questions}
       initialAnswers={initialAnswers}
-      answers={answers}
-      {...props}
+      answers={answers as any}
+      {...(props as any)}
     />
   );
 }

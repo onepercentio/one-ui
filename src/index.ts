@@ -146,8 +146,6 @@ export {default as Compact} from "./components/FileInput/View/Compact/index"
 export * from "./components/FileInput/View/BigFactory/index";
 export {default as BigFactory} from "./components/FileInput/View/BigFactory/index"
 export * from "./components/FileInput/View/View.types";
-export * from "./components/Header/index";
-export {default as Header} from "./components/Header/index"
 export * from "./components/LoopableVideo/index";
 export {default as LoopableVideo} from "./components/LoopableVideo/index"
 export * from "./components/AdaptiveSidebar/index";

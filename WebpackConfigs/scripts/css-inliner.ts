@@ -1,6 +1,6 @@
 export const extractVars = (
   varOrDefault: string,
-  storeVarsAt: string[]
+  storeVarsAt: string[],
 ): string | undefined => {
   const varColorParts = /var\(([a-z0-9A-Z-]+)([^)]*)\)?/.exec(varOrDefault);
   if (varColorParts) {
@@ -14,7 +14,7 @@ export const extractVars = (
 
 export function parseVarColor(
   color: string,
-  startingAt: HTMLElement
+  startingAt: HTMLElement,
 ): string | undefined {
   const varsToCheckFor: string[] = [];
   let defaultColor = extractVars(color, varsToCheckFor);
@@ -71,8 +71,9 @@ export default function inlineCSS(force: boolean = false) {
     }
 
     const inlined = Array.from(styles)
+      .sort((kA, kB) => kA.localeCompare(kB))
       .map((k) => {
-        return `${k}: ${styles.getPropertyValue(k)}`
+        return `${k}: ${styles.getPropertyValue(k)}`;
       })
       .join("; ")
       .concat(";");
@@ -82,16 +83,20 @@ export default function inlineCSS(force: boolean = false) {
   // Then write it to the styles, so the update of previous elements does not affect the generation
   elstyles.forEach(([el, s]) => {
     el.setAttribute("style", s);
+    el.removeAttribute("class")
   });
 
   if (force === false)
     getTextNodesIn(document.body).forEach((n) => {
       n.replaceWith(
-        ...n.textContent!.split(/\n/g).reduce((r, txt, i, arr) => {
-          return arr.length - 1 === i
-            ? [...r, txt]
-            : [...r, txt, document.createElement("br")];
-        }, [] as (Node | string)[])
+        ...n.textContent!.split(/\n/g).reduce(
+          (r, txt, i, arr) => {
+            return arr.length - 1 === i
+              ? [...r, txt]
+              : [...r, txt, document.createElement("br")];
+          },
+          [] as (Node | string)[],
+        ),
       );
     });
 

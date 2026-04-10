@@ -57,7 +57,7 @@ export type TransitionProps = {
 function TransitionClasses(
   type: NonNullable<
     Exclude<TransitionProps["transitionType"], TransitionAnimationTypes.CUSTOM>
-  >
+  >,
 ): {
   /**
    * Applied to the element that was not visible and is now entering the screen
@@ -149,7 +149,7 @@ function ChildrenWrapperFactory(
   externalPropsContainer: { [k: string]: any },
   /** This is used to prevent newer "duplicated" keys from being removed after the new element finished animation */
   timestamp: number,
-  toRemoveKeys?: Key[]
+  toRemoveKeys?: Key[],
 ): ChildrenWrapper {
   (func as any).createdAt = timestamp;
   (func as any).associatedKey = key;
@@ -169,21 +169,22 @@ function _Transition(
     lockTransitionHeight = false,
     ...props
   }: TransitionProps,
-  _containerRef: ForwardedRef<HTMLDivElement | null>
+  _containerRef: ForwardedRef<HTMLDivElement | null>,
 ) {
   const containerRef = useMemo(
     () =>
       (_containerRef as MutableRefObject<HTMLDivElement | null>) || createRef(),
-    [_containerRef]
+    [_containerRef],
   );
   const preTransitionDetails = useRef<CSSProperties>({
     transformOrigin: "initial",
   });
+  const testId = (props as any)["data-testid"] ?? "transition-container";
   const [childrenWrappers, setChildrenWrappers] = useState<
     (ChildrenWrapper | undefined)[]
   >(() => {
     const externalProps = {
-      "data-testid": "transition-container",
+      "data-testid": testId,
       key: String(children[step]?.key || step),
       style: contentStyle,
       className: contentClassName,
@@ -193,7 +194,7 @@ function _Transition(
       children[step]!.key || step,
       externalProps,
       Date.now(),
-      []
+      [],
     );
     return [func];
   });
@@ -211,7 +212,7 @@ function _Transition(
       props.transitionType === TransitionAnimationTypes.CUSTOM
         ? props.config
         : TransitionClasses(
-            props.transitionType || TransitionAnimationTypes.SLIDE
+            props.transitionType || TransitionAnimationTypes.SLIDE,
           );
 
     if (
@@ -248,12 +249,12 @@ function _Transition(
         const enteringScreenRef = createRef<HTMLDivElement>();
         const [FirstNextScreen, ...restOfScreens] =
           screensBeforeChangingStep.filter(
-            (a) => a?.associatedKey !== String(key)
+            (a) => a?.associatedKey !== String(key),
           );
 
         if (FirstNextScreen) {
           Object.assign(FirstNextScreen.externalProps, {
-            "data-testid": "transition-container",
+            "data-testid": testId,
             style: { ...contentStyle, WebkitMaskImage: transitionMask },
             className: `${transitionClasses.backward.elementExiting}`,
           });
@@ -263,10 +264,10 @@ function _Transition(
 
           const isAnimationFromExpectedState =
             enteringScreenRef.current?.classList.contains(
-              transitionClasses.backward.elementEntering
+              transitionClasses.backward.elementEntering,
             );
           enteringScreenRef.current?.classList.remove(
-            transitionClasses.backward.elementEntering
+            transitionClasses.backward.elementEntering,
           );
           setChildrenWrappers((screensAfterTheCurrentStepEntered) => {
             if (onDiscardStep) {
@@ -279,7 +280,7 @@ function _Transition(
               const shouldKeep =
                 (s?.associatedKey !== String(prevKeyToRemove) &&
                   !FirstNextScreen?.toRemoveKeys?.some(
-                    (k) => String(k) === String(s?.associatedKey)
+                    (k) => String(k) === String(s?.associatedKey),
                   )) ||
                 s!.createdAt! > insertedAt;
               return shouldKeep;
@@ -287,12 +288,12 @@ function _Transition(
           });
           event.currentTarget.removeEventListener(
             "animationend",
-            animationEndListener as any
+            animationEndListener as any,
           );
         }
         const propsContainer = {
           ref: enteringScreenRef,
-          "data-testid": "transition-container",
+          "data-testid": testId,
           key,
           className: `${transitionClasses.backward.elementEntering} ${contentClassName}`,
           style: {
@@ -307,7 +308,7 @@ function _Transition(
           key,
           propsContainer,
           insertedAt,
-          [prevKeyToRemove, ...(FirstNextScreen?.toRemoveKeys || [])]
+          [prevKeyToRemove, ...(FirstNextScreen?.toRemoveKeys || [])],
         );
         if (FirstNextScreen)
           return [
@@ -317,7 +318,7 @@ function _Transition(
                 () => <React.Fragment />,
                 "",
                 {},
-                insertedAt
+                insertedAt,
               ),
             ...restOfScreens,
           ];
@@ -332,14 +333,14 @@ function _Transition(
         const nextScreenRef = createRef<HTMLDivElement>();
         if (lastWrapper) {
           Object.assign(lastWrapper.externalProps, {
-            "data-testid": "transition-container",
+            "data-testid": testId,
             style: { ...contentStyle, WebkitMaskImage: transitionMask },
             className: `${contentClassName} ${transitionClasses.forward.elementExiting}`,
             onAnimationEnd: (e: AnimationEvent) => {
               if (e.target !== e.currentTarget) return;
               if (transitionClasses.forward.elementEntering)
                 nextScreenRef.current?.classList.remove(
-                  transitionClasses.forward.elementEntering
+                  transitionClasses.forward.elementEntering,
                 );
               if (onDiscardStep) onDiscardStep(prevKeyToRemove, insertedAt);
               setChildrenWrappers((screensAfterTheCurrentStepEntered) => {
@@ -349,7 +350,7 @@ function _Transition(
                       s?.associatedKey !== String(prevKeyToRemove) ||
                       s.createdAt > insertedAt;
                     return shouldMantain;
-                  }
+                  },
                 );
                 return nextState;
               });
@@ -358,7 +359,7 @@ function _Transition(
         }
         const propsContainer = {
           ref: nextScreenRef,
-          "data-testid": "transition-container",
+          "data-testid": testId,
           key,
           style: {
             ...contentStyle,
@@ -371,7 +372,7 @@ function _Transition(
           },
           key,
           propsContainer,
-          insertedAt
+          insertedAt,
         );
         return [
           ...screensBeforeChangingStep.slice(0, lastIndex),
@@ -380,7 +381,7 @@ function _Transition(
               () => <React.Fragment />,
               "fallback",
               {},
-              insertedAt
+              insertedAt,
             ),
           newWrapper,
         ];
@@ -404,7 +405,7 @@ function _Transition(
       "elementId" in props
     ) {
       const element = document.querySelector(
-        `#${props.elementId}`
+        `#${props.elementId}`,
       ) as HTMLDivElement;
 
       if (element) {
@@ -465,7 +466,7 @@ function _Transition(
       >
         {(childrenWrappers as ChildrenWrapper[]).map((Wrapper) => {
           const childToRender = children.find(
-            (a, i) => (a?.key || i) === Wrapper?.associatedKey
+            (a, i) => (a?.key || i) === Wrapper?.associatedKey,
           );
           return (
             <Wrapper key={`${Wrapper!.associatedKey} ${Wrapper.createdAt}`}>

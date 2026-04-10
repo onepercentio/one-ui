@@ -81,7 +81,7 @@ function Select<I extends SelectItem>({
   alignTo?: AnchoredTooltipAlignment;
   filter?: (item: I, term: string) => boolean;
 } & (SingleMode<I> | MultiMode<I>) &
-  Omit<ComponentProps<typeof Input>, "selected" | "onClick">) {
+  Omit<ComponentProps<typeof Input>, "selected" | "onClick" | "onSelect">) {
   const { selected: _, onClick: __, ...propsToSpread } = otherProps;
   const { StateIndicator } = useOneUIContext().component.select;
   const collapsableRef = useRef<ElementRef<typeof Collapsable>>(null);
@@ -143,10 +143,10 @@ function Select<I extends SelectItem>({
                   }`
                 : label || ""
               : _selected
-              ? "labelStr" in _selected
-                ? _selected.labelStr
-                : _selected.label
-              : label || ""
+                ? "labelStr" in _selected
+                  ? _selected.labelStr
+                  : _selected.label
+                : label || ""
           }
           disabled
           Icon={

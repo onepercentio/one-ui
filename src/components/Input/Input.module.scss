@@ -7,12 +7,13 @@
   line-height: 33px;
   .icon {
     position: absolute;
-    top: 1.5px;
+    top: 50%;
     right: 1.5px;
     min-height: 30px;
     min-width: 30px;
     cursor: pointer;
     user-select: none;
+    margin: -7.5px 0px;
     &img {
       height: 30px;
       width: 30px;

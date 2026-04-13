@@ -14,7 +14,7 @@ import Styles from "./AdaptiveContainer.module.scss";
 
 /**
  * A container that smoothly animates size changes when content updates.
- * 
+ *
  * This component wraps your content and makes transitions between different
  * content sizes look polished by animating the width, height, or both dimensions.
  * It's like giving your UI a gentle, professional feel when content changes.
@@ -71,7 +71,9 @@ export default function AdaptiveContainer<
         transitionContainer.style.height = `${transitionContainer.clientHeight}px`;
       } else if (direction === "h") {
         transitionContainer.style.width = `${transitionContainer.clientWidth}px`;
-        transitionContainer.style[animatedProperty as "width"] = ``;
+        transitionContainer.style.height = transitionContainer.clientHeight
+          ? `${transitionContainer.clientHeight}px`
+          : ``;
       } else {
         transitionContainer.style[animatedProperty as "height"] =
           `${transitionContainer.clientHeight}px`;

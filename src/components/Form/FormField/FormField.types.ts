@@ -31,7 +31,7 @@ export type FormFieldProps<Q extends Pick<FormFieldView, "type">> = {
           | AnswerAction<{
               type: T;
             }>
-          | undefined
+          | undefined,
       ) => void;
       error?: string | string[];
     }
@@ -64,11 +64,13 @@ export type BasicFormFields =
 
 type DistributeValidatorOverUnion<FormFieldTypes extends { type: any }> =
   FormFieldTypes extends any
-    ? FormFieldTypes & {
-        validator?: (
-          val: AnswerAction<FormFieldTypes> | undefined
-        ) => boolean | string;
-      }
+    ? keyof FormFieldTypes extends "validator"
+      ? FormFieldTypes
+      : FormFieldTypes & {
+          validator?: (
+            val: AnswerAction<FormFieldTypes> | undefined,
+          ) => boolean | string;
+        }
     : never;
 export type FormField = {
   optional?: boolean;
@@ -80,10 +82,17 @@ export type FormField = {
       type: "radio";
       options: SelectItem[];
     }
-  | {
+  | ({
       type: "check" | "rawcheck";
       options: SelectItem[];
-    }
+    } & ({
+      validator: (
+        val: AnswerAction<{ type: "check" }> | undefined,
+      ) => boolean | string;
+      optional: false;
+    } | {
+      optional?: true
+    }))
   | {
       type: "file";
       fileUsageDescription: string;
@@ -126,11 +135,11 @@ export type AnswerByField<F extends Pick<FormField, "type">> =
   F["type"] extends "file"
     ? UploadTask | true
     : F["type"] extends "accept" | "check" | "rawcheck"
-    ? boolean[]
-    : F["type"] extends "radio" | "text" | "select" | "number"
-    ? string
-    : F["type"] extends keyof ExternalQuestionFields
-    ? FromOnePercentUtility<"UIElements.FormExtension">["fieldAnswer"][F["type"]]
-    : unknown;
+      ? boolean[]
+      : F["type"] extends "radio" | "text" | "select" | "number"
+        ? string
+        : F["type"] extends keyof ExternalQuestionFields
+          ? FromOnePercentUtility<"UIElements.FormExtension">["fieldAnswer"][F["type"]]
+          : unknown;
 
 type O = FormField["type"];

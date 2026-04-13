@@ -14,7 +14,7 @@ import { FromOnePercentUtility } from "../../type-utils";
 
 export function useFormAnswers<A extends AnswersMap<any> = AnswersMap>(
   defaultAnswers: A,
-  mode: FormMode
+  mode: FormMode,
 ) {
   const [answers, setAnswers] = useState<A>(() => {
     const clone = {
@@ -30,7 +30,7 @@ export function useFormAnswers<A extends AnswersMap<any> = AnswersMap>(
 }
 export function useFormState<Q extends FormFieldView[]>(
   currentQuestions: Q,
-  { answers, setAnswers }: ReturnType<typeof useFormAnswers<AnswersMap<Q>>>
+  { answers, setAnswers }: ReturnType<typeof useFormAnswers<AnswersMap<Q>>>,
 ) {
   const formConfig = useOneUIConfig("component.form");
 
@@ -39,7 +39,7 @@ export function useFormState<Q extends FormFieldView[]>(
       currentQuestions,
       answers,
       formConfig.requiredLabel,
-      formConfig.extensions
+      formConfig.extensions,
     );
   }, [answers, currentQuestions]);
 
@@ -50,7 +50,7 @@ export function useFormState<Q extends FormFieldView[]>(
       | AnswerAction<{
           type: T;
         }>
-      | undefined
+      | undefined,
   ) => {
     switch (questionType) {
       case "file":
@@ -91,7 +91,7 @@ export function useFormState<Q extends FormFieldView[]>(
 export function useForm<Q extends FormFieldView[]>(
   currentQuestions: Q,
   defaultAnswers: AnswersMap,
-  mode: FormMode
+  mode: FormMode,
 ) {
   const answers = useFormAnswers(defaultAnswers, mode);
   return useFormState(currentQuestions, answers as any);
@@ -100,7 +100,7 @@ export function useForm<Q extends FormFieldView[]>(
 function useFileUploads(questions: FormField[], answers: AnswersMap) {
   const fileUploadQuestions = useMemo(
     () => questions.filter((a) => a.type === "file"),
-    [questions]
+    [questions],
   );
   const [fileUploadStatus, setFileUploadStatus] = useState<{
     [questionID: string]: UploadTaskSnapshot["state"];
@@ -132,7 +132,7 @@ function useFileUploads(questions: FormField[], answers: AnswersMap) {
               [fileQuestion.id]:
                 r.totalBytes === r.bytesTransferred ? "success" : "running",
             }));
-          })
+          }),
         );
     }
 
@@ -154,14 +154,14 @@ function useFileUploads(questions: FormField[], answers: AnswersMap) {
 export function useFieldErrors<
   Q extends Readonly<
     Pick<FormField, "type" | "id" | "optional" | "validator">[]
-  >
+  >,
 >(currentQuestions: Q, answers: AnswersMap, showAllErrors: boolean) {
   const { requiredLabel, extensions } = useOneUIConfig("component.form");
   const errorMap = useMemo(() => {
     const ans = <T extends FormFieldView["type"]>(
       question: Pick<FormField, "id"> & {
         type: T;
-      }
+      },
     ) =>
       answers[question.id] as AnswerByField<{
         type: T;
@@ -175,7 +175,7 @@ export function useFieldErrors<
           ans(question),
           !!question.optional,
           question.validator,
-          requiredLabel
+          requiredLabel,
         );
       };
       const updateDefaultError = () => {
@@ -188,7 +188,7 @@ export function useFieldErrors<
           updateDefaultError();
           if (question.validator)
             errorsMap[question.id] = question.validator(
-              ans(question) as any
+              ans(question) as any,
             ) as string;
           break;
         case "number":
@@ -227,7 +227,7 @@ export function useFieldErrors<
         ...r,
         [k]: showAllErrors ? v : v !== requiredLabel ? v : undefined,
       }),
-      {}
+      {},
     );
   }, [showAllErrors, errorMap]);
 
@@ -238,72 +238,69 @@ export function areAllQuestionsAnswered(
   currentQuestions: FormField[],
   answers: AnswersMap,
   requiredLabel: string,
-  extensions: OneUIContextSpecs["component"]["form"]["extensions"]
+  extensions: OneUIContextSpecs["component"]["form"]["extensions"],
 ) {
   const isValid = currentQuestions.reduce((answeredAll, question) => {
     const ans = <T extends FormFieldView["type"]>(
       question: FormField & {
         type: T;
-      }
+      },
     ) =>
       answers[question.id] as unknown as AnswerByField<{
         type: T;
       }>;
 
-    const result =
-      answeredAll &&
-      (() => {
-        switch (question.type) {
-          case "accept":
-            const checks = ans(question) || [];
-            return question.accept.reduce(
-              (r, { optional }, idx) => r && (optional ? true : checks[idx]),
-              true
-            );
-          case "check":
-          case "rawcheck":
-            if (question.optional) return true;
-            if (question.validator)
-              return question.validator(ans(question) as any) as boolean;
-            const checkmarks = ans(question) || [];
-            return checkmarks.includes(true);
-          case "number":
-          case "text":
-          case "select":
-          case "radio":
-          case "file":
-            if (!answers[question.id]) return !!question.optional;
-            const validationResult = isValidated(
-              ans(question),
-              !!question.optional,
-              question.validator,
-              requiredLabel
-            );
-            return validationResult.isValid && answeredAll;
-          default:
-            const extendedSupport =
-              extensions?.[
-                question.type as FromOnePercentUtility<"UIElements.FormExtension">["fields"]["type"]
-              ];
-            if (extendedSupport) {
-              const validationResultExtend = extendedSupport.validator
-                ? extendedSupport.validator(
-                    ans(question) as any,
-                    question as any
-                  )
-                : isValidated(
-                    ans(question),
-                    !!question.optional,
-                    question.validator,
-                    requiredLabel
-                  );
-              return validationResultExtend.isValid;
-            } else
-              return question.validator
-                ? !!question.validator(ans(question) as any)
-                : !!ans(question);
-        }
-      })();
+    const isFieldAnswered = (() => {
+      switch (question.type) {
+        case "accept":
+          const checks = ans(question) || [];
+          return question.accept.reduce(
+            (r, { optional }, idx) => r && (optional ? true : checks[idx]),
+            true,
+          );
+        case "check":
+        case "rawcheck":
+          if (question.optional) return true;
+          if (question.validator)
+            return question.validator(ans(question) as any) === true as boolean;
+          const checkmarks = ans(question) || [];
+          return checkmarks.includes(true);
+        case "number":
+        case "text":
+        case "select":
+        case "radio":
+        case "file":
+          if (!answers[question.id]) return !!question.optional;
+          const validationResult = isValidated(
+            ans(question),
+            !!question.optional,
+            question.validator,
+            requiredLabel,
+          );
+          return validationResult.isValid && answeredAll;
+        default:
+          const extendedSupport =
+            extensions?.[
+              question.type as FromOnePercentUtility<"UIElements.FormExtension">["fields"]["type"]
+            ];
+          if (extendedSupport) {
+            const validationResultExtend = extendedSupport.validator
+              ? extendedSupport.validator(ans(question) as any, question as any)
+              : isValidated(
+                  ans(question),
+                  !!question.optional,
+                  question.validator,
+                  requiredLabel,
+                );
+            return validationResultExtend.isValid;
+          } else
+            return question.validator
+              ? !!question.validator(ans(question) as any)
+              : !!ans(question);
+      }
+    })();
+
+    const result = answeredAll && isFieldAnswered;
     return result;
   }, true);
 
@@ -314,7 +311,7 @@ export const isValidated = (
   _answer: AnswerByField<{ type: FormFieldTypes }>,
   isOptional: boolean,
   validator: ((val: any) => string | boolean) | undefined,
-  requiredFieldLabel: string
+  requiredFieldLabel: string,
 ) => {
   const answer = Array.isArray(_answer) ? _answer[0] : _answer;
   if (!answer && !isOptional)
@@ -335,7 +332,7 @@ export const isValidated = (
         error: "",
       };
     }
-  const validationResult = validator(answer);
+  const validationResult = validator(_answer);
   if (typeof validationResult === "string")
     return {
       isValid: false,

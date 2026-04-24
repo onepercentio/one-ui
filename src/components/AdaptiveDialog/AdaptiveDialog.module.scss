@@ -67,10 +67,8 @@
     height: auto;
     padding: 0px !important;
   }
-  padding: 16px 32px;
   position: relative;
-  width: 100%;
-  max-width: 640px;
+  max-width: 95vw;
   background: $mainBackgroundColor;
   backdrop-filter: var(--adaptive-dialog-backdrop, initial);
   display: flex;

@@ -89,11 +89,49 @@ const prepareSizes = (options) => {
   }));
 };
 
+function getIssuer(loaderContext, currentModule) {
+  const compilation = loaderContext._compilation;
+
+  if (
+    compilation &&
+    compilation.moduleGraph &&
+    typeof compilation.moduleGraph.getIssuer === "function"
+  ) {
+    return compilation.moduleGraph.getIssuer(currentModule);
+  }
+
+  return currentModule && currentModule.issuer;
+}
+
+function shouldExportAsDataUrl(loaderContext) {
+  const documentEntryPattern = /\.document\.tsx(?:[?#].*)?$/;
+  let currentModule = loaderContext._module;
+  const visited = new Set();
+
+  while (currentModule && !visited.has(currentModule)) {
+    visited.add(currentModule);
+
+    const request =
+      currentModule.resource ||
+      currentModule.userRequest ||
+      currentModule.request ||
+      "";
+
+    if (documentEntryPattern.test(request)) {
+      return true;
+    }
+
+    currentModule = getIssuer(loaderContext, currentModule);
+  }
+
+  return false;
+}
+
 function _default(content) {
   const options = Object.assign(
     {},
     loaderUtils.getOptions(this),
-    loaderUtils.parseQuery(this.resourceQuery || "?")
+    loaderUtils.parseQuery(this.resourceQuery || "?"),
   );
   const context = options.context || this.rootContext;
   const callback = this.async();
@@ -101,7 +139,7 @@ function _default(content) {
   options.name = options.name || "[contenthash].png";
   options.name = options.name.replace(
     "[name]",
-    _path.default.basename(this.resourcePath).replace(/\..*$/, "")
+    _path.default.basename(this.resourcePath).replace(/\..*$/, ""),
   );
   let outputPathBase = loaderUtils.interpolateName(this, options.name, {
     context,
@@ -113,6 +151,8 @@ function _default(content) {
     outputPathBase = _path.default.join(options.outputPath, outputPathBase);
   }
 
+  const exportAsDataUrl = shouldExportAsDataUrl(this);
+
   Promise.all(
     prepareSizes(options).map((size) => {
       return new Promise((resolve, reject) => {
@@ -121,7 +161,7 @@ function _default(content) {
         if (size.width > -1 && size.height > -1) {
           sharpInst = sharpInst.resize(
             size.width * options.resizeFactor,
-            size.height * options.resizeFactor
+            size.height * options.resizeFactor,
           );
         }
 
@@ -148,20 +188,27 @@ function _default(content) {
                   return finalSize[match] || finalSize[match] === 0
                     ? finalSize[match]
                     : match;
-                }
+                },
               );
-              this.emitFile(outputPath, data);
+
+              if (!exportAsDataUrl) {
+                this.emitFile(outputPath, data);
+              }
+
               resolve({
                 size: finalSize,
                 outputPath,
+                data,
               });
             }
           });
       });
-    })
+    }),
   )
     .then((results) => {
-      let output = `module.exports = __webpack_public_path__ + "${results[0].outputPath}";`;
+      let output = exportAsDataUrl
+        ? `module.exports = "data:image/png;base64,${results[0].data.toString("base64")}";`
+        : `module.exports = __webpack_public_path__ + "${results[0].outputPath}";`;
       callback(null, output);
     })
     .catch((error) => {

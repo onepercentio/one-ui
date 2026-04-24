@@ -31,7 +31,7 @@ const { findPathDeep } = require("deepdash")(lodash);
 
 function findAllStaticGeneration() {
   const glob = require("glob");
-  const results = glob.sync("**/*.+(static|email).tsx", {
+  const results = glob.sync("**/*.+(static|email|document).tsx", {
     cwd: join(resolve("."), "src"),
     absolute: true,
   });
@@ -41,7 +41,7 @@ function findAllStaticGeneration() {
 
 function parseResultsrToEntries(results) {
   return results.reduce((entries, filePath) => {
-    const [_, fileName] = /[\\/]([^\\/]+).(static|email).tsx/.exec(filePath);
+    const [_, fileName] = /[\\/]([^\\/]+).(static|email|document).tsx/.exec(filePath);
     entries[fileName] = filePath;
     return entries;
   }, {});
@@ -221,7 +221,7 @@ async function createConfig(
   });
 
   whereToPlaceTheNewLoaderPath.splice(1, 0, {
-    test: /\.email\.tsx/,
+    test: [/\.email\.tsx/, /\.document\.tsx/],
     use: [
       {
         loader: babelLoader.loader,
@@ -384,8 +384,15 @@ module.exports = async function initEmailWebpack() {
     templatesFilter,
   );
   checkTemplatesCount(config.entry);
-  return config;
+
+  /** @type {import("webpack").Configuration} */
+  const finalConfig = {...config, bail: true}
+  return finalConfig;
 };
 
 module.exports.checkTemplatesCount = checkTemplatesCount;
 /** @typedef {{mainHtml: [htmlPath: string, htmlOutputFilename: string][], templatesFilter: (availableTemplates: string[]) => Promise<string[]>}} EmailGeneratorConfig  */
+
+process.on("uncaughtException", e => {
+  console.log("Had error", e)
+})

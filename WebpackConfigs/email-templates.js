@@ -221,7 +221,7 @@ async function createConfig(
   });
 
   whereToPlaceTheNewLoaderPath.splice(1, 0, {
-    test: [/\.email\.tsx/, /\.document\.tsx/],
+    test: [/\.email\.tsx/],
     use: [
       {
         loader: babelLoader.loader,
@@ -233,6 +233,25 @@ async function createConfig(
           features: {
             ...features,
             inlineCSS: features.inlineCSS,
+          },
+        },
+      },
+    ],
+  });
+
+  whereToPlaceTheNewLoaderPath.splice(1, 0, {
+    test: [/\.document\.tsx/],
+    use: [
+      {
+        loader: babelLoader.loader,
+        options: babelLoader.options,
+      },
+      {
+        loader: join(__dirname, "loaders", "static-loader"),
+        options: {
+          features: {
+            ...features,
+            inlineCSS: false,
           },
         },
       },

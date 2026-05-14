@@ -138,7 +138,6 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "prebuild": "rm -rf ./dist; rm -rf ./dist-ts;",
-    "build": "babel src --ignore \"**/*.e2e.ts,**/*.test.ts,**/*.test.tsx,**/*.stories.tsx\" --out-dir dist --extensions \".ts,.tsx\" --copy-files --no-copy-ignored --config-file=./.prod.babelrc",
     "build:ts": "tsc --project tsconfig.prod.json",
     "build:ts:scss": "babel src --ignore \"**/*.tsx,**/*.ts\" --out-dir dist-ts --extensions \".ts,.tsx\" --copy-files --no-copy-ignored --config-file=./.prod.babelrc",
     "postbuild": "tsc",
@@ -153,7 +152,7 @@
     "deploy:storybook": "yarn build-storybook && firebase deploy --only hosting",
     "test:e2e:watch": "cypress open --component --port 6005 --browser chrome",
     "test:e2e": "cypress run --component --port 6015 --browser chrome",
-    "prepack": "bun src/index.preprocess.ts; yarn build; yarn build:ts; yarn build:ts:scss;"
+    "prepack": "bun src/index.preprocess.ts; yarn build:ts; yarn build:ts:scss;"
   },
   "browserslist": {
     "production": [

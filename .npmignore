@@ -33,3 +33,5 @@ cypress/**/*
 .preprocess.*
 
 src/**/*
+build/
+WebpackConfigs/__fixtures__

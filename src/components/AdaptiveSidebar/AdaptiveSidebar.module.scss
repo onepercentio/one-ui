@@ -1,4 +1,4 @@
-@import "../../assets/styles/index.scss";
+@use "../../assets/styles/index.scss" as *;
 
 $hamburgerSize: 48;
 $hamburgerOffset: 24;

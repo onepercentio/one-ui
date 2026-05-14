@@ -1,4 +1,4 @@
-@import "../../assets/styles/variables.scss";
+@use "../../assets/styles/variables.scss" as *;
 
 .zoomableIndicator {
   cursor: zoom-in;

@@ -1,5 +1,5 @@
 @use "sass:math";
-@import "../../assets/styles/variables.scss";
+@use "../../assets/styles/variables.scss" as *;
 
 .root {
   box-sizing: border-box;

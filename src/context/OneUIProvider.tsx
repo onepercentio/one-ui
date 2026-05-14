@@ -130,6 +130,9 @@ export type OneUIContextSpecs = {
     };
     fileInput: {
       View: (props: FileInputViewProps) => ReactElement;
+      button: {
+        variant: FromOnePercentUtility<"UIElements.ButtonVariants">;
+      };
     };
     passwordInput: {
       iconSrc: {

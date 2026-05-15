@@ -1,0 +1,76 @@
+name: Release Browser Bundle
+
+on:
+  push:
+    paths:
+      - package.json
+
+permissions:
+  contents: write
+
+jobs:
+  detect-version-change:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.version.outputs.changed }}
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect package version change
+        id: version
+        shell: bash
+        run: |
+          current_version=$(node -p "require('./package.json').version")
+          previous_sha="${{ github.event.before }}"
+
+          if [ -z "$previous_sha" ] || [ "$previous_sha" = "0000000000000000000000000000000000000000" ]; then
+            previous_version=""
+          else
+            previous_version=$(git show "$previous_sha:package.json" 2>/dev/null | node -p "const fs = require('fs'); const pkg = JSON.parse(fs.readFileSync(0, 'utf8')); pkg.version" 2>/dev/null || true)
+          fi
+
+          if [ "$current_version" != "$previous_version" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          echo "version=$current_version" >> "$GITHUB_OUTPUT"
+
+      - name: Skip when version is unchanged
+        if: steps.version.outputs.changed != 'true'
+        run: echo "package.json changed, but version stayed the same."
+
+  release-browser-bundle:
+    needs: detect-version-change
+    if: needs.detect-version-change.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build browser bundle
+        run: yarn build:bundle
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ needs.detect-version-change.outputs.version }}
+          name: v${{ needs.detect-version-change.outputs.version }}
+          generate_release_notes: true
+          files: |
+            dist-browser/bundle.js
+            dist-browser/bundle.js.map

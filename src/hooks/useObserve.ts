@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useState } from "react";
-import "./shims/ObjectWatchShim.js";
+import "./shims/ObjectWatchShim";
 
 interface Object {
   watch<T extends Object>(prop: (keyof T)[], handler: () => void): () => void;

@@ -20,7 +20,10 @@
     "./*.html": null,
     "./*.preprocess": null,
     "./components/Form/v2/*": "./dist-ts/components/Form/v2/*.js",
-    "./components/*": ["./dist-ts/components/*/index.js", "./dist-ts/components/*.js"],
+    "./components/*": [
+      "./dist-ts/components/*/index.js",
+      "./dist-ts/components/*.js"
+    ],
     "./components/*.scss": "./dist-ts/components/*.scss",
     "./components/*.types": "./dist-ts/components/*.types.js",
     "./components/*.hook": "./dist-ts/components/*.hook.js",
@@ -111,7 +114,8 @@
     "typescript": "^5",
     "url": "^0.11.0",
     "use-wallet": "0.13.5",
-    "webpack": "^5"
+    "webpack": "^5",
+    "webpack-cli": "^7.0.2"
   },
   "dependencies": {
     "@mona-health/react-input-mask": "^3.0.3",
@@ -140,6 +144,7 @@
     "prebuild": "rm -rf ./dist; rm -rf ./dist-ts;",
     "build:ts": "tsc --project tsconfig.prod.json",
     "build:ts:scss": "babel src --ignore \"**/*.tsx,**/*.ts\" --out-dir dist-ts --extensions \".ts,.tsx\" --copy-files --no-copy-ignored --config-file=./.prod.babelrc",
+    "build:bundle": "webpack-cli --config ./webpack.bundle.config.js",
     "postbuild": "tsc",
     "copy-css": "cpy --cwd=\"src\" \"**/*.{scss,svg}\" \"../dist\" --parents",
     "dev:ts": "yarn dev:ts-dist; yarn dev:ts-types;",

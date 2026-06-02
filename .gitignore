@@ -21,3 +21,4 @@ test.tsx
 .ai
 dist-browser
 example.html
+.npmrc

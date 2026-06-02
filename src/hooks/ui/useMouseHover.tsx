@@ -12,6 +12,9 @@ export default function useMouseHover() {
       onMouseEnter: ownEvent<MouseEvent>(() => {
         setHovering(true);
       }),
+      onMouseOver: ownEvent<MouseEvent>(() => {
+        setHovering(true);
+      }),
       onMouseOut: ownEvent<MouseEvent>(() => {
         setHovering(false);
       }),

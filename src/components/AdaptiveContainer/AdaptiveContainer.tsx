@@ -173,10 +173,11 @@ export default function AdaptiveContainer<
   }, [children.key, direction]);
   const Wrapper = _Wrapper as any;
   const directionClass = direction in Styles ? Styles[direction] : "";
+  const {contentClassName, ...spreadProps} = otherProps
 
   return (
     <>
-      <Wrapper className={`${className}`} ref={buttonRef} {...otherProps}>
+      <Wrapper className={`${className}`} ref={buttonRef} {...spreadProps}>
         <UncontrolledTransition
           ref={uncontrolledRef}
           transitionType={TransitionAnimationTypes.CUSTOM}

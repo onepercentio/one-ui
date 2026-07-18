@@ -12,6 +12,7 @@ export * from "./utils/ownEvent";
 export * from "./utils/test";
 export * from "./utils/formatters";
 export * from "./utils/flatten";
+export * from "./models/ImageScales";
 export * from "./models/Orbs";
 export * from "./components/Tabs/index";
 export {default as Tabs} from "./components/Tabs/index"

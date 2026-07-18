@@ -1,4 +1,4 @@
-import { ImageScales } from "@muritavo/webpack-microfrontend-scripts/bin/types/ImageScales";
+import { ImageScales } from "../../models/ImageScales";
 import throttle from "lodash/throttle";
 import { useEffect, useState } from "react";
 

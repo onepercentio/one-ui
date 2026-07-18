@@ -5,7 +5,7 @@ import clone from "lodash/cloneDeep";
 import { Get } from "type-fest";
 import React, { ComponentProps, ReactElement, ReactNode, useMemo } from "react";
 import { createContext, PropsWithChildren, useContext } from "react";
-import { ImageScales } from "@muritavo/webpack-microfrontend-scripts/bin/types/ImageScales";
+import { ImageScales } from "../models/ImageScales";
 import { UploadTask } from "firebase/storage";
 import {
   FieldPath,

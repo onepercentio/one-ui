@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import ownEvent from "../../utils/ownEvent";
 
 /**
  * A small hook for binding the hover control over some HTML element
@@ -7,17 +6,16 @@ import ownEvent from "../../utils/ownEvent";
  */
 export default function useMouseHover() {
   const [hovering, setHovering] = useState(false);
+  // enter/leave (not over/out) so the state tracks the bound element as a whole
+  // and isn't toggled by the pointer moving across its children.
   const uiEvents = useMemo(
     () => ({
-      onMouseEnter: ownEvent<MouseEvent>(() => {
+      onMouseEnter: () => {
         setHovering(true);
-      }),
-      onMouseOver: ownEvent<MouseEvent>(() => {
-        setHovering(true);
-      }),
-      onMouseOut: ownEvent<MouseEvent>(() => {
+      },
+      onMouseLeave: () => {
         setHovering(false);
-      }),
+      },
     }),
     []
   );

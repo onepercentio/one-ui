@@ -88,7 +88,7 @@ function _Input(
           ref={inputRef as any}
           placeholder={placeholder}
           rows={multiline}
-          className={className.input}
+          className={`${className.input}${error && shouldShowError ? ` ${className.error ?? ""}` : ""}`}
           {...otherProps}
           onFocus={(e) => {
             setFocused(true);

@@ -1,6 +1,7 @@
 @use "../../assets/styles/index.scss" as *;
 
-$arrowDim: 1em;
+$arrowW: 22px;
+$arrowH: 11px;
 
 /**
 * Some notions to take into account
@@ -32,28 +33,30 @@ $arrowDim: 1em;
   &::after,
   &::before {
     content: " ";
-    width: 0px;
-    height: 0px;
-    border: $arrowDim solid $tooltipBackgroudColor;
-    border-top-color: transparent;
-    border-right-color: transparent;
-    transform: translateY(-$arrowDim) rotate(-45deg);
     display: block;
+    width: $arrowW;
+    height: $arrowH;
+    background-color: $tooltipBackgroudColor;
     margin: auto;
     position: relative;
     left: var(--anchor-indicator-offset-left, 0px);
     z-index: -1;
   }
 
+  // Curved arrow head pointing down at the target (tooltip sits above it)
+  &::after {
+    clip-path: path("M 0 0 C 8 3, 8 3, 11 11 C 14 3, 14 3, 22 0 Z");
+  }
+  // Curved arrow head pointing up at the target (tooltip sits below it)
   &::before {
     display: none;
-    transform: translateY($arrowDim) rotate(135deg);
+    clip-path: path("M 0 11 C 8 8, 8 8, 11 0 C 14 8, 14 8, 22 11 Z");
   }
   &.anchoredTop {
-    transform: translateY(4px);
+    transform: translateY(-8px);
   }
   &.anchoredBottom {
-    transform: translateY(-4px);
+    transform: translateY(8px);
     &::after {
       display: none;
     }

@@ -122,6 +122,8 @@ export type OneUIContextSpecs = {
         container: string;
         /** The input html tag */
         input: string;
+        /** Appended to the input html tag's className when it has a visible error */
+        error?: string;
       };
       labelVariants: {
         error?: FromOnePercentUtility<"UIElements.TextVariants">;

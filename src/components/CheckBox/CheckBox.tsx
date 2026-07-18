@@ -7,6 +7,7 @@ import Styles from "./CheckBox.module.scss";
  * 
  * This component displays a checkbox that users can click to toggle between checked and unchecked states.
  * It shows a label next to the checkbox and supports custom sizing and grouping.
+ * When disabled, it renders muted and ignores toggles.
  **/
 export default function CheckBox({
   checked,
@@ -16,6 +17,7 @@ export default function CheckBox({
   size = undefined,
   groupId,
   value,
+  disabled = false,
   ...props
 }: PropsWithChildren<{
   checked: boolean;
@@ -25,6 +27,7 @@ export default function CheckBox({
   size?: number;
   groupId: string;
   value: string;
+  disabled?: boolean;
 }> &
   Omit<
     React.DetailedHTMLProps<
@@ -39,11 +42,12 @@ export default function CheckBox({
   ) as any;
   return (
     <label
-      className={`${Styles.container} ${className}`}
+      className={`${Styles.container} ${disabled ? Styles.disabled : ""} ${className}`}
       style={{ fontSize: size }}
       onClick={(e) => {
-        onToggle(!checked);
         e.preventDefault();
+        if (disabled) return;
+        onToggle(!checked);
       }}
     >
       <Checkbox
@@ -57,6 +61,7 @@ export default function CheckBox({
         name={groupId}
         id={value}
         checked={checked}
+        disabled={disabled}
         readOnly
       />
 

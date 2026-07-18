@@ -7,7 +7,7 @@ npm install @onepercentio/one-ui
 Or include it directly in HTML:
 
 ```html
-<script src="https://github.com/onepercentio/one-ui/releases/download/v1.3.3/bundle.js"></script>
+<script src="https://github.com/onepercentio/one-ui/releases/download/v1.3.4/bundle.js"></script>
 ```
 
 When loaded via script in HTML, the library is exposed as the global `OneUI` object:

@@ -62,6 +62,9 @@ export default function AdaptiveDialog({
     backdrop: useOneUIConfig("component.adaptiveDialog.backdropClassName", ""),
     dialog: useOneUIConfig("component.adaptiveDialog.dialogClassName", ""),
   };
+  const CloseButtonComponent = useOneUIConfig(
+    "component.adaptiveDialog.closeButton.Component"
+  );
   const content = (
     <div
       ref={rootDivRef}
@@ -78,11 +81,14 @@ export default function AdaptiveDialog({
         onClick={(e) => e.stopPropagation()}
       >
         <ScrollAndFocusLock open={open}>
-          {onClose && (
-            <button className={Styles.closeBtn} onClick={onClose}>
-              <MutableHamburgerButton state="closed" size={24} />
-            </button>
-          )}
+          {onClose &&
+            (CloseButtonComponent ? (
+              <CloseButtonComponent onClick={onClose} />
+            ) : (
+              <button className={Styles.closeBtn} onClick={onClose}>
+                <MutableHamburgerButton state="closed" size={24} />
+              </button>
+            ))}
           <div onClick={() => setExpanded((p) => !p)} />
           {children}
         </ScrollAndFocusLock>

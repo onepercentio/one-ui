@@ -136,7 +136,12 @@ export default function FormField<Q extends FormFieldView>({
         <>
           <div>
             <div>
-              <OneText type={titleVariant}>{c.title}</OneText>
+              <OneText type={titleVariant}>
+                {c.title}
+                {!c.optional && (
+                  <span style={{ color: "var(--warning-red, #e84b4b)" }}> *</span>
+                )}
+              </OneText>
               <br />
               <Button
                 variant="link"
@@ -246,7 +251,12 @@ export default function FormField<Q extends FormFieldView>({
       const selected = val<typeof type>();
       return (
         <>
-          <OneText type={titleVariant}>{c.title}</OneText>
+          <OneText type={titleVariant}>
+            {c.title}
+            {!c.optional && (
+              <span style={{ color: "var(--warning-red, #e84b4b)" }}> *</span>
+            )}
+          </OneText>
           {error && (
             <OneText type="caption" color="error">
               {error}
@@ -276,7 +286,12 @@ export default function FormField<Q extends FormFieldView>({
       const checkmarks = val<typeof type>() || [];
       return (
         <>
-          <OneText type={titleVariant}>{c.title}</OneText>
+          <OneText type={titleVariant}>
+            {c.title}
+            {!c.optional && (
+              <span style={{ color: "var(--warning-red, #e84b4b)" }}> *</span>
+            )}
+          </OneText>
           <br />
           {c.options.map((el, i) => (
             <>
@@ -362,7 +377,12 @@ export default function FormField<Q extends FormFieldView>({
     case "select":
       return (
         <>
-          <OneText type={titleVariant}>{c.title}</OneText>
+          <OneText type={titleVariant}>
+            {c.title}
+            {!c.optional && (
+              <span style={{ color: "var(--warning-red, #e84b4b)" }}> *</span>
+            )}
+          </OneText>
           <Select
             data-testid={props["data-testid"]}
             alignTo={AnchoredTooltipAlignment.LEFT}
@@ -385,7 +405,12 @@ export default function FormField<Q extends FormFieldView>({
           : (val: string) => val;
       return (
         <>
-          <OneText type={titleVariant}>{c.title}</OneText>
+          <OneText type={titleVariant}>
+            {c.title}
+            {!c.optional && (
+              <span style={{ color: "var(--warning-red, #e84b4b)" }}> *</span>
+            )}
+          </OneText>
           <Input
             multiline={"multiline" in c ? c.multiline : undefined}
             placeholder={c.title}

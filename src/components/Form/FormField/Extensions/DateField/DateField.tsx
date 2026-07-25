@@ -21,7 +21,12 @@ export default function dateFieldFactory(dateFormat: string) {
     const { titleVariant } = useOneUIConfig("component.form");
     return (
       <>
-        <Text type={titleVariant}>{question.title}</Text>
+        <Text type={titleVariant}>
+          {question.title}
+          {!question.optional && (
+            <span style={{ color: "var(--warning-red, #e84b4b)" }}> *</span>
+          )}
+        </Text>
         <InputMask
           mask={dateFormat}
           value={value}

@@ -179,6 +179,10 @@ export type OneUIContextSpecs = {
       variant: {
         [k in FromOnePercentUtility<"UIElements.AdaptiveDialogVariants">]: string;
       };
+      closeButton: {
+        /** Overrides the default close button rendered on the dialog */
+        Component?: (props: { onClick: () => void }) => ReactElement;
+      };
     };
     adaptiveSidebar: {
       className: string;

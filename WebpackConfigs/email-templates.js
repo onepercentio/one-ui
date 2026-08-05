@@ -193,6 +193,54 @@ async function createConfig(
     },
   };
   baseConfig.plugins.push(LogPlugin);
+  /**
+   * In development, generate an index.html that links to every compiled
+   * template so they can be browsed without copying URLs from the console.
+   * @type {import("webpack").WebpackPluginInstance}
+   */
+  const IndexPlugin = {
+    apply(compiler) {
+      compiler.hooks.emit.tap("EmailIndex", (compilation) => {
+        const { RawSource } = compiler.webpack.sources;
+        const routes = Object.keys(compilation.assets)
+          .filter((a) => a.endsWith(".html") && a !== "index.html")
+          .sort();
+        const items = routes
+          .map(
+            (route) =>
+              `      <li><a href="/${route}">${route.replace(
+                /\.html$/,
+                "",
+              )}</a></li>`,
+          )
+          .join("\n");
+        const html = `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Templates</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 2rem; }
+      h1 { font-size: 1.25rem; }
+      ul { line-height: 1.8; padding-left: 1.25rem; }
+      a { text-decoration: none; }
+      a:hover { text-decoration: underline; }
+    </style>
+  </head>
+  <body>
+    <h1>Templates (${routes.length})</h1>
+    <ul>
+${items}
+    </ul>
+  </body>
+</html>
+`;
+        compilation.emitAsset("index.html", new RawSource(html));
+      });
+    },
+  };
+  if (process.env.NODE_ENV === "development")
+    baseConfig.plugins.push(IndexPlugin);
   const babelLoaderPath = findFirstBabelLoaderConfigPath(baseConfig);
   const babelLoader = lodash.get(baseConfig.module.rules, babelLoaderPath);
   const indexOfOneOf = babelLoaderPath.indexOf("oneOf");

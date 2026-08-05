@@ -193,6 +193,43 @@ async function createConfig(
     },
   };
   baseConfig.plugins.push(LogPlugin);
+  // Latest list of compiled template routes, kept in sync on every build so
+  // the dev-server fallback middleware can render an up-to-date listing.
+  let latestRoutes = [];
+  const renderTemplatesPage = (routes, heading, warning) => {
+    const items = routes
+      .map(
+        (route) =>
+          `      <li><a href="/${route}">${route.replace(
+            /\.html$/,
+            "",
+          )}</a></li>`,
+      )
+      .join("\n");
+    return `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Templates</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 2rem; }
+      h1 { font-size: 1.25rem; }
+      .warning { color: #b00020; margin-bottom: 1rem; }
+      ul { line-height: 1.8; padding-left: 1.25rem; }
+      a { text-decoration: none; }
+      a:hover { text-decoration: underline; }
+    </style>
+  </head>
+  <body>
+    ${warning ? `<p class="warning">${warning}</p>` : ""}
+    <h1>${heading}</h1>
+    <ul>
+${items}
+    </ul>
+  </body>
+</html>
+`;
+  };
   /**
    * In development, generate an index.html that links to every compiled
    * template so they can be browsed without copying URLs from the console.
@@ -202,45 +239,59 @@ async function createConfig(
     apply(compiler) {
       compiler.hooks.emit.tap("EmailIndex", (compilation) => {
         const { RawSource } = compiler.webpack.sources;
-        const routes = Object.keys(compilation.assets)
-          .filter((a) => a.endsWith(".html") && a !== "index.html")
-          .sort();
-        const items = routes
-          .map(
-            (route) =>
-              `      <li><a href="/${route}">${route.replace(
-                /\.html$/,
-                "",
-              )}</a></li>`,
+        latestRoutes = Object.keys(compilation.assets)
+          .filter(
+            (a) =>
+              a.endsWith(".html") && a !== "index.html" && a !== "404.html",
           )
-          .join("\n");
-        const html = `<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Templates</title>
-    <style>
-      body { font-family: system-ui, sans-serif; margin: 2rem; }
-      h1 { font-size: 1.25rem; }
-      ul { line-height: 1.8; padding-left: 1.25rem; }
-      a { text-decoration: none; }
-      a:hover { text-decoration: underline; }
-    </style>
-  </head>
-  <body>
-    <h1>Templates (${routes.length})</h1>
-    <ul>
-${items}
-    </ul>
-  </body>
-</html>
-`;
-        compilation.emitAsset("index.html", new RawSource(html));
+          .sort();
+        compilation.emitAsset(
+          "index.html",
+          new RawSource(
+            renderTemplatesPage(
+              latestRoutes,
+              `Templates (${latestRoutes.length})`,
+            ),
+          ),
+        );
       });
     },
   };
-  if (process.env.NODE_ENV === "development")
+  if (process.env.NODE_ENV === "development") {
     baseConfig.plugins.push(IndexPlugin);
+    // Any route that isn't a compiled template falls through webpack-dev-
+    // middleware (it calls next() instead of serving a file). Catch it with a
+    // trailing middleware and answer 404 with the same listing plus a warning.
+    const previousSetup = baseConfig.devServer?.setupMiddlewares;
+    baseConfig.devServer = {
+      ...baseConfig.devServer,
+      setupMiddlewares: (middlewares, devServer) => {
+        const result = previousSetup
+          ? previousSetup(middlewares, devServer)
+          : middlewares;
+        result.push({
+          name: "email-templates-not-found",
+          middleware: (req, res, next) => {
+            if (
+              req.method !== "GET" ||
+              !(req.headers.accept || "").includes("text/html")
+            )
+              return next();
+            res.statusCode = 404;
+            res.setHeader("Content-Type", "text/html; charset=utf-8");
+            res.end(
+              renderTemplatesPage(
+                latestRoutes,
+                "Available templates",
+                `Template "${req.url}" was not found. Pick one of the templates below.`,
+              ),
+            );
+          },
+        });
+        return result;
+      },
+    };
+  }
   const babelLoaderPath = findFirstBabelLoaderConfigPath(baseConfig);
   const babelLoader = lodash.get(baseConfig.module.rules, babelLoaderPath);
   const indexOfOneOf = babelLoaderPath.indexOf("oneOf");

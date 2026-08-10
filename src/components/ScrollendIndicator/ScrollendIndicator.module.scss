@@ -1,0 +1,76 @@
+.indicator {
+  position: absolute;
+  z-index: 9999;
+
+  &[data-position="top"] {
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--size, 40px);
+
+    &::before {
+      content: " ";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        ellipse at 50% 0%,
+        var(--main-color) 0%,
+        transparent var(--radius, 50%)
+      );
+    }
+  }
+
+  &[data-position="bottom"] {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--size, 40px);
+
+    &::before {
+      content: " ";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        ellipse at 50% 100%,
+        var(--main-color) 0%,
+        transparent var(--radius, 50%)
+      );
+    }
+  }
+
+  &[data-position="left"] {
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: var(--size, 40px);
+
+    &::before {
+      content: " ";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        ellipse at 0% 50%,
+        var(--main-color) 0%,
+        transparent var(--radius, 50%)
+      );
+    }
+  }
+
+  &[data-position="right"] {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: var(--size, 40px);
+
+    &::before {
+      content: " ";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        ellipse at 100% 50%,
+        var(--main-color) 0%,
+        transparent var(--radius, 50%)
+      );
+    }
+  }
+}

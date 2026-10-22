@@ -21,6 +21,7 @@ const ScrollendIndicator: React.FC<ScrollendIndicatorProps> = ({
   const showLeft = direction === "horizontal";
   const showRight = direction === "horizontal";
   const ref = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const leftRef = useRef<HTMLDivElement>(null);
@@ -56,7 +57,31 @@ const ScrollendIndicator: React.FC<ScrollendIndicatorProps> = ({
       scrollParent.style.position = "relative";
     }
 
+    // The bands ride a sticky box the size of the scrollport, so the browser keeps them
+    // in view on the compositor. Re-pinning them from the `scroll` event instead would
+    // land a frame late (a transparent strip under the gradient while scrolling) and,
+    // because the offset pushed them past the content, it also grew the scrollable area
+    // on every scroll.
+    // `inset: 0` on an absolute child of a scroller resolves against the padding box, so
+    // the wrapper would be scrollport-sized and anchored at the content origin — it would
+    // scroll away and leave the sticky band no room to travel. Stretching it to the whole
+    // content (never beyond, so it adds no overflow) gives the band the full range.
+    const syncViewport = () => {
+      if (ref.current) {
+        if (direction === "vertical")
+          ref.current.style.height = `${scrollParent!.scrollHeight}px`;
+        else ref.current.style.width = `${scrollParent!.scrollWidth}px`;
+      }
+      if (!viewportRef.current) return;
+      const size =
+        direction === "vertical"
+          ? scrollParent!.clientHeight
+          : scrollParent!.clientWidth;
+      viewportRef.current.style.setProperty("--viewport", `${size}px`);
+    };
+
     const handleScroll = () => {
+      syncViewport();
       const {
         scrollTop,
         scrollLeft,
@@ -93,11 +118,11 @@ const ScrollendIndicator: React.FC<ScrollendIndicatorProps> = ({
         );
         const leftRadius = Math.max(
           0,
-          50 * (1 - leftRemaining / maxGradientScroll)
+          Math.min(50, 50 * (leftRemaining / maxGradientScroll))
         );
         const rightRadius = Math.max(
           0,
-          50 * (1 - rightRemaining / maxGradientScroll)
+          Math.min(50, 50 * (rightRemaining / maxGradientScroll))
         );
 
         if (leftRef.current)
@@ -107,10 +132,22 @@ const ScrollendIndicator: React.FC<ScrollendIndicatorProps> = ({
       }
     };
 
+    const observer =
+      typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(() => {
+            syncViewport();
+            handleScroll();
+          })
+        : undefined;
+    observer?.observe(scrollParent);
     scrollParent.addEventListener("scroll", handleScroll, { passive: true });
+    syncViewport();
     handleScroll();
 
-    return () => scrollParent?.removeEventListener("scroll", handleScroll);
+    return () => {
+      observer?.disconnect();
+      scrollParent?.removeEventListener("scroll", handleScroll);
+    };
   }, [direction, forceRelativePosition, indicatorSize, maxGradientScroll]);
 
   return (
@@ -118,38 +155,40 @@ const ScrollendIndicator: React.FC<ScrollendIndicatorProps> = ({
       ref={ref}
       style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
     >
-      {showTop && (
-        <div
-          ref={topRef}
-          className={styles.indicator}
-          data-position="top"
-          style={{ "--size": `${indicatorSize}px` } as React.CSSProperties}
-        />
-      )}
-      {showBottom && (
-        <div
-          ref={bottomRef}
-          className={styles.indicator}
-          data-position="bottom"
-          style={{ "--size": `${indicatorSize}px` } as React.CSSProperties}
-        />
-      )}
-      {showLeft && (
-        <div
-          ref={leftRef}
-          className={styles.indicator}
-          data-position="left"
-          style={{ "--size": `${indicatorSize}px` } as React.CSSProperties}
-        />
-      )}
-      {showRight && (
-        <div
-          ref={rightRef}
-          className={styles.indicator}
-          data-position="right"
-          style={{ "--size": `${indicatorSize}px` } as React.CSSProperties}
-        />
-      )}
+      <div ref={viewportRef} className={styles.viewport} data-direction={direction}>
+        {showTop && (
+          <div
+            ref={topRef}
+            className={styles.indicator}
+            data-position="top"
+            style={{ "--size": `${indicatorSize}px` } as React.CSSProperties}
+          />
+        )}
+        {showBottom && (
+          <div
+            ref={bottomRef}
+            className={styles.indicator}
+            data-position="bottom"
+            style={{ "--size": `${indicatorSize}px` } as React.CSSProperties}
+          />
+        )}
+        {showLeft && (
+          <div
+            ref={leftRef}
+            className={styles.indicator}
+            data-position="left"
+            style={{ "--size": `${indicatorSize}px` } as React.CSSProperties}
+          />
+        )}
+        {showRight && (
+          <div
+            ref={rightRef}
+            className={styles.indicator}
+            data-position="right"
+            style={{ "--size": `${indicatorSize}px` } as React.CSSProperties}
+          />
+        )}
+      </div>
     </div>
   );
 };

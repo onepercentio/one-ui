@@ -1,3 +1,20 @@
+// Sticky box matching the scrollport, so the browser keeps the bands in view without a
+// per-scroll transform. Zero cross-axis size keeps it out of the scrollable overflow.
+.viewport {
+  position: sticky;
+  pointer-events: none;
+
+  &[data-direction="vertical"] {
+    top: 0;
+    height: var(--viewport, 0px);
+  }
+
+  &[data-direction="horizontal"] {
+    left: 0;
+    width: var(--viewport, 0px);
+  }
+}
+
 .indicator {
   position: absolute;
   z-index: 9999;

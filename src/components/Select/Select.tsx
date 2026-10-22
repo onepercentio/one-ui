@@ -61,6 +61,10 @@ type MultiMode<I extends SelectItem> = {
   selected?: I["value"][];
 };
 
+// Item identity fields are not DOM attributes; only the extra HTML props reach the option.
+const itemDomProps = ({ label: _l, labelStr: _ls, value: _v, ...rest }: any) =>
+  rest;
+
 /**
  * A dropdown select
  **/
@@ -72,6 +76,8 @@ function Select<I extends SelectItem>({
   dropdownClassName: _drop = "",
   alignTo = AnchoredTooltipAlignment.CENTER,
   filter,
+  filterPlaceholder,
+  filterEmptyLabel,
   ...otherProps
 }: {
   loading?: boolean;
@@ -80,6 +86,9 @@ function Select<I extends SelectItem>({
   dropdownClassName?: string;
   alignTo?: AnchoredTooltipAlignment;
   filter?: (item: I, term: string) => boolean;
+  filterPlaceholder?: string;
+  /** Shown in the dropdown when the filter term matches no item. */
+  filterEmptyLabel?: string;
 } & (SingleMode<I> | MultiMode<I>) &
   Omit<ComponentProps<typeof Input>, "selected" | "onClick" | "onSelect">) {
   const { selected: _, onClick: __, ...propsToSpread } = otherProps;
@@ -169,6 +178,11 @@ function Select<I extends SelectItem>({
       anchorTo={AnchoredTooltipAnchor.BOTTOM}
     >
       <div
+        data-testid={
+          otherProps["data-testid"]
+            ? `${otherProps["data-testid"]}_options`
+            : undefined
+        }
         className={Styles.items}
         onClick={(e) => {
           e.stopPropagation();
@@ -179,7 +193,7 @@ function Select<I extends SelectItem>({
           <div className={Styles.searchInput}>
             <Input
               onChange={({ target: { value } }) => setFilterTerm(value)}
-              decoration={<span>🔎&nbsp;</span>}
+              placeholder={filterPlaceholder}
               containerProps={{
                 onClick: (e) => e.stopPropagation(),
               }}
@@ -205,11 +219,20 @@ function Select<I extends SelectItem>({
                 ]);
               } else otherProps.onClick(i);
             }}
-            {...i}
+            {...itemDomProps(i)}
           >
             {i.label}
           </Text>
         ))}
+        {filterEmptyLabel && filterTerm && !filteredItems.length && (
+          <Text
+            type="caption"
+            className={Styles.filterEmpty}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {filterEmptyLabel}
+          </Text>
+        )}
       </div>
     </Collapsable>
   );

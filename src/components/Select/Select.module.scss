@@ -16,6 +16,10 @@
     background-color: $lightGray;
   }
 }
+.items > .filterEmpty {
+  cursor: default;
+  opacity: 0.6;
+}
 .empty {
   opacity: 0.3;
 }

@@ -17,7 +17,10 @@ export default function dateFieldFactory(dateFormat: string) {
     error,
     ...input
   }: GenericFormFieldProps<"date"> &
-    Pick<ComponentProps<typeof Input>, "data-testid" | "placeholder">) {
+    Pick<
+      ComponentProps<typeof Input>,
+      "data-testid" | "placeholder" | "disclaimer"
+    >) {
     const { titleVariant } = useOneUIConfig("component.form");
     return (
       <>
@@ -37,6 +40,7 @@ export default function dateFieldFactory(dateFormat: string) {
           <Input
             placeholder={input.placeholder ?? question.title}
             error={error}
+            disclaimer={input.disclaimer}
             data-testid={input["data-testid"]}
           />
         </InputMask>

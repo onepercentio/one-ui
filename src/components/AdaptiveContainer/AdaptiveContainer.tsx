@@ -87,14 +87,34 @@ export default function AdaptiveContainer<
             transitionContainer.lastChild as HTMLDivElement;
 
           if (screenThatWillEnter) {
+            // The animated size is measured once, right after the entering screen
+            // mounts. When that measurement matches the size the container already
+            // computes to, assigning it starts no transition, so `transitionend`
+            // never fires and the inline size stays behind — permanently cropping
+            // content that was still loading when it was measured. The transition's
+            // own duration is the deadline after which it is safe to release it.
+            function longestTransitionMs() {
+              return getComputedStyle(transitionContainer!)
+                .transitionDuration.split(",")
+                .reduce(
+                  (longest, duration) =>
+                    Math.max(
+                      longest,
+                      parseFloat(duration) * (duration.includes("ms") ? 1 : 1000),
+                    ),
+                  0,
+                );
+            }
             function resetFactory(
               param: "minHeight" | "height" | "width",
               target: number,
             ) {
+              let releaseTimeout: ReturnType<typeof setTimeout>;
               const resetPropertyInstance = (
                 e: Pick<TransitionEvent, "propertyName">,
               ) => {
                 if (e.propertyName !== param) return;
+                clearTimeout(releaseTimeout);
                 setTimeout(() => {
                   if (transitionContainer?.style[param] === `${target}px`) {
                     transitionContainer!.style[param] = "";
@@ -107,6 +127,10 @@ export default function AdaptiveContainer<
                     resetPropertyInstance,
                   );
               };
+              releaseTimeout = setTimeout(
+                () => resetPropertyInstance({ propertyName: param }),
+                longestTransitionMs() + 100,
+              );
               return resetPropertyInstance;
             }
             if (direction === "both") {

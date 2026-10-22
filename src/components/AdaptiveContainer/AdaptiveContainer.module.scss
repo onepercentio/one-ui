@@ -4,7 +4,9 @@
     height var(--adaptive-container-transition-time, 400ms) linear,
     min-height var(--adaptive-container-transition-time, 400ms) linear;
   transition-timing-function: linear;
-  overflow: hidden;
+  // `clip` keeps the animated crop but, unlike `hidden`, creates no scroll container —
+  // which would otherwise cancel `position: sticky` for every descendant.
+  overflow: clip;
   align-items: flex-start;
   &.h,&.both {
     > * {

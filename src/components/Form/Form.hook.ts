@@ -7,6 +7,7 @@ import {
   FormFieldTypes,
   FormFieldView,
   FormMode,
+  ValidationFeedback,
 } from "./FormField/FormField.types";
 import { AnswersMap } from "./Form.types";
 import { UploadTask, UploadTaskSnapshot } from "firebase/storage";
@@ -310,7 +311,9 @@ export function areAllQuestionsAnswered(
 export const isValidated = (
   _answer: AnswerByField<{ type: FormFieldTypes }>,
   isOptional: boolean,
-  validator: ((val: any) => string | boolean) | undefined,
+  validator:
+    | ((val: any) => string | boolean | ValidationFeedback)
+    | undefined,
   requiredFieldLabel: string,
 ) => {
   const answer = Array.isArray(_answer) ? _answer[0] : _answer;
@@ -333,6 +336,11 @@ export const isValidated = (
       };
     }
   const validationResult = validator(_answer);
+  if (typeof validationResult === "object" && validationResult !== null)
+    return {
+      isValid: validationResult.type === "warning",
+      error: validationResult.type === "error" ? validationResult.label : "",
+    };
   if (typeof validationResult === "string")
     return {
       isValid: false,

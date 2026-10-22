@@ -3,6 +3,12 @@ import { SelectItem } from "../../Select/Select";
 import { UploadTask } from "firebase/storage";
 import { FromOnePercentUtility, UnresolvableOr } from "../../../type-utils";
 
+/** Validator feedback: "error" invalidates the field, "warning" keeps it valid while still showing the label */
+export type ValidationFeedback = {
+  type: "error" | "warning";
+  label: string;
+};
+
 export type GenericFormFieldProps<T extends FormField["type"]> = {
   value: AnswerByField<{ type: T }> | undefined;
   onAnswer: (FormFieldProps<{ type: T }> & {
@@ -69,7 +75,7 @@ type DistributeValidatorOverUnion<FormFieldTypes extends { type: any }> =
       : FormFieldTypes & {
           validator?: (
             val: AnswerAction<FormFieldTypes> | undefined,
-          ) => boolean | string;
+          ) => boolean | string | ValidationFeedback;
         }
     : never;
 export type FormField = {
@@ -88,7 +94,7 @@ export type FormField = {
     } & ({
       validator: (
         val: AnswerAction<{ type: "check" }> | undefined,
-      ) => boolean | string;
+      ) => boolean | string | ValidationFeedback;
       optional: false;
     } | {
       optional?: true

@@ -294,13 +294,14 @@ export default function FormField<Q extends FormFieldView>({
           </OneText>
           <br />
           {c.options.map((el, i) => (
-            <>
+            <Fragment key={el.value ?? i}>
               <OneText type={labelVariant}>
                 <CheckBox
+                  data-testid={props["data-testid"]}
                   checked={checkmarks[i]}
                   label={
                     <>
-                      <div>{el.label}</div>
+                      <span>{el.label}</span>
                     </>
                   }
                   onToggle={(checked) => {
@@ -313,7 +314,7 @@ export default function FormField<Q extends FormFieldView>({
                 />
               </OneText>
               <br />
-            </>
+            </Fragment>
           ))}
           <AdaptiveContainer direction="v">
             {Array.isArray(checkError) ? (
@@ -355,9 +356,10 @@ export default function FormField<Q extends FormFieldView>({
             </>
           )}
           {c.options.map((el, i) => (
-            <>
+            <Fragment key={el.value ?? i}>
               <OneText type={labelVariant}>
                 <CheckBox
+                  data-testid={props["data-testid"]}
                   checked={rawCheckmarks[i]}
                   label={el.label}
                   onToggle={(checked) => {
@@ -370,7 +372,7 @@ export default function FormField<Q extends FormFieldView>({
                 />
               </OneText>
               <br />
-            </>
+            </Fragment>
           ))}
         </>
       );

@@ -190,7 +190,15 @@ function _Transition(
       className: contentClassName,
     };
     const func = ChildrenWrapperFactory(
-      ({ children }) => <div {...externalProps}>{children}</div>,
+      ({ children }) => {
+        // React warns when `key` travels inside a spread; hand it to the runtime on its own.
+        const { key: elementKey, ...divProps } = externalProps;
+        return (
+          <div {...divProps} key={elementKey}>
+            {children}
+          </div>
+        );
+      },
       children[step]!.key || step,
       externalProps,
       Date.now(),
@@ -303,7 +311,12 @@ function _Transition(
         };
         const newWrapper = ChildrenWrapperFactory(
           ({ children }) => {
-            return <div {...propsContainer}>{children}</div>;
+            const { key: elementKey, ...divProps } = propsContainer;
+            return (
+              <div {...divProps} key={elementKey}>
+                {children}
+              </div>
+            );
           },
           key,
           propsContainer,
@@ -368,7 +381,12 @@ function _Transition(
         };
         const newWrapper = ChildrenWrapperFactory(
           ({ children }) => {
-            return <div {...propsContainer}>{children}</div>;
+            const { key: elementKey, ...divProps } = propsContainer;
+            return (
+              <div {...divProps} key={elementKey}>
+                {children}
+              </div>
+            );
           },
           key,
           propsContainer,

@@ -18,6 +18,7 @@ export default function CheckBox({
   groupId,
   value,
   disabled = false,
+  "data-testid": dataTestId,
   ...props
 }: PropsWithChildren<{
   checked: boolean;
@@ -28,6 +29,7 @@ export default function CheckBox({
   groupId: string;
   value: string;
   disabled?: boolean;
+  "data-testid"?: string;
 }> &
   Omit<
     React.DetailedHTMLProps<
@@ -42,6 +44,7 @@ export default function CheckBox({
   ) as any;
   return (
     <label
+      data-testid={dataTestId}
       className={`${Styles.container} ${disabled ? Styles.disabled : ""} ${className}`}
       style={{ fontSize: size }}
       onClick={(e) => {
